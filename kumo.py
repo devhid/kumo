@@ -20,10 +20,19 @@ help_max_pages = 'The maximum total number of crawled pages.'
 @click.option('--d', default=default_max_depth, help=help_max_depth)
 @click.option('--n', default=default_max_pages, help=help_max_pages)
 def main(a, m, d, n):
+    # Gets the width of the terminal.
     terminal_width = os.get_terminal_size().columns
 
-    click.secho('kumo [クモ]'.center(terminal_width)[:-2], fg='green')
-    click.secho('A configurable, efficient web crawler and form brute-forcer written in Python.\n'.center(terminal_width), fg='blue')
-    click.secho('version: 0.1'.center(terminal_width), fg='yellow')
-    click.secho('authors: Johnny So, Andy Liang, Stanley Lim, Mankirat Gulati'.center(terminal_width), fg='yellow')
-    click.secho('github: http://github.com/devhid/kumo'.center(terminal_width), fg='yellow')
+    # Project information and metadata.
+    title = 'kumo [クモ]'.center(terminal_width)[:-2]
+    description = 'A configurable, efficient web crawler and form brute-forcer written in Python.\n'.center(terminal_width)
+    version = 'version: 0.1'.center(terminal_width)
+    authors = 'authors: Johnny So, Andy Liang, Stanley Lim, Mankirat Gulati'.center(terminal_width)
+    github = 'github: http://github.com/devhid/kumo'.center(terminal_width)
+
+    # Output to STDOUT with ANSI coloring.
+    click.secho(title, fg='green')
+    click.secho(description, fg='blue')
+    click.secho(version, fg='yellow')
+    click.secho(authors, fg='yellow')
+    click.secho(github, fg='yellow')
