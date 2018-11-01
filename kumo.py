@@ -14,12 +14,23 @@ help_max_depth = 'The maximum depth of pages to crawl.'
 help_max_pages = 'The maximum total number of crawled pages.'
 
 # The entry point for our CLI.
-@click.command()
+@click.group()
+def main():
+    pass
+
+# Sub-command for actually crawling the website.
+@main.command(name='crawl')
 @click.option('--a', default=default_agent, help=help_agent)
 @click.option('--m', default=default_search_method, help=help_search_method)
 @click.option('--d', default=default_max_depth, help=help_max_depth)
 @click.option('--n', default=default_max_pages, help=help_max_pages)
-def main(a, m, d, n):
+@click.argument('url', type=click.STRING, metavar='<url>', required=True)
+def crawl(a, m, d, n, url):
+    pass
+
+# Sub-command that displays information about the project.
+@main.command(name='info')
+def info():
     # Gets the width of the terminal.
     terminal_width = os.get_terminal_size().columns
 
