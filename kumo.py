@@ -18,8 +18,8 @@ def main():
 @main.command(name='crawl')
 @click.option('--a', default=default_agent, help=help_agent)
 @click.option('--m', default=default_search_method, help=help_search_method)
-@click.option('--d', default=default_max_depth, help=help_max_depth)
-@click.option('--n', default=default_max_pages, help=help_max_pages)
+@click.option('--depth', default=default_max_depth, help=help_max_depth)
+@click.option('--pages', default=default_max_pages, help=help_max_pages)
 @click.argument('url', type=click.STRING, metavar='<url>', required=True)
 def crawl(a, m, depth, pages, url):
     print(url)
