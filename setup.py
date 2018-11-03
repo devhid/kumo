@@ -1,8 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='kumo',
     version='0.1',
+    packages=find_packages(),
     py_modules=['kumo'],
     install_requires=[
         'Click',
