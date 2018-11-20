@@ -19,11 +19,11 @@ def generate_transformations(strings):
     res = dict()
 
     for string in strings:
-        lower = lower(string)
-        upper = upper(string)
+        lower = string.lower()
+        upper = string.upper()
         reverse = string[::-1]
         leet = generate_leet(string) 
-        res[string] = Transform(lower, upper, reverse, leet)
+        res[string] = Transformation(lower, upper, reverse, leet)
     
     return res
 
