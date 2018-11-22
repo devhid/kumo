@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+<div class="content u-text-center">
+    <h1 class="font-alt font-light">Kumo Testbed</h1>
+    <div class="row">
+        {% for page in pages %}
+            <a class="u-inline-block" href="{{ page }}"><button>{{ page.replace('/', '') }}</button></a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
