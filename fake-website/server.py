@@ -14,9 +14,7 @@ def home():
 def standard():
     form = StandardLogin(request.form)
     if request.method == 'POST':
-        print(form.email)
         if form.email.data == 'admin@kumo.io' and form.password.data == 'admin':
-            print('test')
             return redirect('/success')
         return render_template('login-standard.html', form = StandardLogin(), error = 'Invalid credentials.')
 
