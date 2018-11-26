@@ -219,9 +219,10 @@ def close(socket):
     socket : socket
         the socket describing a connection, created by connect(url,port)
     """
-    #socket.shutdown(SHUT_RDWR)
-    socket.close()
-    socket = None
+    if socket is not None:
+        #socket.shutdown(SHUT_RDWR)
+        socket.close()
+        socket = None
 
 if __name__ == "__main__":
     socket = connect("www.google.com",80)
