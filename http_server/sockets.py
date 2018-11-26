@@ -178,7 +178,7 @@ def send_get_request(socket, url, host, agent):
         Accept-Language: en-US,en;q=0.9
         Accept-Encoding: gzip, deflate, br
         Accept-Charset: utf-8
-        Connection: keep-alive
+        Connection: close
         \\r\\n\\r\\n
 
     Parameters
@@ -208,7 +208,7 @@ def send_get_request(socket, url, host, agent):
                         accept_lang="en-US,en;q=0.9",
                         accept_encoding="gzip, deflate, br",
                         accept_charset="utf-8",
-                        connection="keep-alive")
+                        connection="close")
 
 
 def close(socket):
@@ -225,9 +225,15 @@ def close(socket):
         socket = None
 
 if __name__ == "__main__":
-    socket = connect("www.google.com",80)
+
+    host = "httpbin.org"
+    port = 80
+    url = "/headers"
+    ua = "chrome"
+
+    socket = connect(host,port)
     print("socket %r" % (socket))
-    sent_get = send_get_request(socket,"/","www.google.com","chrome")
+    sent_get = send_get_request(socket,url,host,ua)
     print("send_get_request %r" % (sent_get))
     if sent_get:
         response = receive(socket)
