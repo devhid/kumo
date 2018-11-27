@@ -7,6 +7,7 @@ setup(
     py_modules=['kumo'],
     install_requires=[
         'Click',
+        'PyQuery',
     ],
     entry_points='''
         [console_scripts]
