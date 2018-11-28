@@ -85,9 +85,9 @@ def receive(socket):
     
     return response
 
-def send_request(socket, method, url, protocol, host, 
-                 agent, cache_control, accept, accept_lang, 
-                 accept_encoding, accept_charset, connection):
+def send_request(socket, method, url, protocol, host, agent, 
+                 content_type, content_length, cache_control, accept, 
+                 accept_lang, accept_encoding, accept_charset, connection):
     """ Sends an HTTP Request to the specified socket created by connect(url,port).
 
     Request is formatted as follows:
@@ -116,6 +116,10 @@ def send_request(socket, method, url, protocol, host,
         HTTP Host header
     agent : string
         HTTP User-Agent header
+    content_type : string
+        HTTP Content-Type header
+    content_length : string
+        HTTP Content-Length header
     cache_control : string
         HTTP Cache-Control header
     accept : string
@@ -141,6 +145,12 @@ def send_request(socket, method, url, protocol, host,
         return False
     if method != "GET" and method != "POST":
         return False
+    if method == "GET" and cache_control is None or accept is None or \
+        accept_lang is None or accept_encoding is None or \
+        accept_charset is None or connection is None:
+        return False
+    if method == "POST" and content_type is None:
+        return False
     
     user_agent = agent
     if user_agent in HTTP_UA:
@@ -149,12 +159,22 @@ def send_request(socket, method, url, protocol, host,
     request = method + " " + url + " " + protocol + "\n"
     request += "Host: " + host + "\n"
     request += "User-Agent: " + user_agent + "\n"
-    request += "Cache-Control: " + cache_control + "\n"
-    request += "Accept: " + accept + "\n"
-    request += "Accept-Language: " + accept_lang + "\n"
-    request += "Accept-Encoding: " + accept_encoding + "\n"
-    request += "Accept-Charset: " + accept_charset + "\n"
-    request += "Connection: " + connection
+    if content_type is not None:
+        request += "Content-Type: " + content_type + "\n"
+    if content_length is not None:
+        request += "Content-Length: " + content_length + "\n"
+    if cache_control is not None:
+        request += "Cache-Control: " + cache_control + "\n"
+    if accept is not None:
+        request += "Accept: " + accept + "\n"
+    if accept_lang is not None:
+        request += "Accept-Language: " + accept_lang + "\n"
+    if accept_encoding is not None:
+        request += "Accept-Encoding: " + accept_encoding + "\n"
+    if accept_charset is not None:
+        request += "Accept-Charset: " + accept_charset + "\n"
+    if connection is not None:
+        request += "Connection: " + connection
     request += "\r\n\r\n"
 
     sent = send(socket,request)
@@ -199,6 +219,8 @@ def send_get_request(socket, url, host, agent):
                         protocol="HTTP/1.1",
                         host=host,
                         agent=agent,
+                        content_type=None,
+                        content_length=None,
                         cache_control="max-age=0",
                         accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
                         accept_lang="en-US,en;q=0.9",
@@ -206,6 +228,80 @@ def send_get_request(socket, url, host, agent):
                         accept_charset="utf-8",
                         connection="close")
 
+def send_post_request(socket, url, host, agent, 
+                      content_type, content_length, body):
+    """ Sends an HTTP POST Request to the specified socket created by connect(url,port).
+
+    Request is formatted as follows:
+        POST [url] HTTP/1.1
+        Host: [host]
+        User-Agent: [agent]
+        Content-Type: [content_type]
+        Content-Length: [content_length]
+        \\r\\n
+        BODY
+        \\r\\n\\r\\n
+
+    Parameters
+    ----------
+    socket : socket
+        the socket describing a connection, created by connect(url,port)
+    url : string
+        url to which the HTTP request will affect based on method
+    host : string
+        HTTP Host header
+    agent : string
+        HTTP User-Agent header
+    content_type : string
+        HTTP Content-Type header
+    content_length : string
+        HTTP Content-Length header
+    body : string
+        HTTP body
+
+    Returns
+    -------
+    status : boolean
+        True if the request was sent, False if not
+    """
+    return send_request(socket=socket,
+                        method="POST",
+                        url=url,
+                        protocol="HTTP/1.1",
+                        host=host,
+                        agent=agent,
+                        content_type=content_type,
+                        content_length=content_length,
+                        cache_control=None,
+                        accept=None,
+                        accept_lang="en-US,en;q=0.9",
+                        accept_encoding=None,
+                        accept_charset="utf-8",
+                        connection=None)
+
+def generate_post_body(content_type, data):
+    """ Generates the HTTP Body of a POST request given a Content-Type and data.
+
+    Parameters
+    ----------
+    content_type : string
+        HTTP Content-Type header
+    data : dictionary
+        data to be formatted into the body of the POST request
+
+    Returns
+    -------
+    body : string
+        body of the HTTP POST request, or None if the Content-Type was invalid
+    """
+    body = ""
+    if content_type == "application/x-www-form-urlencoded":
+        # Expect data to be a dictionary.
+        for key in data:
+            body += key + "=" + data[key] + "&"
+    else:
+        return None
+    return body[:len(body)-1] if len(body) >= 1 else body
 
 def close(mysocket):
     """ Closes the specified socket.
