@@ -77,13 +77,12 @@ def receive(socket):
     if socket is None:
         return response
 
-    # while True:
-    message = socket.recv(4096)
-    # if len(message) == 0:
-    #     break
-    response += message.decode()
-    print("current response %s" % (response))
-
+    while True:
+        message = socket.recv(4096)
+        if len(message) == 0:
+            break
+        response += message.decode()
+    
     return response
 
 def send_request(socket, method, url, protocol, host, 
@@ -139,10 +138,8 @@ def send_request(socket, method, url, protocol, host,
         protocol is None or host is None or agent is None or \
         cache_control is None or accept is None or accept_lang is None or \
         accept_encoding is None or accept_charset is None or connection is None:
-        print("hi")
         return False
     if method != "GET" and method != "POST":
-        print("method %s" % (method))
         return False
     
     user_agent = agent
@@ -161,7 +158,6 @@ def send_request(socket, method, url, protocol, host,
     request += "\r\n\r\n"
 
     sent = send(socket,request)
-    print("sent %d" % (sent))
     if sent > 0:
         return True
     return False
@@ -211,7 +207,7 @@ def send_get_request(socket, url, host, agent):
                         connection="close")
 
 
-def close(socket):
+def close(mysocket):
     """ Closes the specified socket.
 
     Parameters
@@ -219,25 +215,9 @@ def close(socket):
     socket : socket
         the socket describing a connection, created by connect(url,port)
     """
-    if socket is not None:
-        #socket.shutdown(SHUT_RDWR)
-        socket.close()
-        socket = None
-
-if __name__ == "__main__":
-
-    host = "httpbin.org"
-    port = 80
-    url = "/headers"
-    ua = "chrome"
-
-    socket = connect(host,port)
-    print("socket %r" % (socket))
-    sent_get = send_get_request(socket,url,host,ua)
-    print("send_get_request %r" % (sent_get))
-    if sent_get:
-        response = receive(socket)
-        print("response %s" % (response))
-    close(socket)
+    if mysocket is not None:
+        mysocket.shutdown(socket.SHUT_RDWR)
+        mysocket.close()
+        mysocket = None
     
 
