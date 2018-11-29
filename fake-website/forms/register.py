@@ -10,6 +10,7 @@ class Register(Form):
     name = StringField('Name')
     gender = RadioField('Gender', choices = [('male', 'Male'), ('female', 'Female'), ('other', 'Other')])
     email = StringField('Email')
+    password = PasswordField('Password')
     city = StringField('City')
     country = StringField('Country')
     subscription = SelectField('Subscription', choices = subscription_types)

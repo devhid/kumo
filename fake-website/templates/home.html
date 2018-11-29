@@ -1,7 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-<div class="content u-text-center">
+<div id="header" class="header header-top header-fixed unselectable header-animated header-clear-mod">
+    <div class="header-brand">
+        <div class="nav-item no-hover">
+            <a>
+                <h5 class="title">Kumo</h5>
+            </a>
+        </div>
+        <div class="nav-item nav-btn" id="header-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div class="header-nav" id="header-menu">
+        <div class="nav-left"></div>
+
+        <div class="nav-right">
+            <div class="nav-item">
+                <a href="#">
+                    <span class="icon">
+                        <i class="fas fa-wrapper fa-pen-fancy small"></i>
+                    </span>
+                    Design and Colors</a>
+            </div>
+            <div class="nav-item">
+                <a href="#">
+                    <span class="icon">
+                        <i class="fas fa-wrapper fa-palette small"></i>
+                    </span>
+                    Examples</a>
+            </div>
+            <div class="nav-item">
+                <a href="#">
+                    <span class="icon">
+                        <i class="fas fa-wrapper fa-boxes small"></i>
+                    </span>
+                    Docs</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content u-text-center has-nav">
     <h1 class="lead">Kumo Testbed</h1>
     <div class="row">
         {% for page in pages %}
