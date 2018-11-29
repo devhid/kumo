@@ -1,3 +1,6 @@
+"""
+Simple form for logging in
+"""
 from wtforms import Form, StringField, PasswordField
 
 class StandardLogin(Form):

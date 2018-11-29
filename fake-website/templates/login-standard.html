@@ -5,14 +5,15 @@
     <div class="hero-body">
         <div class="content">
             <form class="frame" method="post">
-                <div class="frame__header">
+                <div class="frame__header"></div>
+                <div class="frame__body">
                     <h3>Login</h3>
                     <div class="form-section">
                         <label>Email</label>
                         <div class="input-control">
                             {{ form.email(class="input-contains-icon input-control--pilled", placeholder="Email") }}
                             <span class="icon">
-                                <i class="fas fa-wrapper fa-layer-group small" aria-hidden="true"></i>
+                                <i class="far fa-envelope-open small"></i>
                             </span>
                         </div>
                     </div>
@@ -21,7 +22,7 @@
                         <div class="input-control">
                             {{ form.password(class="input-contains-icon input-control--pilled", placeholder="Password") }}
                             <span class="icon">
-                                <i class="fas fa-wrapper fa-layer-group small" aria-hidden="true"></i>
+                                <i class="fas fa-key small"></i>
                             </span>
                         </div>
                     </div>
@@ -30,6 +31,7 @@
                     <span class="fg-danger info">{{ error }}</span>
                     <span class="info">If there are any issues, please email our admin at admin@kumo.io.</span>
                 </div>
+                <div class="frame__footer"></div>
             </form>
         </div>
     </div>

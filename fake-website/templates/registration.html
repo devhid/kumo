@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block externalcss %}
+<link href="{{ url_for('static', filename='registration.css') }}" type="text/css" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+<div class="hero fullscreen">
+    <div class="hero-body">
+        <div class="content">
+            <form class="frame u-no-padding" method="post">
+                <div class="frame__body u-no-padding">
+                    <div class="row u-no-padding level fill-height">
+                        <div class="col-6 u-no-padding bg">
+                        </div>
+                        <div class="col-6">
+                            <space class="x-large"></space>
+                            <div class="padded">
+                                <h3>Sign Up</h3>
+                                <div class="form-section">
+                                    <label>Name</label>
+                                    <div class="input-control">
+                                        {{ form.name(class="input-contains-icon", placeholder="Name") }}
+                                        <span class="icon">
+                                            <i class="far fa-user-circle small"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <p>Gender</p>
+                                    {{ form.gender }}
+                                </div>
+                                <div class="form-section">
+                                    <div class="input-control">
+                                        {{ form.email(class="input-contains-icon", placeholder="Email") }}
+                                        <span class="icon">
+                                            <i class="far fa-envelope-open small"></i>
+                                    </div>
+                                </div>
+                                <div class="row u-no-padding">
+                                    <div class="col-6">
+                                            <div class="input-control">
+                                                {{ form.city(class="input-contains-icon", placeholder="City") }}
+                                                <span class="icon">
+                                                    <i class="fas fa-map-marker-alt small"></i>
+                                            </div>
+                                    </div>
+                                    <div class="col-6">
+                                            <div class="input-control">
+                                                {{ form.country(class="input-contains-icon", placeholder="Country") }}
+                                                <span class="icon">
+                                                    <i class="fas fa-globe-americas small"></i>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                        <div class="input-control">
+                                            {{ form.subscription }}
+                                        </div>
+                                </div>
+                                <button class="btn-info u-pull-right" type="submit">Log In</button>
+                                <span class="fg-danger info">{{ error }}</span>
+                                <span class="info">If there are any issues, please email our admin at admin@kumo.io.</span>
+                            </div>
+                            <space class="x-large"></space>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
