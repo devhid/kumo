@@ -5,8 +5,11 @@ from forms.register import Register
 app = Flask(__name__) # Init app
 pages = [
     '/login',
-    'register'
+    '/register'
 ]
+
+# In memory record of user accounts
+accounts = dict()
 
 @app.route('/', methods = ['GET'])
 def home():
@@ -16,7 +19,7 @@ def home():
 def login():
     form = StandardLogin(request.form)
     if request.method == 'POST':
-        if form.email.data == 'admin@kumo.io' and form.password.data == 'admin':
+        if (form.email.data in accounts.keys() and form.password.data == accounts[form.email.data]) or (form.email.data == 'admin@kumo.io' and form.password.data == 'admin'):
             return redirect('/success')
         return render_template('login-standard.html', form = StandardLogin(), error = 'Invalid credentials.')
 
@@ -26,6 +29,10 @@ def login():
 def register():
     form = Register(request.form)
     if request.method == 'POST':
+        if form.email.data in accounts.keys():
+            return render_template('registration.html', form = Register(), error = 'User already exists. Please login instead.')
+
+        accounts[form.email.data] = form.password.data # Register user
         return redirect('/success')
 
     return render_template('registration.html', form = Register())
