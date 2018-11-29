@@ -38,6 +38,8 @@ class HttpRequest:
             Connection: [connection]
             \\r\\n\\r\\n
 
+            [body]
+
         Parameters
         ----------
         url : string
@@ -165,7 +167,7 @@ class HttpRequest:
                             accept_charset="utf-8",
                             connection="close",
                             body=None)
-                            
+
     def send_post_request(self, url, host, agent, 
                         content_type, content_length, body):
         """ Sends an HTTP POST Request to the specified socket created by connect(url,port).
