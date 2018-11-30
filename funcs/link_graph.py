@@ -37,6 +37,5 @@ class LinkGraph:
         " :return: None
         """
         def add_link(self, url):
-            link = LinkGraph.Node(url)
-            self.links.add(link)
+            self.links.add(url)
 
