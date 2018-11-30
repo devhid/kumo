@@ -40,6 +40,17 @@ def register():
 
     return render_template('registration.html', form = Register())
 
+@app.route('/funform', methods = ['GET', 'POST'])
+def funform():
+    form_login = Login(request.form)
+    register_form = Register(request.form)
+
+    # Split between two form types
+    if request.form['btn'] == 'Register':
+
+    elif request.form['btn'] == 'Login':
+        
+
 @app.route('/success', methods = ['GET'])
 def success():
     return render_template('success.html', pages = pages)

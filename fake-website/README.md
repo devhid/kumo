@@ -2,11 +2,15 @@
 * Demo website for cracking into different pages.
 
 ## Running
-* Activate `venv`.
+* Optional creation of a virtual environment.
+    ```sh
+    $ python3 -m venv ./venv
     ```
-    source venv/bin/activate
+* Activate `venv`.
+    ```sh
+    $ source venv/bin/activate
     ```
 * Run the app.
-    ```
-    python server.py
+    ```sh
+    $ python server.py
     ```
