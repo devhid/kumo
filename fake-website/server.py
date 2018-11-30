@@ -20,7 +20,7 @@ def home():
 def login():
     form = StandardLogin(request.form)
     if request.method == 'POST':
-        login_helper(form)
+        return login_helper(form)
 
     return render_template('login-standard.html', form = StandardLogin())
 
@@ -28,7 +28,7 @@ def login():
 def register():
     form = Register(request.form)
     if request.method == 'POST':
-        register(form)
+        return register_helper(form)
 
     return render_template('registration.html', form = Register())
 
@@ -40,11 +40,11 @@ def funform():
     # Split between two form types
     if request.method == 'POST':
         print(request.form['btn'])
-        if request.form['btn'] == 'Register':
-            return redirect('/')
+        if request.form['btn'] == 'login':
+            return login_helper(form_login)
 
-        elif request.form['btn'] == 'Login':
-            return redirect('/success')
+        elif request.form['btn'] == 'register':
+            return register_helper(form_register)
 
 
     return render_template('fun-form.html', form_login = StandardLogin(), form_register = Register())
@@ -54,9 +54,10 @@ def success():
     return render_template('success.html', pages = pages)
 
 def login_helper(form):
+    print(form.email.data)
     if (form.email.data in accounts.keys() and form.password.data == accounts[form.email.data]) or (form.email.data == 'admin@mizio.io' and form.password.data == 'admin'):
-            return redirect('/success')
-        return render_template('login-standard.html', form = StandardLogin(), error = 'Invalid credentials.')
+        return redirect('/success')
+    return render_template('login-standard.html', form = StandardLogin(), error = 'Invalid credentials.')
 
 def register_helper(form):
     if form.email.data in accounts.keys():
