@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
+{% block externalcss %}
+<link href="{{ url_for('static', filename='home.css') }}" type="text/css" rel="stylesheet"/>
+{% endblock %}
 {% block body %}
 <div id="header" class="header header-top header-fixed unselectable header-animated header-clear-mod">
     <div class="header-brand">
         <div class="nav-item no-hover">
             <a>
-                <h5 class="title">Kumo</h5>
+                <h5 class="title">Mizio</h5>
             </a>
         </div>
         <div class="nav-item nav-btn" id="header-btn">
@@ -19,35 +22,31 @@
 
         <div class="nav-right">
             <div class="nav-item">
-                <a href="#">
+                <a href="https://github.com/devhid/kumo" target="_blank">
                     <span class="icon">
-                        <i class="fas fa-wrapper fa-pen-fancy small"></i>
+                        <i class="fab fa-wrapper fa-github small"></i>
                     </span>
-                    Design and Colors</a>
-            </div>
-            <div class="nav-item">
-                <a href="#">
-                    <span class="icon">
-                        <i class="fas fa-wrapper fa-palette small"></i>
-                    </span>
-                    Examples</a>
-            </div>
-            <div class="nav-item">
-                <a href="#">
-                    <span class="icon">
-                        <i class="fas fa-wrapper fa-boxes small"></i>
-                    </span>
-                    Docs</a>
+                    Github</a>
             </div>
         </div>
     </div>
 </div>
-<div class="content u-text-center has-nav">
-    <h1 class="lead">Kumo Testbed</h1>
-    <div class="row">
-        {% for page in pages %}
-            <a class="u-inline-block" href="{{ page }}"><button>{{ page.replace('/', '') }}</button></a>
-        {% endfor %}
+<div class="hero fullscreen hero-img parallax-img">
+    <video id="video-bg" autoplay muted loop="loop">
+        <source src="{{ url_for('static', filename='video.mp4') }}" type="video/mp4"/>
+    </video>
+    <div class="hero-body">
+        <div class="content landing">
+           <div class="u-text-center">
+                <h1>Mizio</h1>
+                <h3 class="uppercase">Stress free email management</h3>
+                <div class="row">
+                    {% for page in pages %}
+                        <a class="u-inline-block" href="{{ page }}"><button class="btn-primary">{{ page.replace('/', '') }}</button></a>
+                    {% endfor %}
+                </div>
+           </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Login - Kumo{% endblock %}
+{% block title %}Login - Mizio{% endblock %}
 {% block externalcss %}
-<link href="{{ url_for('static', filename='registration.css') }}" type="text/css" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='login.css') }}" type="text/css" rel="stylesheet"/>
 {% endblock %}
 {% block body %}
 <div class="hero fullscreen hero-img parallax-img">
@@ -16,7 +16,7 @@
                         <div class="input-control">
                             {{ form.email(class="input-contains-icon input-control--pilled", placeholder="Email") }}
                             <span class="icon">
-                                <i class="far fa-envelope-open small"></i>
+                                <i class="far fa-wrapper fa-envelope-open small"></i>
                             </span>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                         <div class="input-control">
                             {{ form.password(class="input-contains-icon input-control--pilled", placeholder="Password") }}
                             <span class="icon">
-                                <i class="fas fa-key small"></i>
+                                <i class="fas fa-wrapper fa-key small"></i>
                             </span>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
                     <button class="btn-info u-pull-right" type="submit">Log In</button>
                     <span class="fg-danger info">{{ error }}</span>
                     <p class="info">No account? <a class="u u-LR" href="/register">Register</a> today!</p>
-                    <span class="info">If there are any issues, please email our admin at admin@kumo.io.</span>
+                    <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
                 </div>
                 <div class="frame__footer"></div>
             </form>

@@ -19,7 +19,7 @@ def home():
 def login():
     form = StandardLogin(request.form)
     if request.method == 'POST':
-        if (form.email.data in accounts.keys() and form.password.data == accounts[form.email.data]) or (form.email.data == 'admin@kumo.io' and form.password.data == 'admin'):
+        if (form.email.data in accounts.keys() and form.password.data == accounts[form.email.data]) or (form.email.data == 'admin@mizio.io' and form.password.data == 'admin'):
             return redirect('/success')
         return render_template('login-standard.html', form = StandardLogin(), error = 'Invalid credentials.')
 
@@ -32,6 +32,9 @@ def register():
         if form.email.data in accounts.keys():
             return render_template('registration.html', form = Register(), error = 'User already exists. Please login instead.')
 
+        if len(form.email.data) == 0 or len(form.password.data) == 0:
+            return render_template('registration.html', form = Register(), error = 'Please enter valid credentials.')
+
         accounts[form.email.data] = form.password.data # Register user
         return redirect('/success')
 
@@ -42,4 +45,4 @@ def success():
     return render_template('success.html', pages = pages)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug = True, threaded = True)

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Register - Kumo{% endblock %}
+{% block title %}Register - Mizio{% endblock %}
 {% block externalcss %}
 <link href="{{ url_for('static', filename='registration.css') }}" type="text/css" rel="stylesheet"/>
 {% endblock %}
@@ -21,7 +21,7 @@
                                     <div class="input-control">
                                         {{ form.name(class="input-contains-icon", placeholder="Name") }}
                                         <span class="icon">
-                                            <i class="far fa-user-circle small"></i>
+                                            <i class="far fa-wrapper fa-user-circle small"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -33,14 +33,14 @@
                                     <div class="input-control">
                                         {{ form.email(class="input-contains-icon", placeholder="Email") }}
                                         <span class="icon">
-                                            <i class="far fa-envelope-open small"></i>
+                                            <i class="far fa-wrapper fa-envelope-open small"></i>
                                     </div>
                                 </div>
                                 <div class="form-section">
                                     <div class="input-control">
                                         {{ form.password(class="input-contains-icon", placeholder="Password") }}
                                         <span class="icon">
-                                            <i class="fas fa-key small"></i>
+                                            <i class="fas fa-wrapper fa-key small"></i>
                                     </div>
                                 </div>
                                 <div class="row u-no-padding">
@@ -48,14 +48,14 @@
                                             <div class="input-control">
                                                 {{ form.city(class="input-contains-icon", placeholder="City") }}
                                                 <span class="icon">
-                                                    <i class="fas fa-map-marker-alt small"></i>
+                                                    <i class="fas fa-wrapper fa-map-marker-alt small"></i>
                                             </div>
                                     </div>
                                     <div class="col-6">
                                             <div class="input-control">
                                                 {{ form.country(class="input-contains-icon", placeholder="Country") }}
                                                 <span class="icon">
-                                                    <i class="fas fa-globe-americas small"></i>
+                                                    <i class="fas fa-wrapper fa-globe-americas small"></i>
                                             </div>
                                     </div>
                                 </div>
@@ -66,7 +66,7 @@
                                 </div>
                                 <button class="btn-info u-pull-right" type="submit">Sign Up</button>
                                 <span class="fg-danger info">{{ error }}</span>
-                                <span class="info">If there are any issues, please email our admin at admin@kumo.io.</span>
+                                <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
                             </div>
                             <space class="x-large"></space>
                         </div>
