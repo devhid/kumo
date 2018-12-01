@@ -22,7 +22,7 @@ def generate_transformations(strings):
         lower = string.lower()
         upper = string.upper()
         reverse = string[::-1]
-        leet = generate_leet(string) 
+        leet = _generate_leet(string) 
         res[string] = Transformation(lower, upper, reverse, leet)
     
     return res
@@ -32,7 +32,7 @@ def generate_transformations(strings):
 " :arg string: String
 " :return: String
 """
-def generate_leet(string):
+def _generate_leet(string):
     leet = re.sub('[Aa]', '4', string)
     leet = re.sub('[Ee]', '3', leet)
     leet = re.sub('[Ll]', '1', leet)
