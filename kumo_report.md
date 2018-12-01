@@ -125,6 +125,291 @@ Library.
 
 - #### HTTP Requests
 
+  HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
+
+  The sections below describe how the sockets and HTTP request interfaces are implemented in **kumo**. An [example usage of client code using `HttpRequest`](#example-usage-of-httprequest) can be found at the end of this section.
+
+  ## Sockets
+
+  Socket functionality is split into two: a Python module `sockets.py` using relevant socket functions from the standard Python3 library `socket`, and a wrapper `Socket.py` class that uses the custom-defined functions in `sockets.py`.
+
+  ### sockets.py
+
+  `sockets.py` is a module with basic socket functionality. It has the following functions:
+
+  - `connect(url, port)`
+
+    Creates and returns a standard `socket` object that is connected to the specified URL and port.
+
+    **Returns**: a standard `socket` object (`socket`)
+
+    **Exception**: return `None`
+
+  - `close(mysocket)`
+
+    Closes the specified socket.
+
+    **Returns**: does not return
+
+    **Note**: the argument here is named `mysocket` instead of `socket` because it must call the standard method `socket.close()`
+
+  - `send(socket, msg)`
+
+    Sends a message to a socket. Returns the number of bytes sent.
+
+    **Returns**: number of bytes sent (`int`)
+
+    **Exception**: return `0` if either argument was `None` or if the message failed to completely send.
+
+    **Note**: The message fails to completely send if the socket is closed on the other (receiving) end before the message sends, amongst other reasons.
+
+  - `receive(socket)`
+
+    Receives and returns a message from a socket. It detects the end of the message when it reads that the length read was `0` bytes, indicating `EOF`.
+
+    **Returns**: message received from the socket (`string`)
+
+    **Exception**: return `""` (empty string) if `socket` is `None`
+
+    **Note**: The reason it is implemented in such a way is that it is impossible to determine the length of the message unless a prior format is agreed to between the sender and receiver. Since **kumo** is designed to work on any general website, this method cannot be used, and **kumo** must rely on this method of checking.
+
+  ### Socket.py
+
+  `Socket.py` is a wrapper that uses OOP principles over the functions defined in `sockets.py` to create a wrapping `Socket`  class to be used later. The `Socket` class has the following properties:
+
+  - **Constructor**
+
+    - `__init__(self,url,port)`
+
+      The constructor takes a `url` and `port` that describes the socket connection, and assigns the instance variables appropriately.
+
+  - **Private Instance Variables**
+
+    - `self.__url`
+
+      The `url` that the socket will connect to
+
+    - `self.__port`
+
+      The `port` that the socket will connect to the `url` on
+
+    - `self.__socket`
+
+      The underlying standard `socket` object
+
+  - **Instance Methods**
+
+    - `connect(self)`
+
+      The underlying socket (`self.__socket`) connects to the specified `url (self.__url)`and `port (self.__port)` assigned during its construction.
+
+      **Uses**: `sockets.connect(url, port)`
+
+      **Returns**: does not return
+
+      **Note**: This implementation allows for the same `Socket` object to be reused for the same `(url,port)`, which makes sense to code that uses this class, as the `Socket` object then represents an object that is used to connect to a `(url,port)`.
+
+    - `close(self)`
+
+      The underlying socket (`self.__socket`) is closed.
+
+      **Uses**: `sockets.close(mysocket)`
+
+      **Returns**: does not return
+
+    - `send(self, msg)`
+
+      The message `msg` is sent to the underlying socket (`self.__socket`), and the amount of bytes sent is returned.
+
+      **Uses**: `sockets.send(socket, msg)`
+
+      **Returns**: number of bytes sent (`int`)
+
+    - `recv(self)`
+
+      Receives and returns the message received from the underlying socket (`self.__socket`).
+
+      **Uses**: `sockets.receive(socket)`
+
+      **Returns**: message received from the `Socket` (`string`)
+
+  ## Requests
+
+  HTTP request functionality is implemented in the `HttpRequest.py` class, and depends on the `Socket.py` class.
+
+  ### HttpRequest.py
+
+  `HttpRequest.py` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
+
+  An instance of an `HttpRequest` can be reused to perform multiple HTTP requests of the same type to a specified `url` and `port`, by calling `connect()`, sending/receiving a request, and then calling `close()`.
+
+  - **Constructor**
+
+    - `__init__(self, url, port, method)`
+
+      Initializes the `HttpRequest` instance by constructing a `Socket` to the specified `url` and `port` and setting the specified `method`.
+
+  - **Private Instance Variables**
+
+    - `self.__socket`
+
+      The underlying `Socket` that describes the connection.
+
+    - `self.__method`
+
+      The HTTP request method.
+
+  - **Instance Methods**
+
+    - `connect(self)`
+
+      Initializes the underlying `Socket` (`self.__socket`) that represents the connection.
+
+      **Uses**: `Socket.connect()`
+
+      **Returns**: does not return
+
+      **Note**: after instantiation, use `connect()` every time another HTTP request is to be sent
+
+    - `close(self)`
+
+      Closes the underlying `Socket` (`self.__socket`) that represents the connection.
+
+      **Uses**: `Socket.close()`
+
+      **Returns**: does not return
+
+    - `receive(self)`
+
+      Receives a message from the underlying `Socket` (`self.__socket`)  that represents the connection.
+
+      **Uses**: `Socket.recv()`
+
+      **Returns**: message received from the `Socket` (`string`)
+
+    - `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+
+      A generic method for sending an HTTP `GET` or `POST` request. The arguments describe header values for the request. It is formatted as follows:
+
+      ```
+      [self.method] [url] [protocol]
+      Host: [host]
+      User-Agent: [agent]
+      Cache-Control: [cache-control]
+      Accept: [accept]
+      Accept-Language: [accept-lang]
+      Accept-Encoding: [accept-encoding]
+      Accept-Charset: [accept-charset]
+      Connection: [connection]
+      \\r\\n\\r\\n
+      
+      [body]
+      ```
+
+      **Uses**: `Socket.send(msg)`
+
+      **Returns**: `True` if the message was sent successfully, `False` otherwise
+
+      **Note**: this method is denoted private by convention because client code should use either `send_get_request` or `send_post_request`, and not this general method.
+
+    - `send_get_request(self, url, host, agent)`
+
+      Sends an HTTP `GET` request to the specified `socket` (`self.socket`).
+
+      The `GET` request is formatted as follows:
+
+      ```
+      GET [url] HTTP/1.1
+      Host: [host]
+      User-Agent: [agent]
+      Cache-Control: max-age=0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+      Accept-Language: en-US,en;q=0.9
+      Accept-Encoding: gzip, deflate, br
+      Accept-Charset: utf-8
+      Connection: close
+      \\r\\n\\r\\n
+      ```
+
+      **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+
+      **Returns**: `True` if the message was sent successfully, `False` otherwise
+
+    - `send_post_request(self, url, host, agent, content_type, content_length, body)`
+
+      Sends an HTTP `POST` request to the specified `socket` (`self.socket`).
+
+      The `POST` request is formatted as follows:
+
+      ```
+       POST [url] HTTP/1.1
+       Host: [host]
+       User-Agent: [agent]
+       Content-Type: [content_type]
+       Content-Length: [content_length]
+       Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
+       Accept-Language: en-US,en;q=0.9,ja;q=0.8"
+       Accept-Encoding: gzip, deflate, br
+       Accept-Charset: utf-8
+       Connection: close
+       \\r\\n
+       [body]
+       \\r\\n\\r\\n
+      ```
+
+      **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+
+      **Returns**: `True` if the message was sent successfully, `False` otherwise
+
+    - `generate_post_body(self, content_type, data)`
+
+      Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
+
+      **Returns**: the HTTP body of the `POST` request as a string 
+
+      ​		(e.g. `key1=val1&key2=val2`)
+
+      **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
+
+  - **Static Methods**
+
+    - `get_status_code(http_response)`
+
+      Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
+
+      **Returns**: 
+
+      - `None` if `http_response` is invalid
+
+      - `(status_code, interesting_info)`
+
+        If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
+
+  ## Example Usage of `HttpRequest`
+
+  An example usage of client code interacting with the `http_requests` module is shown below.
+
+  ```python
+  # example usage of client code using HttpRequest to send a GET request
+  request = HttpRequest(url,port,method)
+  for i in range(num_req):
+      request.connect()
+      successful = request.send_get_request(self, url, host, agent)
+      if successful:
+          response = request.receive()
+          print(response)
+          tuple_ = HttpRequest.get_status_code(response)
+          if tuple_ is not None:
+              status_code, redirect_url = tuple_
+              print("status code %s" % (status_code))
+              if status_code[:1] == "3":
+                  if redirect_url is not None:
+                      print("redirect url %s" % (redirect_url))
+                  else:
+                      print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
+      request.close()
+  ```
+
 - #### Tokenizing Words
 
 - #### Text Transformation
