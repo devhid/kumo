@@ -1,7 +1,9 @@
 from tests.test_transform import *
+from tests.test_tokenize import *
 from configs import configs
 from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
+
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
@@ -62,3 +64,12 @@ if __name__ == "__main__":
         test_transform.test_lower()
         test_transform.test_reverse()
         test_transform.test_leet()
+    elif test == "test_tokenize":
+        test_tokenize = TokenizeTest()
+        test_tokenize.test_one_layer()
+        test_tokenize.test_multiple_layers()
+        test_tokenize.test_link_layer()
+        test_tokenize.test_link_retrieval()
+        test_tokenize.test_link_retrieval_layers()
+        test_tokenize.test_link_retrieval_relative()
+        test_tokenize.test_login_detection()
