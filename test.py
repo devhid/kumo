@@ -4,7 +4,7 @@ from http_requests.HttpRequest import HttpRequest
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "http_local"
+    test = "http_requests"
     if test == "http_requests":
         host = "httpbin.org"
         port = 80

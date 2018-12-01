@@ -19,9 +19,6 @@ def home():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = StandardLogin(request.form)
-
-    print(request.form)
-
     if request.method == 'POST':
         return login_helper(form)
 
