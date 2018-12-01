@@ -229,6 +229,10 @@ Refer to [Properties](#Properties) for an explanation of the main configurations
 This section of the report describes how to use **kumo** after it is [Setup](#Setup).
 
 
+# Testing
+The repository provides a small Flask powered application with a few forms to test the crawler. It should demonstrate **kumo's** ability to distinguish between different types of login and register forms along with being able to use tokenized words to break into forms.
+
+To get it setup, refer to `README.md` inside the `fake-website` directory.
 
 <h1 align=center>References</h1>
 

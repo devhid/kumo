@@ -10,11 +10,19 @@ class Transformation:
     def __repr__(self):
         return 'Transformation=(lower={}, upper={}, reverse={}, leet={})'.format(self.lower, self.upper, self.reverse, self.leet)
 
+"""Generates a lowercase, uppercase, reverse, and leet-speak version of each string inside the given list of strings
+
+    Parameters
+    ----------
+    strings : list<string>
+        the list of strings we need to transform
+
+    Returns
+    ----------
+    res : dict<string, Transform>
+        the list of strings mapped to a corresponding Transform object
 """
-" Generates all variants for each given string (uppercase, reverse, and leet-speak)
-" :arg strings: string[]
-" :return: { string, Transformation }
-"""
+
 def generate_transformations(strings):
     res = dict()
 
@@ -26,12 +34,21 @@ def generate_transformations(strings):
         res[string] = Transformation(lower, upper, reverse, leet)
     
     return res
+    
+"""Creates the leet-speak version of a string
+    
+    Parameters
+    ----------
+    string : string
+        the string to encode
+
+    Returns
+    ----------
+    leet : string
+        the leet-speak version of the string
 
 """
-" Creates leet encoded version of string
-" :arg string: String
-" :return: String
-"""
+
 def _generate_leet(string):
     leet = re.sub('[Aa]', '4', string)
     leet = re.sub('[Ee]', '3', leet)
