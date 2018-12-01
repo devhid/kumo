@@ -10,7 +10,7 @@ This project is an implementation of a **web crawler** and **form brute-forcer**
 
 **kumo** starts at a specified target domain and builds its [graph model of the internet](#websites) as it analyzes web pages and traverses to the target's subdomains.
 
-It is configured to use either [Breadth-First Search (BFS)](#Breadth-First Search-(BFS)) or [Depth-First Search (DFS)](#Depth-First Search-(DFS)) in its web-crawling, as either algorithm is guaranteed to visit every node exactly once in a connected component of the graph.
+It is configured to use either [Breadth-First Search (BFS)](#Breadth-First-Search-(BFS)) or [Depth-First Search (DFS)](#Depth-First-Search-(DFS)) in its web-crawling, as either algorithm is guaranteed to visit every node exactly once in a connected component of the graph.
 
 **kumo** _visits_ a page by sending an **HTTP GET** request and receiving the **HTTP response** sent back by the server. Then, it analyzes the HTML for links to other pages and domains. Depending on the crawling algorithm used (BFS or DFS), the links are processed differently. After the links are processed, **kumo** strips the HTML and tokenizes and transforms all the words (converts them to lowercase, uppercase, reverse and leet-speak) it can find and adds them to its database of words to use in brute-forcing the login forms.
 
@@ -70,8 +70,8 @@ max_total = 100
 
   | `traversal` |                      Traversal Used                       |
   | :---------: | :-------------------------------------------------------: |
-  |    `bfs`    | [Breadth-First Search (BFS)](#Breadth-First Search-(BFS)) |
-  |    `dfs`    |   [Depth-First Search (DFS)](#Depth-First Search-(DFS))   |
+  |    `bfs`    | [Breadth-First Search (BFS)](#Breadth-First-Search-(BFS)) |
+  |    `dfs`    |   [Depth-First Search (DFS)](#Depth-First-Search-(DFS))   |
 
 - `max_depth` : `int > 0`
 
