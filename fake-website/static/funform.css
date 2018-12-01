@@ -1,0 +1,50 @@
+body {
+    background: #C9D6FF;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom, #E2E2E2, #C9D6FF);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom, #E2E2E2, #C9D6FF) no-repeat fixed; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.frame {
+    background-color: #fff;
+}
+
+.padded {
+    padding: 0 2rem;
+}
+
+.level.fill-height {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.col-fluid:first-child {
+    padding-left: 0;
+}
+
+.col-fluid:last-child {
+    padding-right: 0;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+}
+
+li {
+    padding: 0 0.5rem;
+}
+
+@media screen and (min-width: 769px) {    
+    .col-6:not(:last-child) {
+        border-right: 1px solid rgba(0, 0, 0, 0.10);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .level.fill-height {
+        display: inherit;
+    }
+}

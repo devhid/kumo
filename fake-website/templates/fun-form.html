@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Fun Form - Mizio{% endblock %}
+{% block externalcss %}
+<link href="{{ url_for('static', filename='funform.css') }}" type="text/css" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+<div class="hero fullscreen">
+    <div class="hero-body">
+        <div class="content">
+            <div class="frame padded">
+                <space class="large"></space>
+                <div class="frame__body u-no-padding">
+                    <div class="row u-no-padding level fill-height">
+                        <div class="col-6">
+                            <form method="post">
+                                <div class="frame__body">
+                                    <h3>Login</h3>
+                                    <div class="form-section">
+                                        <label>Email</label>
+                                        <div class="input-control">
+                                            {{ form_login.email(class="input-contains-icon", placeholder="Email") }}
+                                            <span class="icon">
+                                                <i class="far fa-wrapper fa-envelope-open small"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-section">
+                                        <label>Password</label>
+                                        <div class="input-control">
+                                            {{ form_login.password(class="input-contains-icon", placeholder="Password") }}
+                                            <span class="icon">
+                                                <i class="fas fa-wrapper fa-key small"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <space></space>
+                                    <button class="btn-info u-pull-right" name="btn" value="login" type="submit">Log In</button>
+                                    <span class="fg-danger info">{{ error }}</span>
+                                    <p class="info">No account? <a class="u u-LR" href="/register">Register</a> today!</p>
+                                    <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-6">
+                            <form method="post">
+                                <div class="padded">
+                                    <h3>Sign Up</h3>
+                                    <div class="form-section">
+                                        <label>Name</label>
+                                        <div class="input-control">
+                                            {{ form_register.name(class="input-contains-icon", placeholder="Name") }}
+                                            <span class="icon">
+                                                <i class="far fa-wrapper fa-user-circle small"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-section">
+                                        <p>Gender</p>
+                                        {{ form_register.gender }}
+                                    </div>
+                                    <div class="form-section">
+                                        <div class="input-control">
+                                            {{ form_register.email(class="input-contains-icon", placeholder="Email", id="register-email") }}
+                                            <span class="icon">
+                                                <i class="far fa-wrapper fa-envelope-open small"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-section">
+                                        <div class="input-control">
+                                            {{ form_register.password(class="input-contains-icon", placeholder="Password", id="register-password") }}
+                                            <span class="icon">
+                                                <i class="fas fa-wrapper fa-key small"></i>
+                                        </div>
+                                    </div>
+                                    <div class="row u-no-padding fluid-container">
+                                        <div class="col-fluid">
+                                                <div class="input-control">
+                                                    {{ form_register.city(class="input-contains-icon", placeholder="City") }}
+                                                    <span class="icon">
+                                                        <i class="fas fa-wrapper fa-map-marker-alt small"></i>
+                                                </div>
+                                        </div>
+                                        <div class="col-fluid">
+                                                <div class="input-control">
+                                                    {{ form_register.country(class="input-contains-icon", placeholder="Country") }}
+                                                    <span class="icon">
+                                                        <i class="fas fa-wrapper fa-globe-americas small"></i>
+                                                </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-section">
+                                            <div class="input-control">
+                                                {{ form_register.subscription }}
+                                            </div>
+                                    </div>
+                                    <button class="btn-info u-pull-right" name="btn" value="register" type="submit">Sign Up</button>
+                                    <span class="fg-danger info">{{ error }}</span>
+                                    <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <space class="large"></space>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

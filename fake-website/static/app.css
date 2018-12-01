@@ -1,0 +1,12 @@
+body {
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.has-nav {
+    margin-top: 5rem;
+}
+
+a button {
+    margin-bottom: 0;
+}
