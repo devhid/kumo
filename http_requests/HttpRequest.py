@@ -1,25 +1,65 @@
 # http_requests Imports
-from http_requests import Socket
+from http_requests.Socket import Socket
 
 # utils Imports
 from utils.constants import HTTP_UA
 
 class HttpRequest:
    
-    """ A simple class representing either a GET or POST request. """
+    """ A simple class representing either a GET or POST request. 
+    
+    Example Usage:
+        request = HttpRequest(url,port,method)
+        for i in range(num_req):
+            request.connect()
+            successful = request.send_get_request(self, url, host, agent)
+            if successful:
+                response = request.receive()
+                print(response)
+                tuple_ = HttpRequest.get_status_code(response)
+                if tuple_ is not None:
+                    status_code, redirect_url = tuple_
+                    print("status code %s" % (status_code))
+                    if status_code[:1] == "3":
+                        if redirect_url is not None:
+                            print("redirect url %s" % (redirect_url))
+                        else:
+                            print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
+            request.close()
+    """
 
-    def __init__(self, socket, method):
+    def __init__(self, url, port, method):
         """ Initializes a new HttpRequest.
         
         Parameters
         ----------
-        socket : Socket
-            the socket describing a connection, created by connect(url,port)
+        url : string
+            the url to establish a connection to
+        port : string
+            the port on which to establish a connection to the url
         method : string
             HTTP method to use in the request (supports GET & POST)
         """
-        self.socket = socket
-        self.method = method
+        self.__socket = Socket(url,port)
+        self.__method = method
+    
+    def connect(self):
+        """ Reinitializes the underlying Socket that represents the connection. """
+        self.__socket.connect()
+
+    def close(self):
+        """ Closes the underlying Socket that represents the connection. """
+        self.__socket.close()
+
+    def receive(self):
+        """ Receives a message from the underlying Socket. 
+        
+        Returns
+        -------
+        response : string
+            HTTP response received
+        """
+        return self.__socket.recv()
     
     def __send_request(self, url, protocol, host, agent, 
                  content_type, content_length, cache_control, accept, 
@@ -74,8 +114,8 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
-        socket = self.socket
-        method = self.method
+        socket = self.__socket
+        method = self.__method
         if socket is None or method is None or url is None or \
             protocol is None or host is None or agent is None:
             return False
@@ -152,7 +192,7 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
-        if self.method != "GET":
+        if self.__method != "GET":
             return False
         return self.__send_request(url=url,
                             protocol="HTTP/1.1",
@@ -207,7 +247,7 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
-        if self.method != "POST":
+        if self.__method != "POST":
             return False
         return self.__send_request(url=url,
                             protocol="HTTP/1.1",
@@ -238,7 +278,7 @@ class HttpRequest:
         body : string
             body of the HTTP POST request, or None if the Content-Type was invalid
         """
-        if self.method != "POST":
+        if self.__method != "POST":
             return None
         if not isinstance(data,dict):
             return None

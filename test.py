@@ -10,23 +10,25 @@ if __name__ == "__main__":
         port = 80
         url = "/safetycheck/"
         ua = "googlebot"
+        num_get_req = 10
 
         # Test GET requests
-        socket = Socket(host,port)
-        request = HttpRequest(socket,"GET")
-        socket.connect()
-        sent_get = request.send_get_request(url,host,ua)
-        if sent_get:
-            response = socket.recv()
-            print(response)
-            tuple_ = HttpRequest.get_status_code(response)
-            status_code = tuple_[0] if tuple_ is not None else None
-            redirect_url = tuple_[1] if tuple_ is not None else None
-            if status_code is not None:
-                print("status code %s" % (status_code))
-                if status_code[:1] == "3":
-                    print("redirect url %s" % (redirect_url))
-        socket.close()
+        request = HttpRequest(host,port,"GET")
+        for i in range(num_get_req):
+            print("request %d" % (i))
+            request.connect()
+            sent_get = request.send_get_request(url,host,ua)
+            if sent_get:
+                response = request.receive()
+                print(response)
+                tuple_ = HttpRequest.get_status_code(response)
+                status_code = tuple_[0] if tuple_ is not None else None
+                redirect_url = tuple_[1] if tuple_ is not None else None
+                if status_code is not None:
+                    print("status code %s" % (status_code))
+                    if status_code[:1] == "3":
+                        print("redirect url %s" % (redirect_url))
+            request.close()
 
         # Separate the output.
         print("---------------")
@@ -36,14 +38,14 @@ if __name__ == "__main__":
         receive = True
         content_type = "application/x-www-form-urlencoded"
         data = {"hi":"world"}
-        request = HttpRequest(socket,"POST")
+        request = HttpRequest(host,port,"POST")
         body = request.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            socket.connect()
+            request.connect()
             sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
             if sent_get and receive:
-                response = socket.recv()
+                response = request.receive()
                 print(response)
                 tuple_ = HttpRequest.get_status_code(response)
                 status_code = tuple_[0] if tuple_ is not None else None
@@ -52,7 +54,7 @@ if __name__ == "__main__":
                     print("status code %s" % (status_code))
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
-            socket.close()
+            request.close()
     elif test == "test_transform":
         test_transform = TransformTest()
         test_transform.test_upper()

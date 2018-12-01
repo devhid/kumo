@@ -56,8 +56,7 @@ def send(socket, msg):
 def receive(socket):
     """ Receives a message from a socket.
 
-    It detects the end of the message when it receives 0 bytes, as each socket
-    should only be used for one transfer.
+    It detects the end of the message when it receives 0 bytes (EOF).
 
     Parameters
     ----------
@@ -93,6 +92,5 @@ def close(mysocket):
     if mysocket is not None:
         mysocket.shutdown(socket.SHUT_RDWR)
         mysocket.close()
-        mysocket = None
     
 
