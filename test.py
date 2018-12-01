@@ -7,10 +7,10 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "http_requests"
     if test == "http_requests":
-        host = "www.google.com"
+        host = "facebook.com"
         port = 80
-        url = "/"
-        ua = "chrome"
+        url = "/safetycheck/"
+        ua = "googlebot"
 
         # Test GET requests
         socket = Socket(host,port)
