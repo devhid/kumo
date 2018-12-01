@@ -149,7 +149,7 @@ Library.
 
       **Exception**: return `0` if either argument was `None` or if the message failed to completely send.
 
-      The message fails to completely send if the socket is closed on the other (receiving) end before the message sends, amongst other reasons.
+      **Note**: The message fails to completely send if the socket is closed on the other (receiving) end before the message sends, amongst other reasons.
 
     - `receive(socket)`
 
@@ -159,7 +159,7 @@ Library.
 
       **Exception**: return `""` (empty string) if `socket` is `None`
 
-      The reason it is implemented in such a way is that it is impossible to determine the length of the message unless a prior format is agreed to between the sender and receiver. Since **kumo** is designed to work on any general website, this method cannot be used, and **kumo** must rely on this method of checking.
+      **Note**: The reason it is implemented in such a way is that it is impossible to determine the length of the message unless a prior format is agreed to between the sender and receiver. Since **kumo** is designed to work on any general website, this method cannot be used, and **kumo** must rely on this method of checking.
 
     - `close(mysocket)`
 
