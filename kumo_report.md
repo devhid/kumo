@@ -85,29 +85,51 @@ max_total = 100
 
 ### 1. Data Structures
 
-#### Websites
+#### Domain Graph
 
-A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. Vertices in the graph correspond to domains (**kumo** considers subdomains as separate domains in its model. **kumo**, by specification, crawls only one website and does not crawl to a domain that is different from the target), and there exists an edge from vertex *A* to vertex *B* if and only if there is a *way* to get from *A* to *B*.
+A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. 
 
-A *way* from *A* to *B* exists if at least one of the following holds:
+##### Vertices
 
-+ there is a link on *A* that directs the user to *B* and *B* is a **direct** subdomain of *A*
-+ *B* is a **direct** subdomain of *A*
+Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
 
-Now what is a **direct** subdomain? It is best explained with an example. Say we have these domains:
+We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
 
-- `a.com`
-- `b.a.com`
-- `c.b.a.com`
-- `d.a.com`
+- **Subdomains and Parent Domains**
 
-We denote *only* these pairs `(a,b)` such that `a` is a **direct** subdomain of **b** (and hence, there exists an edge from `a` to `b` in the graph):
+  Now what does it mean for domain `A` to be a **subdomain** of domain `B`, or for `A` to be a **parent domain** of `B`? It is best explained with an example. Let us say the user enters the starting domain to be `c.b.a.com`, and we find links to the following domains on the pages on `c.b.a.com`:
+  - `a.com`
+  - `b.a.com`
+  - `e.d.c.b.a.com`
+  - `f.e.d.c.b.a.com`
+  - `b.com`
 
-- `(b.a.com, a.com)`
-- `(d.a.com, a.com)`
-- `(c.b.a.com, b.a.com)`
+  Then we define the following pairs `(d,p)` such that `p` is a **parent domain** of `d`:
 
-Hence, although `c.b.a.com` is undoubtedly a subdomain of `a.com`, it is **not a direct subdomain** of `a.com` and there is no edge between the two in the graph modeled by **kumo**.
+  - `(c.b.a.com, a.com)`
+  - `(c.b.a.com, b.a.com)`
+
+  We define the following pairs `(d,s)` such that `s` is a **subdomain** of `d`:
+
+  - `(c.b.a.com, e.d.c.b.a.com)`
+  - `(c.b.a.com, f.e.d.c.b.a.com)`
+
+  One other term that may come in handy is a **direct subdomain** which we shall define as `(d,direct)` such that `direct` is a **direct subdomain** of `d`:
+
+  - `(a.com, b.a.com)`
+  - `(b.a.com, c.b.a.com)`
+  - `(e.d.c.b.a.com, f.e.d.c.b.a.com)`
+
+  Hence, if `D = c.b.a.com`, then `F(D) = {a.com, b.a.com, e.d.c.b.a.com, f.e.d.c.b.a.com}`. Note that `b.com` is **not in** `F(D)`.
+
+##### Edges
+
+An edge from vertex `A` to vertex `B` exists if and only if at least one of the following holds:
+
++ there is a link on some webpage in domain `A` that goes to some webpage in domain `B`
+
++ vertex `B` is found from combining [this list of popular subdomains](https://github.com/rbsec/dnscan/blob/master/subdomains-100.txt) with the domain of `A`
+
 
 #### Tokenized Words
 
@@ -127,7 +149,7 @@ Library.
 
   HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
 
-  The sections below describe how the sockets and HTTP request interfaces are implemented in **kumo**. An [example usage of client code using `HttpRequest`](#example-usage-of-httprequest) can be found at the end of this section.
+  The sections below describe how the sockets and HTTP request interfaces are implemented in **kumo**. An [example usage of client code using `HttpRequest`](#example-usage-of-`httprequest`) can be found at the end of this section.
 
   ## Sockets
 
