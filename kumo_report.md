@@ -128,6 +128,18 @@ Library.
 - #### Tokenizing Words
 
 - #### Text Transformation
+  * **Transformation**
+    The text transformation in **kumo** is included to encode or transform passwords in several different ways to simulate how some users would modify their passwords. The different transformations supported by **kumo**:
+      * `lower` - converts given string to lowercase.
+      * `upper` - converts given string to uppercase.
+      * `reverse` - reverses given string.
+      * `leet` - changes string with following changes:
+        * 'a' -> '4'
+        * 'e' -> '3'
+        * 'l' -> '1'
+        * 't' -> '7'
+        * 'o' -> '0'
+  * **Incomplete**
 
 - #### Detecting Login Forms
 
