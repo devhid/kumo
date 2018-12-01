@@ -9,6 +9,7 @@ import .link_graph
 SUBDOMAIN_FILE_PATH = '../subdomains.txt'
 
 class Crawler:
+
     class TraversalMethod(Enum):
         BFS = 1,
         DFS = 2
@@ -52,7 +53,7 @@ class Crawler:
 
                 connected = retrieve_links(response.content)
                 for clink in connected:
-                    if within_domain(root_domain, clink) and clink not in visited:
+                    if within_domain(domain, clink) and clink not in visited:
                         queue.append(clink)
                     else:
                         self.to_traverse.append(clink)
