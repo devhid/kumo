@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
         # Test POST requests
         url = "/post"
-        receive = False
+        receive = True
         content_type = "application/x-www-form-urlencoded"
         data = {"hi":"world"}
         request = HttpRequest(socket,"POST")

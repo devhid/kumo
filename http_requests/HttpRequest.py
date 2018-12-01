@@ -162,7 +162,7 @@ class HttpRequest:
                             content_length=None,
                             cache_control="max-age=0",
                             accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                            accept_lang="en-US,en;q=0.9",
+                            accept_lang="en-US,en;q=0.9,ja;q=0.8",
                             accept_encoding="gzip, deflate, br",
                             accept_charset="utf-8",
                             connection="close",
@@ -178,8 +178,13 @@ class HttpRequest:
             User-Agent: [agent]
             Content-Type: [content_type]
             Content-Length: [content_length]
+            Accept: application/json;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+            Accept-Language: en-US,en;q=0.9,ja;q=0.8"
+            Accept-Encoding: gzip, deflate, br
+            Accept-Charset: utf-8
+            Connection: close
             \\r\\n
-            BODY
+            [body]
             \\r\\n\\r\\n
 
         Parameters
@@ -211,11 +216,11 @@ class HttpRequest:
                             content_type=content_type,
                             content_length=content_length,
                             cache_control=None,
-                            accept="appplication/json",
-                            accept_lang="en-US,en;q=0.9",
-                            accept_encoding=None,
+                            accept="appplication/json;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                            accept_lang="en-US,en;q=0.9,ja;q=0.8",
+                            accept_encoding="gzip, deflate, br",
                             accept_charset="utf-8",
-                            connection=None,
+                            connection="close",
                             body=body)
 
     def generate_post_body(self, content_type, data):
@@ -242,6 +247,10 @@ class HttpRequest:
             # Expect data to be a dictionary.
             for key in data:
                 body += key + "=" + data[key] + "&"
+        elif content_type == "multipart/form-data":
+            # Not suppported; this is for uploading files
+            return None
         else:
+            # Anything else is not supported
             return None 
         return body[:len(body)-1] if len(body) >= 1 else body
