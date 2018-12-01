@@ -46,3 +46,13 @@ class TokenizeTest(unittest.TestCase):
             register_html = register_file.read().replace('\n', '')
         login_detected = detect_login(register_html, "http://kumo.x10host.com")
         assert login_detected == False
+
+        with open('./tests/bootstrap_login_test.txt', 'r') as login_file:
+            login_html = login_file.read().replace('\n', '')
+        login_detected = detect_login(login_html, "http://kumo.x10host.com")
+        assert login_detected == True
+
+        with open('./tests/bootstrap_register_test.txt', 'r') as register_file:
+            register_html = register_file.read().replace('\n', '')
+        login_detected = detect_login(register_html, "http://kumo.x10host.com")
+        assert login_detected == False
