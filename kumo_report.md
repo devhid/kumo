@@ -244,7 +244,22 @@ Library.
 
         - `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
-          A generic method for sending an HTTP `GET` or `POST` request. The arguments describe header values for the request.
+          A generic method for sending an HTTP `GET` or `POST` request. The arguments describe header values for the request. It is formatted as follows:
+
+          ```
+          [self.method] [url] [protocol]
+          Host: [host]
+          User-Agent: [agent]
+          Cache-Control: [cache-control]
+          Accept: [accept]
+          Accept-Language: [accept-lang]
+          Accept-Encoding: [accept-encoding]
+          Accept-Charset: [accept-charset]
+          Connection: [connection]
+          \\r\\n\\r\\n
+          
+          [body]
+          ```
 
           **Uses**: `Socket.send(msg)`
 
