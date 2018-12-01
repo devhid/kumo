@@ -87,7 +87,7 @@ def close(mysocket):
 
     Parameters
     ----------
-    socket : socket
+    mysocket : socket
         the socket describing a connection, created by connect(url,port)
     """
     if mysocket is not None:
