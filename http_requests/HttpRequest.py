@@ -43,13 +43,17 @@ class HttpRequest:
         self.__socket = Socket(url,port)
         self.__method = method
     
+    # Connecting Functions
+
     def connect(self):
-        """ Reinitializes the underlying Socket that represents the connection. """
+        """ Initializes the underlying Socket that represents the connection. """
         self.__socket.connect()
 
     def close(self):
         """ Closes the underlying Socket that represents the connection. """
         self.__socket.close()
+
+    # General Sending/Receiving Functions
 
     def receive(self):
         """ Receives a message from the underlying Socket. 
@@ -162,6 +166,8 @@ class HttpRequest:
         if sent > 0:
             return True
         return False
+    
+    # Sending GET/POST requests
 
     def send_get_request(self, url, host, agent):
         """ Sends an HTTP GET Request to the specified socket created by connect(url,port).
@@ -294,6 +300,8 @@ class HttpRequest:
             # Anything else is not supported
             return None 
         return body[:len(body)-1] if len(body) >= 1 else body
+
+    # Static Methods
 
     @staticmethod
     def get_status_code(http_response):

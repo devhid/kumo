@@ -2,6 +2,8 @@
 import socket
 import sys
 
+# Connection Functions
+
 def connect(url, port):
     """ Creates and returns a socket that is connected to the specified URL.
     
@@ -24,6 +26,20 @@ def connect(url, port):
         return client_socket
     except socket.error as err:
         return None
+
+def close(mysocket):
+    """ Closes the specified socket.
+
+    Parameters
+    ----------
+    socket : socket
+        the socket describing a connection, created by connect(url,port)
+    """
+    if mysocket is not None:
+        mysocket.shutdown(socket.SHUT_RDWR)
+        mysocket.close()
+
+# Sending and Receiving Functions
 
 def send(socket, msg):
     """ Sends a message to a socket.
@@ -80,17 +96,4 @@ def receive(socket):
         response += message.decode()
     
     return response
-
-def close(mysocket):
-    """ Closes the specified socket.
-
-    Parameters
-    ----------
-    socket : socket
-        the socket describing a connection, created by connect(url,port)
-    """
-    if mysocket is not None:
-        mysocket.shutdown(socket.SHUT_RDWR)
-        mysocket.close()
-    
 

@@ -17,6 +17,8 @@ class Socket:
         self.__url = url
         self.__port = port
         
+    # Connection Functions
+
     def connect(self):
         """ Establishes the connection to the specified url and port given during construction. """
         self.__socket = sockets.connect(self.__url,self.__port)
@@ -24,6 +26,8 @@ class Socket:
     def close(self):
         """ Closes the connection to the specified url and port given during construction. """
         sockets.close(self.__socket)
+
+    # Sending and Receiving Functions
 
     def send(self, msg):
         """ Sends a message into the connection described by the underlying socket.
