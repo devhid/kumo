@@ -14,3 +14,5 @@ HTTP_UA_GOOGLEBOT = 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
             'opera':HTTP_UA_OPERA,'safari':HTTP_UA_SAFARI,
             'ie':HTTP_UA_IE,'googlebot':HTTP_UA_GOOGLEBOT}
+def test(): 
+    print('test')
