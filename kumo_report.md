@@ -8,9 +8,9 @@ This project is an implementation of a **web crawler** and **form brute-forcer**
 
 ## Crawling the Web 
 
-**kumo** starts at a specified target domain and builds its [graph model of the internet](#websites) as it analyzes web pages and traverses to other domains.
+**kumo** starts at a specified target domain and builds its [graph model of the internet](#websites) as it analyzes web pages and traverses to the target's subdomains.
 
-It is configured to use either [Breadth-First Search (BFS)](#Breadth-First Search (BFS))or [Depth-First Search (DFS)](#Depth-First Search (DFS)) in its web-crawling, as either algorithm is guaranteed to visit every node exactly once in a connected component of the graph.
+It is configured to use either [Breadth-First Search (BFS)](#Breadth-First Search-(BFS)) or [Depth-First Search (DFS)](#Depth-First Search-(DFS)) in its web-crawling, as either algorithm is guaranteed to visit every node exactly once in a connected component of the graph.
 
 **kumo** _visits_ a page by sending an **HTTP GET** request and receiving the **HTTP response** sent back by the server. Then, it analyzes the HTML for links to other pages and domains. Depending on the crawling algorithm used (BFS or DFS), the links are processed differently. After the links are processed, **kumo** strips the HTML and tokenizes and transforms all the words (converts them to lowercase, uppercase, reverse and leet-speak) it can find and adds them to its database of words to use in brute-forcing the login forms.
 
@@ -30,7 +30,25 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 
 ## Properties
 
-### config.json
+The main configurable properties of **kumo** can be found in `/configs.ini`. An example of a valid `configs.ini` file is shown below:
+
+### configs.ini
+
+```ini
+# /configs.ini
+
+[BFS]
+user_agent = chrome
+traversal = bfs
+max_depth = 10
+max_total = 100
+
+[DFS]
+user_agent = chrome
+traversal = dfs
+max_depth = 10
+max_total = 100
+```
 
 - `user_agent` : `string`
 
@@ -52,8 +70,8 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 
   | `traversal` |                      Traversal Used                       |
   | :---------: | :-------------------------------------------------------: |
-  |    `bfs`    | [Breadth-First Search (BFS)](#Breadth-First Search (BFS)) |
-  |    `dfs`    |   [Depth-First Search (DFS)](#Depth-First Search (DFS))   |
+  |    `bfs`    | [Breadth-First Search (BFS)](#Breadth-First Search-(BFS)) |
+  |    `dfs`    |   [Depth-First Search (DFS)](#Depth-First Search-(DFS))   |
 
 - `max_depth` : `int > 0`
 
@@ -69,11 +87,27 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 
 #### Websites
 
-A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. Vertices in the graph correspond to domains (**kumo** considers subdomains as separate domains in its model, and in this document **domains** will refer to both separate and subdomains), and there exists an edge from vertex *A* to vertex *B* if and only if there is a *way* to get from A to B.
+A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. Vertices in the graph correspond to domains (**kumo** considers subdomains as separate domains in its model. **kumo**, by specification, crawls only one website and does not crawl to a domain that is different from the target), and there exists an edge from vertex *A* to vertex *B* if and only if there is a *way* to get from *A* to *B*.
 
 A *way* from *A* to *B* exists if at least one of the following holds:
-​    + there is a link on *A* that directs the user to *B*
-​    + *B* is a subdomain of *A*
+
++ there is a link on *A* that directs the user to *B* and *B* is a **direct** subdomain of *A*
++ *B* is a **direct** subdomain of *A*
+
+Now what is a **direct** subdomain? It is best explained with an example. Say we have these domains:
+
+- `a.com`
+- `b.a.com`
+- `c.b.a.com`
+- `d.a.com`
+
+We denote *only* these pairs `(a,b)` such that `a` is a **direct** subdomain of **b** (and hence, there exists an edge from `a` to `b` in the graph):
+
+- `(b.a.com, a.com)`
+- `(d.a.com, a.com)`
+- `(c.b.a.com, b.a.com)`
+
+Hence, although `c.b.a.com` is undoubtedly a subdomain of `a.com`, it is **not a direct subdomain** of `a.com` and there is no edge between the two in the graph modeled by **kumo**.
 
 #### Tokenized Words
 
@@ -103,7 +137,7 @@ Library.
 
 ### 3. Future Improvements
 
-
+- Support for HTTPS servers
 
 <h1 align=center> User Guide </h1>
 
