@@ -6,9 +6,9 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "http_local"
     if test == "http_requests":
-        host = "httpbin.org"
+        host = "www.google.com"
         port = 80
-        url = "/get"
+        url = "/"
         ua = "chrome"
 
         # Test GET requests
@@ -19,7 +19,17 @@ if __name__ == "__main__":
         if sent_get:
             response = socket.recv()
             print(response)
+            tuple_ = HttpRequest.get_status_code(response)
+            status_code = tuple_[0] if tuple_ is not None else None
+            redirect_url = tuple_[1] if tuple_ is not None else None
+            if status_code is not None:
+                print("status code %s" % (status_code))
+                if status_code[:1] == "3":
+                    print("redirect url %s" % (redirect_url))
         socket.close()
+
+        # Separate the output.
+        print("---------------")
 
         # Test POST requests
         url = "/post"
@@ -35,6 +45,13 @@ if __name__ == "__main__":
             if sent_get and receive:
                 response = socket.recv()
                 print(response)
+                tuple_ = HttpRequest.get_status_code(response)
+                status_code = tuple_[0] if tuple_ is not None else None
+                redirect_url = tuple_[1] if tuple_ is not None else None
+                if status_code is not None:
+                    print("status code %s" % (status_code))
+                    if status_code[:1] == "3":
+                        print("redirect url %s" % (redirect_url))
             socket.close()
     
     elif test == "http_local":

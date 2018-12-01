@@ -254,3 +254,45 @@ class HttpRequest:
             # Anything else is not supported
             return None 
         return body[:len(body)-1] if len(body) >= 1 else body
+
+    @staticmethod
+    def get_status_code(http_response):
+        """ Gets the HTTP status code from an HTTP response.
+            Does basic validity checking on http_response.
+
+        Parameters
+        ----------
+        http_response : string
+            string representing an HTTP response
+
+        Returns
+        -------
+        (status_code, interesting_info) or None : (int, depends) or None
+            status_code is the HTTP status code, and interesting_info is
+            not None only if status_code == '3xx' and a preferred redirect
+            link is in the http_response
+        """
+        lines = http_response.split("\n")
+        status_code = 0
+        interesting_info = None
+        find_interesting_info = False
+        if len(lines) > 0:
+            words = lines[0].split(" ")
+            if len(words) >= 3:
+                status_code = words[1]
+                if len(status_code) != 3:
+                    return None
+                if status_code[:1] == "3":
+                    # Extract the preferred redirect URL.
+                    find_interesting_info = True
+            else:
+                return None
+        else:
+            return None
+        if find_interesting_info:
+            for line in lines:
+                words = line.split(" ")
+                if len(words) > 0 and words[0] == "Location:":
+                    interesting_info = words[1]
+        return (status_code,interesting_info)
+
