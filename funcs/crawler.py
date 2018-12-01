@@ -5,8 +5,6 @@ import requests
 from .tokenizer import tokenize_html, retrieve_links
 from ..utils import file_utils
 import .link_graph
- 
-SUBDOMAIN_FILE_PATH = '../subdomains.txt'
 
 class Crawler:
 
@@ -16,7 +14,7 @@ class Crawler:
 
     def crawl(self, root_domain, method):
         root = LinkGraph.Node(root_domain)
-        visited, to_traverse = set(), [root] if method == TraversalMethod.BFS else deque(root)
+        visited, to_traverse = set(), [root] if method == TraversalMethod.DFS else deque(root)
 
         while to_traverse:
             domain = _pop(method, to_traverse)
@@ -34,7 +32,7 @@ class Crawler:
         return visited
     
     def _pop(self, method, to_traverse):
-        if method == TraversalMethod.DFS:
+        if method == TraversalMethod.BFS:
             return to_traverse.popleft()
         else:
             return to_traverse.pop()
@@ -56,11 +54,6 @@ class Crawler:
                     if within_domain(domain, clink) and clink not in visited:
                         queue.append(clink)
                     else:
-                        self.to_traverse.append(clink)
+                        self.to_traverse.append(LinkGraph.Node(clink))
         
         return visited
-
-
-
-
-

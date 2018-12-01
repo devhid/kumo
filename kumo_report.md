@@ -25,6 +25,8 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 ## Prerequisites & Dependencies
 
 - :zap: [Click](https://click.palletsprojects.com/en/7.x/) - A python package for creating beautiful command line interfaces.
+- :globe_with_meridians: [TLDExtract](https://github.com/john-kurkowski/tldextract) - A url parsing library to easily extract domains and subdomains.
+- :moneybag: [PyQuery](https://pythonhosted.org/pyquery/) - A python equivalent of JQuery.
 
 
 
@@ -118,10 +120,46 @@ Library.
 ### 2. Feature Implementation
 
 - #### Breadth-First Search (BFS)
+```
+function bfs(root_domain):
+      visited_domains = set()
+      to_traverse = queue(root_domain)
+
+      while to_traverse {
+          domain = to_traverse.dequeue()
+          if domain not in visited_domains {
+              visited_domains.add(domain)
+
+              // At this point, we would extract all the links from a domain using a
+              // BFS or DFS traversal and whenever we find a link that is a subdomain,
+              // we would enqueue that subdomain in to_traverse.
+              traverse_links(domain, to_traverse)
+          }
+      }
+```
 
 - #### Depth-First Search (DFS)
+```
+function dfs(root_domain):
+      visited_domains = set()
+      to_traverse = stack(root_domain)
+
+      while to_traverse {
+          domain = to_traverse.pop()
+          if domain not in visited_domains {
+              visited_domains.add(domain)
+
+              // At this point, we would extract all the links from a domain using a
+              // BFS or DFS traversal and whenever we find a link that is a subdomain,
+              // we would push that subdomain in to_traverse.
+              traverse_links(domain, to_traverse)
+          }
+      }
+```
 
 - #### Completely Processing the Current Domain
+  * A domain is considered **completely processed** when all the links in that domain (and _only_ that domain, not subdomains) have been collected and every login page that is found within those links have received a bruteforcing attempt.
+  * Words are collected and tokenized in a global data structure every time the crawler visits a page. When the crawler detects a login form on a certain page, an attempt is made to bruteforce the login by using all combinations of all the words currently collected and their transformations as the username and password.
 
 - #### HTTP Requests
 
