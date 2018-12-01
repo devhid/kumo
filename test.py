@@ -1,4 +1,5 @@
 from tests.test_transform import *
+from configs import configs
 from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
 
@@ -53,6 +54,7 @@ if __name__ == "__main__":
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
             socket.close()
+<<<<<<< HEAD
     
     elif test == "http_local":
         host = "localhost"
@@ -134,6 +136,12 @@ if __name__ == "__main__":
                 print(response)
             socket.close()
 
+=======
+    elif test == "configs":
+        config = configs.config
+        for val in config:
+            print("%s : %s" % (val,config[val]))
+>>>>>>> master
     elif test == "test_transform":
         test_transform = TransformTest()
         test_transform.test_upper()
