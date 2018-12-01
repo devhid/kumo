@@ -76,7 +76,7 @@ def detect_login(html, base_url):
     login: boolean
         Return whether the current page is a login 
     """
-    if(base_url < 8):
+    if(len(base_url) < 8):
         return False
 
     # RESTful URL Standards
@@ -84,33 +84,65 @@ def detect_login(html, base_url):
     if(url[len(url) - 1] == "/"):
         url = url[0:len(url) - 1]
     last_param_pos = url.rfind("/")
+    print(last_param_pos)
     if(last_param_pos != 7 and last_param_pos != 8): 
-        last_param = url[last_param_pos + 1, len(url)]
+        last_param = url[last_param_pos + 1:len(url)]
         print(last_param)
         if(last_param == "login" or last_param == "signin"):
             return True
 
     # HTML Forms
     d = pq(html)
-    user_input = 0
-    pass_input = 0
+    user_input = False
+    pass_input = False
+    login_submit = False
+    register_submit = False
 
-    for form in d('form')
+    for form in d('form'):
         if(form.attrib['method'].lower() == "post"):
             for inp in d('input'):
-                if((inp.attrib['name'].lower() == "login"
+
+                # Register submit button
+                if((inp.attrib['value'].lower() == "register"
+                or inp.attrib['value'].lower() == "signup"
+                or inp.attrib['value'].lower() == "sign up")
+                and inp.attrib['type'].lower() == "submit"):
+                    register_submit = True
+
+                # Login submit button
+                if((inp.attrib['value'].lower() == "log in"
+                or inp.attrib['value'].lower() == "login"
+                or inp.attrib['value'].lower() == "signin"
+                or inp.attrib['value'].lower() == "sign in")
+                and inp.attrib['type'].lower() == "submit"):
+                    login_submit = True
+
+                # Username/email input
+                if((inp.attrib['name'].lower() == "log in"
+                or inp.attrib['name'].lower() == "login"
+                or inp.attrib['name'].lower() == "log"
                 or inp.attrib['name'].lower() == "user" 
                 or inp.attrib['name'].lower() == "username"
-                or inp.attrib['name'].lower() == "email")
-                and inp.attrib['type'.lower() == "text"]):
-                    user_input += 1
+                or inp.attrib['name'].lower() == "user_login"
+                or inp.attrib['name'].lower() == "email"
+                or inp.attrib['name'].lower() == "signin"
+                or inp.attrib['name'].lower() == "sign in")
+                and inp.attrib['type'].lower() == "text"):
+                    user_input = True
                 
+                # Password input 
                 if((inp.attrib['name'].lower() == "passwd"
                 or inp.attrib['name'].lower() == "pass" 
                 or inp.attrib['name'].lower() == "password"
                 or inp.attrib['name'].lower() == "email")
-                and inp.attrib['type'.lower() == "password"]):
-                    pass_input += 1
+                or inp.attrib['type'].lower() == "password"):
+                    pass_input = True
 
-    if(pass_input == 2):
-        
+    print(user_input)
+    print(pass_input)
+    print(login_submit)
+    print(register_submit)
+    return user_input and pass_input and login_submit
+    
+# HTML Forms Bootstrap
+    

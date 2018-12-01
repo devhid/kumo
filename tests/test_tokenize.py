@@ -29,6 +29,20 @@ class TokenizeTest(unittest.TestCase):
         assert links == set(['https://google.com', 'https://amazon.com'])
 
     def test_link_retrieval_relative(self):
-        links = retrieve_links("<html><a href=./>Link</a><a href=../>Link</a><a href=./kumo>Link</a><a href=../devhid>TestSpan</a></html>", "https://github.com/devhid/")
+        links = retrieve_links("<html><a href=\"\">Link</a><a href=./>Link</a><a href=/>Link</a><a href=./>Link</a><a href=../>Link</a><a href=./kumo>Link</a><a href=../devhid>TestSpan</a></html>", "https://github.com/devhid/")
         print(links)
-        assert links == set(['https://github.com', 'https://github.com/devhid', 'https://github.com/devhid/kumo', 'https://github.com/devhid'])
+        assert links == set(['https://github.com', 'https://github.com/devhid', 'https://github.com/devhid/kumo'])
+
+    def test_login_detection(self):
+        login_detected = detect_login("", "http://kumo.x10host.com/login/")
+        assert login_detected == True
+
+        with open('./tests/login_test.txt', 'r') as login_file:
+            login_html = login_file.read().replace('\n', '')
+        login_detected = detect_login(login_html, "http://kumo.x10host.com")
+        assert login_detected == True
+
+        with open('./tests/register_test.txt', 'r') as register_file:
+            register_html = register_file.read().replace('\n', '')
+        login_detected = detect_login(register_html, "http://kumo.x10host.com")
+        assert login_detected == False
