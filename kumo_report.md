@@ -87,7 +87,7 @@ max_total = 100
 
 #### Websites
 
-A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. Vertices in the graph correspond to domains (**kumo** considers subdomains as separate domains in its model, and in this document **domains** will refer to **only** subdomain. **kumo**, by specification, crawls only one website and does not crawl to a domain that is different from the target), and there exists an edge from vertex *A* to vertex *B* if and only if there is a *way* to get from *A* to *B*.
+A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. Vertices in the graph correspond to domains (**kumo** considers subdomains as separate domains in its model. **kumo**, by specification, crawls only one website and does not crawl to a domain that is different from the target), and there exists an edge from vertex *A* to vertex *B* if and only if there is a *way* to get from *A* to *B*.
 
 A *way* from *A* to *B* exists if at least one of the following holds:
 
