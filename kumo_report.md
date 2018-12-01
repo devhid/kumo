@@ -263,8 +263,7 @@ Library.
           Host: [host]
           User-Agent: [agent]
           Cache-Control: max-age=0
-          Accept: text/html,application/xhtml+xml,application/xml;
-          		q=0.9,image/webp,image/apng,*/*;q=0.8
+          Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
           Accept-Language: en-US,en;q=0.9
           Accept-Encoding: gzip, deflate, br
           Accept-Charset: utf-8
@@ -288,8 +287,7 @@ Library.
            User-Agent: [agent]
            Content-Type: [content_type]
            Content-Length: [content_length]
-           Accept: application/json; text/html,application/xhtml+xml,
-           		 application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
+           Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
            Accept-Language: en-US,en;q=0.9,ja;q=0.8"
            Accept-Encoding: gzip, deflate, br
            Accept-Charset: utf-8
