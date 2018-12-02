@@ -99,6 +99,13 @@ class Crawler:
 
         visited, to_traverse = set(), [root_domain] if method.casefold() == "dfs" else deque([root_domain])
 
+        # Add subdomains
+        print('> Currently checking for existing subdomains...')
+        for subdomain in self.validate_subdomains(url):
+            print("> Found Subdomain: " + subdomain)
+            to_traverse.append(DomainGraph.DomainNode(subdomain, user_agent, max_depth, max_pages))
+
+        print('\n> Now Crawling...')
         while to_traverse:
             domain = self._pop(method, to_traverse)
             domain.page_count = self.page_count
@@ -109,7 +116,7 @@ class Crawler:
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()
 
-                self.page_count = len(visited_pages)
+                self.page_count += len(visited_pages)
 
                 if domain.page_count >= max_pages or domain.reached_max_depth:
                     break
@@ -126,3 +133,14 @@ class Crawler:
             return to_traverse.popleft()
         else:
             return to_traverse.pop()
+
+    def validate_subdomains(self, root_domain):
+        valid = set()
+        for subdomain in SUBDOMAINS:
+            full_url = add_subdomain(root_domain, subdomain)
+            
+            if requests.get(full_url):
+                valid.add(full_url)
+        
+        return valid
+            

@@ -33,6 +33,107 @@ PASS_KEYWORDS = set(["pwd", "passwd", "pass", "password"])
 LOGIN_KEYWORDS = set(["log in", "login", "signin", "sign in"])
 REGISTER_KEYWORDS = set(["register", "signup", "sign up"])
 
+SUBDOMAINS = "\
+            www,\
+            mail,\
+            ftp,\
+            localhost,\
+            webmail,\
+            smtp,\
+            pop,\
+            ns1,\
+            webdisk,\
+            ns2,\
+            cpanel,\
+            whm,\
+            autodiscover,\
+            autoconfig,\
+            m,\
+            imap,\
+            test,\
+            ns,\
+            blog,\
+            pop3,\
+            dev,\
+            www2,\
+            admin,\
+            forum,\
+            news,\
+            vpn,\
+            ns3,\
+            mail2,\
+            new,\
+            mysql,\
+            old,\
+            lists,\
+            support,\
+            mobile,\
+            mx,\
+            static,\
+            docs,\
+            beta,\
+            shop,\
+            sql,\
+            secure,\
+            demo,\
+            cp,\
+            calendar,\
+            wiki,\
+            web,\
+            media,\
+            email,\
+            images,\
+            img,\
+            www1,\
+            intranet,\
+            portal,\
+            video,\
+            sip,\
+            dns2,\
+            api,\
+            cdn,\
+            stats,\
+            dns1,\
+            ns4,\
+            www3,\
+            dns,\
+            search,\
+            staging,\
+            server,\
+            mx1,\
+            chat,\
+            wap,\
+            my,\
+            svn,\
+            mail1,\
+            sites,\
+            proxy,\
+            ads,\
+            host,\
+            crm,\
+            cms,\
+            backup,\
+            mx2,\
+            lyncdiscover,\
+            info,\
+            apps,\
+            download,\
+            remote,\
+            db,\
+            forums,\
+            store,\
+            relay,\
+            files,\
+            newsletter,\
+            app,\
+            live,\
+            owa,\
+            en,\
+            start,\
+            sms,\
+            office,\
+            exchange,\
+            ipv4".split(',')
 
 def tokenize_html(html):
     """Return all tokenized strings from an html document passed as a string
@@ -309,8 +410,13 @@ def clean_url(url):
     return url
 
 def get_domain(url):
-    
+
     o = urlparse(url)
     link = o.scheme + "://" + o.netloc
     return link
+
+def add_subdomain(url, subdomain):
+    o = urlparse(url)
+
+    return o.scheme + "://" + subdomain.strip() + "." + o.netloc + o.path
 

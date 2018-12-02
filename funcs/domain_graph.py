@@ -38,7 +38,7 @@ class DomainGraph:
 
         def __repr__(self):
             return 'DomainNode(url={}, connected_domains={})'.format(self.url, self.connected_domains)
-        
+
         def process(self):
             root_page = PageGraph.PageNode(self.url)
             page_graph = PageGraph(root_page)
@@ -59,6 +59,8 @@ class DomainGraph:
                     if 200 >= requests.get(current_page.url).status_code <= 300:
                         print('------------------------------------------------------------')
                         print("> New Page: " + current_page.url)
+                        visited.add(current_page.url)
+                        current_page.process() 
 
                         if current_page.url in current_page.get_login_pages():
                             print("> Login Page Detected: " + current_page.url)
@@ -75,9 +77,6 @@ class DomainGraph:
                         if self.page_count == self.max_pages:
                             print("> Reached Max Page Count: " + str(self.page_count))
                             break
-
-                        visited.add(current_page.url)
-                        current_page.process() 
                         
                         for link in current_page.get_connected_pages():
                             if link not in visited:
