@@ -1,6 +1,6 @@
-# kumo - the simple web brute-forcer
+<h1 align=center> kumo - the simple web brute-forcer </h1>
 
-### Mankirat Gulati, Andy Liang, Stanley Lim, Johnny So
+<h4 align=center> Mankirat Gulati, Andy Liang, Stanley Lim, Johnny So </h1>
 
 This project is an implementation of a **web crawler** and **form brute-forcer** that can "**autonomously navigate websites**, collecting and tokenizing all the words that it finds which it will later use as potential passwords on the website's login form". In addition, the crawler will "**autonomously identify the login page** and also detect whether a **combination of username and password was successful** or not".
 
@@ -16,11 +16,46 @@ It is configured to use either [Breadth-First Search (BFS)](#Breadth-First-Searc
 
 After **kumo** is done with a page, it moves onto the next page according to specified graph traversal algorithm. However, regardless of whether it is BFS or DFS, since each domain (**not each page**) is its own vertex, it will **always** choose to visit another page in the same domain over a page in another domain. Only when **kumo** has detected that there are no other links to pages in the current domain does it choose to traverse to another domain using the specified graph traversal algorithm.
 
+```html
+<div style="page-break-after: always;"></div>
+```
+
+<h1 align=center> Table of Contents </h1>
+
+1. [Functional Specifications](#Functional-Specifications)
+
+   - [Prerequisites & Dependencies](#Prerequisites-&-Dependencies)
+   - [Properties](#Properties)
+   - [Technical Design](#Technical-Design)
+   - 
+
+2. [User Guide](#User-Guide)
+
+   1. [Setup](#Setup)
+   2. [Downloading](#Downloading)
+   3. [Configs](#Configs)
+   4. [How to Use](#How-To-Use)
+
+3. [References](#References)
+
+   1. [Internet Standards](#Internet-Standards)
+   2. [Programming Guidelines](#Programming-Guidelines)
+
+4. [Team Dynamics & Journey](#Team-Dynamics-&-Journey)
+
+   1. [Workflow](#Workflow)
+   2. [Brainstorming](#Brainstorming)
+   3. [Feature Contributions](#Feature-Contributions)
+   4. [Tying It Together](#Tying-It-Together)
+   5. [Major Blockers](#Major-Blockers)
+   6. [Presentation Planning](#Presentation-Planning)
+
+   ```html
+   <div style="page-break-after: always;"></div>
+   ```
 
 
 <h1 align=center> Functional Specifications </h1>
-
-
 
 ## Prerequisites & Dependencies
 
@@ -150,6 +185,7 @@ max_total = 100
 - ### Tokenized Words
 
   Words are tokenized from a html body via the `PyQuery` library and stored inside a regular, global `set()`. As the crawler continues to traverse other pages, the set of tokenized words is updated with more words that are found.
+
 
 
 ### 2. Feature Implementation
@@ -562,7 +598,7 @@ max_total = 100
     - `username`: The value of the name attribute in the username input tag. 
     - `passname`: The value of the name attribute in the password input tag.
 
-- #### Bruteforcing
+- #### Brute-forcing
 
 
 
@@ -571,11 +607,17 @@ max_total = 100
 - Support for HTTPS servers
 - Support for the `Accept-Encoding` for messages sent using `HttpRequest.send_get_request` and `HttpRequest.send_post_request`
 
+```html
+<div style="page-break-after: always;"></div>
+```
+
 <h1 align=center> User Guide </h1>
 
 # Setup
 
 This section of the report describes how **kumo** is set up to be deployed.
+
+
 
 ## Downloading
 
@@ -588,6 +630,8 @@ Via SSH:
 Via HTTPS:
 
 ​	```git clone https://github.com/devhid/kumo.git	```
+
+
 
 ### Extracting ZIP
 
@@ -605,38 +649,48 @@ Refer to [Properties](#Properties) for an explanation of the main configurations
 
 This section of the report describes how to use **kumo** after it is [Setup](#Setup).
 
-
+```html
+<div style="page-break-after: always;"></div>
+```
 
 <h1 align=center>References</h1>
 
 ### Internet Standards
 
-- ### HTTP
+- #### HTTP
 
-  - #### Headers and Message Format
+  - ##### Headers and Message Format
 
     - [RFC 2616: HTTP](https://tools.ietf.org/html/rfc2616#section-4.2)
 
-- ### SMTP
+- #### SMTP
 
-  - [Case-Insensitive Email Addresses StackOverflow Question](https://stackoverflow.com/questions/9807909/are-email-addresses-case-sensitive)
+  - ##### [Case-Insensitive Email Addresses StackOverflow Question](https://stackoverflow.com/questions/9807909/are-email-addresses-case-sensitive)
+
     - References [RFC 5321: SMTP, Section 2.3-11](https://tools.ietf.org/html/rfc5321#section-2.3.11)
+
+
 
 ### Programming Guidelines
 
-- ### Socket Programming
+- #### Socket Programming
 
     - [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
     - [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
 
 
-<h1 align=center>Team Dynamics & Journey</h1>
 
-[Talk about initial splitting, meeting, brainstorming. Include design decisions.]
+  ```html
+  <div style="page-break-after: always;"></div>
+  ```
+
+<h1 align=center>Team Dynamics & Journey</h1>
 
 ## Workflow
 
 The first topic we decided before we began our project was how to structure our workflow. We decided that we could all just choose a feature or component we wanted to work on, create a feature branch on Git, work on it, and merge on completion. Overall, this type of workflow worked very well for this type of project.
+
+
 
 ## Brainstorming
 
@@ -651,6 +705,7 @@ The first topic we decided before we began our project was how to structure our 
 #### Testing the Crawler
 
 * In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
+
 
 ## Feature Contributions
 
@@ -670,7 +725,10 @@ The first topic we decided before we began our project was how to structure our 
 
 * Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
 
-[Talk about tying it together.]
+
+## Tying It Together
+
+
 
 ## Major Blockers
 
@@ -686,4 +744,7 @@ The first topic we decided before we began our project was how to structure our 
 
 * Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
-[Talk about presentation planning.]
+
+
+## Presentation Planning
+
