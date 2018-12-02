@@ -16,10 +16,10 @@ def main():
 
 # Sub-command for actually crawling the website.
 @main.command(name='crawl')
-@click.option('--a', default=default_agent, help=help_agent)
-@click.option('--m', default=default_search_method, help=help_search_method)
-@click.option('--depth', default=default_max_depth, help=help_max_depth)
-@click.option('--pages', default=default_max_pages, help=help_max_pages)
+@click.option('--a', default=default_agent, help=HELP_AGENT)
+@click.option('--m', default=default_search_method, help=HELP_SEARCH_METHOD)
+@click.option('--depth', default=default_max_depth, help=HELP_MAX_DEPTH)
+@click.option('--pages', default=default_max_pages, help=HELP_MAX_PAGES)
 @click.argument('url', type=click.STRING, metavar='<url>', required=True)
 def crawl(a, m, depth, pages, url):
     print(url)
