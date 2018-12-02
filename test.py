@@ -181,3 +181,5 @@ if __name__ == "__main__":
         test_link_utils.test_link_retrieval_layers()
         test_link_utils.test_link_retrieval_relative()
         test_link_utils.test_login_detection()
+        test_link_utils.test_domain_family()
+        print("Test passed")

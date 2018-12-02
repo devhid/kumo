@@ -25,7 +25,7 @@ def tokenize_html(html):
     if(start == -1):
         start = html.find("<html")
 
-    html = html[start:len(html)]
+    html = html[start:]
 
     d = pq(html)
     d('svg').remove()
@@ -33,7 +33,10 @@ def tokenize_html(html):
     wordset = set()
 
     sentences = d('body').text()
+<<<<<<< HEAD
     # print(sentences)
+=======
+>>>>>>> 20c8d562483f705ec3a77e18174bd75e28c152d8
 
     for word in sentences.split():
         wordset.add(word)
@@ -91,11 +94,10 @@ def detect_login(html, base_url):
             url: string
                 Url that the form posts to
                 The url is relative to the domain
-            userid: string
-                HTML id of the username input tag
-            passid: string
-                HTML id of the password input tag
-
+            username: string
+                HTML name of the username input tag
+            passname: string
+                HTML name of the password input tag
     """
 
     #if(detect_login_from_url(base_url)):
@@ -138,14 +140,14 @@ def detect_login(html, base_url):
                     if(user_input == False
                     and inp.attrib[attrib].lower() in USER_KEYWORDS
                     and inp.attrib['type'].lower() == "text"):
-                        form_prop[1] = inp.attrib['id']
+                        form_prop[1] = inp.attrib['name']
                         user_input = True
                     
                     # Password input 
                     if(pass_input == False
                     and (inp.attrib[attrib].lower() in PASS_KEYWORDS
                     or inp.attrib['type'].lower() == "password")):
-                        form_prop[2] = inp.attrib['id']
+                        form_prop[2] = inp.attrib['name']
                         pass_input = True
 
         if(user_input and pass_input):
@@ -157,7 +159,7 @@ def detect_login(html, base_url):
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -190,7 +192,7 @@ def detect_login(html, base_url):
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
     else:
         return None
     
@@ -217,7 +219,7 @@ def detect_login_from_url(base_url):
         url = url[0:len(url) - 1]
     last_param_pos = url.rfind("/")
     if(last_param_pos != 7 and last_param_pos != 8): 
-        last_param = url[last_param_pos + 1:len(url)]
+        last_param = url[last_param_pos + 1:]
         if(last_param == "login" or last_param == "signin"):
             return True
 
@@ -242,4 +244,30 @@ def in_domain(domain, url):
     dom_ext = tld.extract(domain)
     url_ext = tld.extract(url)
     return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
+
+def dom_family(dom_one, dom_two):
+    """Determine the relation of one domain to another
+
+    Parameters
+    ---
+    dom_one: string
+        Domain or subdomain of a webpage
+    dom_two: string
+        Domain or subdomain of a webpage
+
+    Returns
+    ---
+    login: boolean
+        Return whether domain_one and domain_two are in the same domain family
+    """
+
+    done_ext = tld.extract(dom_one)
+    dtwo_ext = tld.extract(dom_two)
+    if(done_ext.domain != dtwo_ext.domain):
+        return False
+    
+    done = '.'.join(done_ext[:])
+    dtwo = '.'.join(dtwo_ext[:])
+    return done.find(dtwo) != -1 or dtwo.find(done) != -1
+    
 

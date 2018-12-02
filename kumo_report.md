@@ -484,6 +484,8 @@ function dfs(root_domain):
 
 - #### Tokenizing Words
 
+  - 
+
 - #### Text Transformation
   * **Transformation**
     The text transformation in **kumo** is included to encode or transform passwords in several different ways to simulate how some users would modify their passwords. The different transformations supported by **kumo**:
@@ -508,14 +510,14 @@ function dfs(root_domain):
       Returns a string representation with all instance variables.
 
   - **Instance Variables**
-  
+
     - `lower` - the lowercased version of the given word.
     - `upper` - the uppercased version of the given word.
     - `reverse` - the reversed version of the given word.
     - `leet` - the leet code version of a given word.
 
   - **Public**
-  
+
     - `generate_transformations(strings)`
 
       Function designed to generate all the different transformations as listed above for the given list of strings, `strings`.
@@ -525,7 +527,7 @@ function dfs(root_domain):
       **Returns**: A map where the word is the key and the transformation object as the value.
 
   - **Private**
-  
+
     - `_generate_leet(string)`
 
       Generates the leet-speak version of a given string by performing the following **case-insensitive** replacements:
