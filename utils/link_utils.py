@@ -6,6 +6,7 @@ from utils.constants import REGISTER_KEYWORDS
 from pyquery import PyQuery as pq
 from urllib.parse import urlparse
 from urllib.parse import urljoin
+from urllib.parse import urldefrag
 import tldextract as tld
 import re
 
@@ -55,6 +56,8 @@ def retrieve_links(html, base_url):
     wordset = set()
     for link in d('a'):
         url = link.attrib['href']
+        defrag_result = urldefrag(url) # Remove url fragment
+        url = defrag_result.url
         if(url[len(url) - 1] == "/"):
             url = url[0:len(url) - 1]
         wordset.add(url)
@@ -178,4 +181,23 @@ def detect_login_from_url(base_url):
 
     return False
 
+def in_domain(domain, url):
+    """Determine whether a url resides within the provided domain
+
+    Parameters
+    ---
+    domain: string
+        Domain or subdomain of a webpage
+    url: string
+        Url of the webpage to be checked
+
+    Returns
+    ---
+    login: boolean
+        Return whether the url's root domain is equivalent to the provided domain
+    """
+
+    dom_ext = tld.extract(domain)
+    url_ext = tld.extract(url)
+    return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
 

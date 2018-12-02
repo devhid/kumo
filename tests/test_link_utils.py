@@ -19,7 +19,7 @@ class LinkUtilsTest(unittest.TestCase):
         assert tokenize_link == set(['TestP', 'TestH1', 'Link', 'TestSpan'])
 
     def test_link_retrieval(self):
-        links = retrieve_links("<html><a href=https://google.com>Link</a><a href=https://amazon.com>TestSpan</a></html>", "")
+        links = retrieve_links("<html><a href=https://google.com>Link</a><a href=https://amazon.com>TestSpan</a><a href=https://google.com#fragment>Link</a><a href=https://amazon.com/#fragment>TestSpan</a></html>", "")
         print(links)
         assert links == set(['https://google.com', 'https://amazon.com'])
 
