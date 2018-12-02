@@ -624,6 +624,7 @@ To get it setup, refer to `README.md` inside the `fake-website` directory.
 
 [Talk about initial splitting, meeting, brainstorming. Include design decisions.]
 
+<<<<<<< HEAD
 ##Workflow
 
 The first topic we decided before we began our project was how to structure our workflow. We decided that we could all just choose a feature or component we wanted to work on, create a feature branch on Git, work on it, and merge on completion. Overall, this type of workflow worked very well for this type of project.
@@ -639,11 +640,29 @@ The first topic we decided before we began our project was how to structure our 
 * At first, we were stuck on how we wanted to design our graph. We had a choice between designating each page as a vertex or each domain as a vertex. Ultimately, we realized that we wanted both.
 
 ####Testing the Crawler
+=======
+## Workflow
+
+The first topic we decided before we began our project was how to structure our workflow. We decided that we could all just choose a feature or component we wanted to work on, create a feature branch on Git, work on it, and merge on completion. Overall, this type of workflow worked very well for this type of project.
+
+## Brainstorming
+
+#### Command Line Interface vs. Web Application
+
+* We were first thinking about whether to control the crawler through a simple command line interface or through an online web application. We decided that we should just build a simple command line interface and build a web application version if we had extra time (we didn't).
+
+#### Domain Vertices vs. Pages Vertices
+
+* At first, we were stuck on how we wanted to design our graph. We had a choice between designating each page as a vertex or each domain as a vertex. Ultimately, we realized that we wanted both.
+
+#### Testing the Crawler
+>>>>>>> 0fc3333bee23a110395bef1d9e0f541bfcc9ab60
 
 * In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
 
 ## Feature Contributions
 
+<<<<<<< HEAD
 ####Stanley Lim
 
 * Worked on **text transformation**, created the **test websites**, and helped out with **bruteforcing**.
@@ -657,6 +676,21 @@ The first topic we decided before we began our project was how to structure our 
 * Started implementing **command line interface**, helped design the **graph data structures**, combined other components to implement the **main crawling logic**.
 
 ####Andy Liang
+=======
+#### Stanley Lim
+
+* Worked on **text transformation**, created the **test websites**, and helped out with **bruteforcing**.
+
+#### Johnny So
+
+* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, and helped design **graph traversal strategies**.
+
+#### Mankirat Gulati
+
+* Started implementing **command line interface**, helped design the **graph data structures**, combined other components to implement the **main crawling logic**.
+
+#### Andy Liang
+>>>>>>> 0fc3333bee23a110395bef1d9e0f541bfcc9ab60
 
 * Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
 
@@ -664,6 +698,7 @@ The first topic we decided before we began our project was how to structure our 
 
 ## Major Blockers
 
+<<<<<<< HEAD
 ####Request Limits
 
 * When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts.
@@ -673,6 +708,17 @@ The first topic we decided before we began our project was how to structure our 
 * We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. 
 
 ####Graph Design and Traversal Strategies
+=======
+#### Request Limits
+
+* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts.
+
+#### Testing Issues
+
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. 
+
+#### Graph Design and Traversal Strategies
+>>>>>>> 0fc3333bee23a110395bef1d9e0f541bfcc9ab60
 
 * Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
