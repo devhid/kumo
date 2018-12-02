@@ -85,329 +85,377 @@ max_total = 100
 
 ### 1. Data Structures
 
-#### Domain Graph
+A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. **kumo** has a main [**domain graph**](#domain-graph) whose vertices are domains and separate [**page graphs**](#page-graph) whose vertices are the pages within a specified domain.
 
-A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. 
+- ### Domain Graph
 
-##### Vertices
+  #### Vertices
 
-Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
+  Vertices in the **domain graph** correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
 
-We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
+  We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
 
-- **Subdomains and Parent Domains**
+  - **Subdomains and Parent Domains**
 
-  Now what does it mean for domain `A` to be a **subdomain** of domain `B`, or for `A` to be a **parent domain** of `B`? It is best explained with an example. Let us say the user enters the starting domain to be `c.b.a.com`, and we find links to the following domains on the pages on `c.b.a.com`:
-  - `a.com`
-  - `b.a.com`
-  - `e.d.c.b.a.com`
-  - `f.e.d.c.b.a.com`
-  - `b.com`
+    Now what does it mean for domain `A` to be a **subdomain** of domain `B`, or for `A` to be a **parent domain** of `B`? It is best explained with an example. Let us say the user enters the starting domain to be `c.b.a.com`, and we find links to the following domains on the pages on `c.b.a.com`:
+    - `a.com`
+    - `b.a.com`
+    - `e.d.c.b.a.com`
+    - `f.e.d.c.b.a.com`
+    - `b.com`
 
-  Then we define the following pairs `(d,p)` such that `p` is a **parent domain** of `d`:
+    Then we define the following pairs `(d,p)` such that `p` is a **parent domain** of `d`:
 
-  - `(c.b.a.com, a.com)`
-  - `(c.b.a.com, b.a.com)`
+    - `(c.b.a.com, a.com)`
+    - `(c.b.a.com, b.a.com)`
 
-  We define the following pairs `(d,s)` such that `s` is a **subdomain** of `d`:
+    We define the following pairs `(d,s)` such that `s` is a **subdomain** of `d`:
 
-  - `(c.b.a.com, e.d.c.b.a.com)`
-  - `(c.b.a.com, f.e.d.c.b.a.com)`
+    - `(c.b.a.com, e.d.c.b.a.com)`
+    - `(c.b.a.com, f.e.d.c.b.a.com)`
 
-  One other term that may come in handy is a **direct subdomain** which we shall define as `(d,direct)` such that `direct` is a **direct subdomain** of `d`:
+    One other term that may come in handy is a **direct subdomain** which we shall define as `(d,direct)` such that `direct` is a **direct subdomain** of `d`:
 
-  - `(a.com, b.a.com)`
-  - `(b.a.com, c.b.a.com)`
-  - `(e.d.c.b.a.com, f.e.d.c.b.a.com)`
+    - `(a.com, b.a.com)`
+    - `(b.a.com, c.b.a.com)`
+    - `(e.d.c.b.a.com, f.e.d.c.b.a.com)`
 
-  Hence, if `D = c.b.a.com`, then `F(D) = {a.com, b.a.com, e.d.c.b.a.com, f.e.d.c.b.a.com}`. Note that `b.com` is **not in** `F(D)`.
+    Hence, if `D = c.b.a.com`, then `F(D) = {a.com, b.a.com, e.d.c.b.a.com, f.e.d.c.b.a.com}`. Note that `b.com` is **not in** `F(D)`.
 
-##### Edges
+  #### Edges
 
-An edge from vertex `A` to vertex `B` exists if and only if at least one of the following holds:
+  An edge from vertex `A` to vertex `B` exists if and only if at least one of the following holds:
 
-+ there is a link on some webpage in domain `A` that goes to some webpage in domain `B`
+  - there is a link on some webpage in domain `A` that goes to some webpage in domain `B`
+  - vertex `B` is found from combining [this list of popular subdomains](https://github.com/rbsec/dnscan/blob/master/subdomains-100.txt) with the domain of `A`
 
-+ vertex `B` is found from combining [this list of popular subdomains](https://github.com/rbsec/dnscan/blob/master/subdomains-100.txt) with the domain of `A`
 
+- ### Page Graph
 
-#### Tokenized Words
+  #### Vertices
 
-Library.
+  Vertices in the **page graph** correspond to pages within a certain domain `D`. To completely process a domain `D`, **kumo** must crawl all the pages it can find under domain `D` before it can move onto a different domain `D'`.
+
+  #### Edges
+
+  An edge from vertex `A` to vertex `B` exists if and only if:
+
+  - there is a link on webpage `A` to webpage `B`
+
+- ### Tokenized Words
+
+  Library.
 
 
 
 ### 2. Feature Implementation
 
-- #### Breadth-First Search (BFS)
+- ## Graph Traversal
 
-- #### Depth-First Search (DFS)
+  **kumo** must crawl and process all the domains in `F(D)` where `D` is the user-input target domain and `F(D)` is the [target family of domains](#domain-graph). The way **kumo** does this is to maintain a **DomainGraph** that consists of **DomainNodes**, each of which maintains a separate **PageGraph**.
 
-- #### Completely Processing the Current Domain
+  Each **DomainNode** `D` has one **PageGraph** `P(D)` that describes all the pages under domain `D`. For **kumo** to completely process `D` (what it means to "completely process `D`" depends on `max_total` specified by the user in `configs.ini`), it must completely process `P(D)` (what it means to "completely process `P(D)`" depends on `max_depth` specified by the user in `configs.ini`).
 
-- #### HTTP Requests
+  Hence, **kumo** actually performs nested traversals of graphs. The main graph is the **DomainGraph**, and the inner graphs are the **PageGraphs**. 
+
+  The following sections describe how each feature is implemented, and culminates in the pseudo-code for the [main `crawl` method](#crawling).
+
+
+
+  ### Domains
+
+  - #### DomainGraph
+
+    Constructor, Variables, Methods (+ maybe pseudo-code of methods)
+
+  - #### DomainNode
+
+    Constructor, Variables, Methods (+ maybe pseudo-code of methods)
+
+  ### Pages
+
+  - #### PageGraph
+
+    Constructor, Variables, Methods (+ maybe pseudo-code of methods)
+
+  - #### PageNode
+
+    Constructor, Variables, Methods (+ maybe pseudo-code of methods)
+
+
+  ### Crawling
+
+  The pseudo-code for **kumo**'s crawling implementation is as follows: 
+
+  ```python
+  def crawl(target_url):
+  ```
+
+
+
+- ## HTTP Requests
 
   HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
 
   The sections below describe how the sockets and HTTP request interfaces are implemented in **kumo**. An [example usage of client code using `HttpRequest`](#example-usage-of-`httprequest`) can be found at the end of this section.
 
-  ## Sockets
+  ### Sockets
 
   Socket functionality is split into two: a Python module `sockets.py` using relevant socket functions from the standard Python3 library `socket`, and a wrapper `Socket.py` class that uses the custom-defined functions in `sockets.py`.
 
-  ### sockets.py
+  - ### sockets.py
 
-  `sockets.py` is a module with basic socket functionality. It has the following functions:
+    `sockets.py` is a module with basic socket functionality. It has the following functions:
 
-  - `connect(url, port)`
+    - `connect(url, port)`
 
-    Creates and returns a standard `socket` object that is connected to the specified URL and port.
+      Creates and returns a standard `socket` object that is connected to the specified URL and port.
 
-    **Returns**: a standard `socket` object (`socket`)
+      **Returns**: a standard `socket` object (`socket`)
 
-    **Exception**: return `None`
+      **Exception**: return `None`
 
-  - `close(mysocket)`
+    - `close(mysocket)`
 
-    Closes the specified socket.
-
-    **Returns**: does not return
-
-    **Note**: the argument here is named `mysocket` instead of `socket` because it must call the standard method `socket.close()`
-
-  - `send(socket, msg)`
-
-    Sends a message to a socket. Returns the number of bytes sent.
-
-    **Returns**: number of bytes sent (`int`)
-
-    **Exception**: return `0` if either argument was `None` or if the message failed to completely send.
-
-    **Note**: The message fails to completely send if the socket is closed on the other (receiving) end before the message sends, amongst other reasons.
-
-  - `receive(socket)`
-
-    Receives and returns a message from a socket. It detects the end of the message when it reads that the length read was `0` bytes, indicating `EOF`.
-
-    **Returns**: message received from the socket (`string`)
-
-    **Exception**: return `""` (empty string) if `socket` is `None`
-
-    **Note**: The reason it is implemented in such a way is that it is impossible to determine the length of the message unless a prior format is agreed to between the sender and receiver. Since **kumo** is designed to work on any general website, this method cannot be used, and **kumo** must rely on this method of checking.
-
-  ### Socket.py
-
-  `Socket.py` is a wrapper that uses OOP principles over the functions defined in `sockets.py` to create a wrapping `Socket`  class to be used later. The `Socket` class has the following properties:
-
-  - **Constructor**
-
-    - `__init__(self,url,port)`
-
-      The constructor takes a `url` and `port` that describes the socket connection, and assigns the instance variables appropriately.
-
-  - **Private Instance Variables**
-
-    - `self.__url`
-
-      The `url` that the socket will connect to
-
-    - `self.__port`
-
-      The `port` that the socket will connect to the `url` on
-
-    - `self.__socket`
-
-      The underlying standard `socket` object
-
-  - **Instance Methods**
-
-    - `connect(self)`
-
-      The underlying socket (`self.__socket`) connects to the specified `url (self.__url)`and `port (self.__port)` assigned during its construction.
-
-      **Uses**: `sockets.connect(url, port)`
+      Closes the specified socket.
 
       **Returns**: does not return
 
-      **Note**: This implementation allows for the same `Socket` object to be reused for the same `(url,port)`, which makes sense to code that uses this class, as the `Socket` object then represents an object that is used to connect to a `(url,port)`.
+      **Note**: the argument here is named `mysocket` instead of `socket` because it must call the standard method `socket.close()`
 
-    - `close(self)`
+    - `send(socket, msg)`
 
-      The underlying socket (`self.__socket`) is closed.
-
-      **Uses**: `sockets.close(mysocket)`
-
-      **Returns**: does not return
-
-    - `send(self, msg)`
-
-      The message `msg` is sent to the underlying socket (`self.__socket`), and the amount of bytes sent is returned.
-
-      **Uses**: `sockets.send(socket, msg)`
+      Sends a message to a socket. Returns the number of bytes sent.
 
       **Returns**: number of bytes sent (`int`)
 
-    - `recv(self)`
+      **Exception**: return `0` if either argument was `None` or if the message failed to completely send.
 
-      Receives and returns the message received from the underlying socket (`self.__socket`).
+      **Note**: The message fails to completely send if the socket is closed on the other (receiving) end before the message sends, amongst other reasons.
 
-      **Uses**: `sockets.receive(socket)`
+    - `receive(socket)`
 
-      **Returns**: message received from the `Socket` (`string`)
+      Receives and returns a message from a socket. It detects the end of the message when it reads that the length read was `0` bytes, indicating `EOF`.
 
-  ## Requests
+      **Returns**: message received from the socket (`string`)
+
+      **Exception**: return `""` (empty string) if `socket` is `None`
+
+      **Note**: The reason it is implemented in such a way is that it is impossible to determine the length of the message unless a prior format is agreed to between the sender and receiver. Since **kumo** is designed to work on any general website, this method cannot be used, and **kumo** must rely on this method of checking.
+
+  - ### Socket.py
+
+    `Socket.py` is a wrapper that uses OOP principles over the functions defined in `sockets.py` to create a wrapping `Socket`  class to be used later. The `Socket` class has the following properties:
+
+    - **Constructor**
+
+      - `__init__(self,url,port)`
+
+        The constructor takes a `url` and `port` that describes the socket connection, and assigns the instance variables appropriately.
+
+    - **Private Instance Variables**
+
+      - `self.__url`
+
+        The `url` that the socket will connect to
+
+      - `self.__port`
+
+        The `port` that the socket will connect to the `url` on
+
+      - `self.__socket`
+
+        The underlying standard `socket` object
+
+    - **Instance Methods**
+
+      - `connect(self)`
+
+        The underlying socket (`self.__socket`) connects to the specified `url (self.__url)`and `port (self.__port)` assigned during its construction.
+
+        **Uses**: `sockets.connect(url, port)`
+
+        **Returns**: does not return
+
+        **Note**: This implementation allows for the same `Socket` object to be reused for the same `(url,port)`, which makes sense to code that uses this class, as the `Socket` object then represents an object that is used to connect to a `(url,port)`.
+
+      - `close(self)`
+
+        The underlying socket (`self.__socket`) is closed.
+
+        **Uses**: `sockets.close(mysocket)`
+
+        **Returns**: does not return
+
+      - `send(self, msg)`
+
+        The message `msg` is sent to the underlying socket (`self.__socket`), and the amount of bytes sent is returned.
+
+        **Uses**: `sockets.send(socket, msg)`
+
+        **Returns**: number of bytes sent (`int`)
+
+      - `recv(self)`
+
+        Receives and returns the message received from the underlying socket (`self.__socket`).
+
+        **Uses**: `sockets.receive(socket)`
+
+        **Returns**: message received from the `Socket` (`string`)
+
+  ### Requests
 
   HTTP request functionality is implemented in the `HttpRequest.py` class, and depends on the `Socket.py` class.
 
-  ### HttpRequest.py
+  - ### HttpRequest.py
 
-  `HttpRequest.py` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
+    `HttpRequest.py` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
 
-  An instance of an `HttpRequest` can be reused to perform multiple HTTP requests of the same type to a specified `url` and `port`, by calling `connect()`, sending/receiving a request, and then calling `close()`.
+    An instance of an `HttpRequest` can be reused to perform multiple HTTP requests of the same type to a specified `url` and `port`, by calling `connect()`, sending/receiving a request, and then calling `close()`.
 
-  - **Constructor**
+    - **Constructor**
 
-    - `__init__(self, url, port, method)`
+      - `__init__(self, url, port, method)`
 
-      Initializes the `HttpRequest` instance by constructing a `Socket` to the specified `url` and `port` and setting the specified `method`.
+        Initializes the `HttpRequest` instance by constructing a `Socket` to the specified `url` and `port` and setting the specified `method`.
 
-  - **Private Instance Variables**
+    - **Private Instance Variables**
 
-    - `self.__socket`
+      - `self.__socket`
 
-      The underlying `Socket` that describes the connection.
+        The underlying `Socket` that describes the connection.
 
-    - `self.__method`
+      - `self.__method`
 
-      The HTTP request method.
+        The HTTP request method.
 
-  - **Instance Methods**
+    - **Instance Methods**
 
-    - `connect(self)`
+      - `connect(self)`
 
-      Initializes the underlying `Socket` (`self.__socket`) that represents the connection.
+        Initializes the underlying `Socket` (`self.__socket`) that represents the connection.
 
-      **Uses**: `Socket.connect()`
+        **Uses**: `Socket.connect()`
 
-      **Returns**: does not return
+        **Returns**: does not return
 
-      **Note**: after instantiation, use `connect()` every time another HTTP request is to be sent
+        **Note**: after instantiation, use `connect()` every time another HTTP request is to be sent
 
-    - `close(self)`
+      - `close(self)`
 
-      Closes the underlying `Socket` (`self.__socket`) that represents the connection.
+        Closes the underlying `Socket` (`self.__socket`) that represents the connection.
 
-      **Uses**: `Socket.close()`
+        **Uses**: `Socket.close()`
 
-      **Returns**: does not return
+        **Returns**: does not return
 
-    - `receive(self)`
+      - `receive(self)`
 
-      Receives a message from the underlying `Socket` (`self.__socket`)  that represents the connection.
+        Receives a message from the underlying `Socket` (`self.__socket`)  that represents the connection.
 
-      **Uses**: `Socket.recv()`
+        **Uses**: `Socket.recv()`
 
-      **Returns**: message received from the `Socket` (`string`)
+        **Returns**: message received from the `Socket` (`string`)
 
-    - `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+      - `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
-      A generic method for sending an HTTP `GET` or `POST` request. The arguments describe header values for the request. It is formatted as follows:
+        A generic method for sending an HTTP `GET` or `POST` request. The arguments describe header values for the request. It is formatted as follows:
 
-      ```
-      [self.method] [url] [protocol]
-      Host: [host]
-      User-Agent: [agent]
-      Cache-Control: [cache-control]
-      Accept: [accept]
-      Accept-Language: [accept-lang]
-      Accept-Encoding: [accept-encoding]
-      Accept-Charset: [accept-charset]
-      Connection: [connection]
-      \\r\\n\\r\\n
-      
-      [body]
-      ```
+        ```
+        [self.method] [url] [protocol]
+        Host: [host]
+        User-Agent: [agent]
+        Cache-Control: [cache-control]
+        Accept: [accept]
+        Accept-Language: [accept-lang]
+        Accept-Encoding: [accept-encoding]
+        Accept-Charset: [accept-charset]
+        Connection: [connection]
+        \\r\\n\\r\\n
+        
+        [body]
+        ```
 
-      **Uses**: `Socket.send(msg)`
+        **Uses**: `Socket.send(msg)`
 
-      **Returns**: `True` if the message was sent successfully, `False` otherwise
+        **Returns**: `True` if the message was sent successfully, `False` otherwise
 
-      **Note**: this method is denoted private by convention because client code should use either `send_get_request` or `send_post_request`, and not this general method.
+        **Note**: this method is denoted private by convention because client code should use either `send_get_request` or `send_post_request`, and not this general method.
 
-    - `send_get_request(self, url, host, agent)`
+      - `send_get_request(self, url, host, agent)`
 
-      Sends an HTTP `GET` request to the specified `socket` (`self.socket`).
+        Sends an HTTP `GET` request to the specified `socket` (`self.socket`).
 
-      The `GET` request is formatted as follows:
+        The `GET` request is formatted as follows:
 
-      ```
-      GET [url] HTTP/1.1
-      Host: [host]
-      User-Agent: [agent]
-      Cache-Control: max-age=0
-      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-      Accept-Language: en-US,en;q=0.9
-      Accept-Encoding: gzip, deflate, br
-      Accept-Charset: utf-8
-      Connection: close
-      \\r\\n\\r\\n
-      ```
+        ```
+        GET [url] HTTP/1.1
+        Host: [host]
+        User-Agent: [agent]
+        Cache-Control: max-age=0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+        Accept-Language: en-US,en;q=0.9
+        Accept-Encoding: gzip, deflate, br
+        Accept-Charset: utf-8
+        Connection: close
+        \\r\\n\\r\\n
+        ```
 
-      **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+        **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
-      **Returns**: `True` if the message was sent successfully, `False` otherwise
+        **Returns**: `True` if the message was sent successfully, `False` otherwise
 
-    - `send_post_request(self, url, host, agent, content_type, content_length, body)`
+      - `send_post_request(self, url, host, agent, content_type, content_length, body)`
 
-      Sends an HTTP `POST` request to the specified `socket` (`self.socket`).
+        Sends an HTTP `POST` request to the specified `socket` (`self.socket`).
 
-      The `POST` request is formatted as follows:
+        The `POST` request is formatted as follows:
 
-      ```
-       POST [url] HTTP/1.1
-       Host: [host]
-       User-Agent: [agent]
-       Content-Type: [content_type]
-       Content-Length: [content_length]
-       Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
-       Accept-Language: en-US,en;q=0.9,ja;q=0.8"
-       Accept-Encoding: gzip, deflate, br
-       Accept-Charset: utf-8
-       Connection: close
-       \\r\\n
-       [body]
-       \\r\\n\\r\\n
-      ```
+        ```
+         POST [url] HTTP/1.1
+         Host: [host]
+         User-Agent: [agent]
+         Content-Type: [content_type]
+         Content-Length: [content_length]
+         Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
+         Accept-Language: en-US,en;q=0.9,ja;q=0.8"
+         Accept-Encoding: gzip, deflate, br
+         Accept-Charset: utf-8
+         Connection: close
+         \\r\\n
+         [body]
+         \\r\\n\\r\\n
+        ```
 
-      **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
+        **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
-      **Returns**: `True` if the message was sent successfully, `False` otherwise
+        **Returns**: `True` if the message was sent successfully, `False` otherwise
 
-    - `generate_post_body(self, content_type, data)`
+      - `generate_post_body(self, content_type, data)`
 
-      Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
+        Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
 
-      **Returns**: the HTTP body of the `POST` request as a string 
+        **Returns**: the HTTP body of the `POST` request as a string 
 
-      ​		(e.g. `key1=val1&key2=val2`)
+        ​		(e.g. `key1=val1&key2=val2`)
 
-      **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
+        **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
 
-  - **Static Methods**
+    - **Static Methods**
 
-    - `get_status_code(http_response)`
+      - `get_status_code(http_response)`
 
-      Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
+        Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
 
-      **Returns**: 
+        **Returns**: 
 
-      - `None` if `http_response` is invalid
+        - `None` if `http_response` is invalid
 
-      - `(status_code, interesting_info)`
+        - `(status_code, interesting_info)`
 
-        If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
+          If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
 
-  ## Example Usage of `HttpRequest`
+  ### Example Usage of `HttpRequest`
 
   An example usage of client code interacting with the `http_requests` module is shown below.
 
@@ -432,13 +480,13 @@ Library.
       request.close()
   ```
 
-- #### Tokenizing Words
+- ## Tokenizing Words
 
-- #### Text Transformation
+- ## Text Transformation
 
-- #### Detecting Login Forms
+- ## Detecting Login Forms
 
-- #### Bruteforcing
+- ## Bruteforcing
 
 
 

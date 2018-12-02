@@ -2,7 +2,7 @@
 from http_requests.Socket import Socket
 
 # utils Imports
-from utils.constants import HTTP_UA
+from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED, HTTP_CONTENTTYPE_MULTIFORMDATA
 
 class HttpRequest:
    
@@ -289,7 +289,7 @@ class HttpRequest:
         if not isinstance(data,dict):
             return None
         body = ""
-        if content_type == "application/x-www-form-urlencoded":
+        if content_type == HTTP_CONTENTTYPE_FORMENCODED:
             # Expect data to be a dictionary.
             for key in data:
                 body += key + "=" + data[key] + "&"
