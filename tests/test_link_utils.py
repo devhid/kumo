@@ -36,7 +36,7 @@ class LinkUtilsTest(unittest.TestCase):
             login_html = login_file.read().replace('\n', '')
         #print(tokenize_html(login_html))
         form_info = detect_login(login_html, "http://kumo.x10host.com/login/")
-        assert form_info == Form(url='/login/', userid='user_login', passid='user_pass')
+        assert form_info == Form(url='/login/', username='log', passname='pwd')
 
         with open('./tests/register_test.txt', 'r') as register_file:
             register_html = register_file.read().replace('\n', '')
@@ -46,7 +46,7 @@ class LinkUtilsTest(unittest.TestCase):
         with open('./tests/bootstrap_login_test.txt', 'r') as login_file:
             login_html = login_file.read().replace('\n', '')
         form_info = detect_login(login_html, "http://base_url.com")
-        assert form_info == Form(url='', userid='email', passid='password')
+        assert form_info == Form(url='', username='email', passname='password')
 
         with open('./tests/bootstrap_register_test.txt', 'r') as register_file:
             register_html = register_file.read().replace('\n', '')
@@ -56,7 +56,7 @@ class LinkUtilsTest(unittest.TestCase):
         with open('./tests/bootstrap_fun_form.txt', 'r') as fun_file:
             fun_html = fun_file.read().replace('\n', '')
         form_info = detect_login(fun_html, "http://base_url.com")
-        assert form_info == Form(url='', userid='email', passid='password')
+        assert form_info == Form(url='', username='email', passname='password')
 
     def test_domain_family(self):
         assert dom_family('a.b.c.com', 'c.com') == True

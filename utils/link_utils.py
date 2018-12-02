@@ -90,11 +90,10 @@ def detect_login(html, base_url):
             url: string
                 Url that the form posts to
                 The url is relative to the domain
-            userid: string
-                HTML id of the username input tag
-            passid: string
-                HTML id of the password input tag
-
+            username: string
+                HTML name of the username input tag
+            passname: string
+                HTML name of the password input tag
     """
 
     #if(detect_login_from_url(base_url)):
@@ -137,14 +136,14 @@ def detect_login(html, base_url):
                     if(user_input == False
                     and inp.attrib[attrib].lower() in USER_KEYWORDS
                     and inp.attrib['type'].lower() == "text"):
-                        form_prop[1] = inp.attrib['id']
+                        form_prop[1] = inp.attrib['name']
                         user_input = True
                     
                     # Password input 
                     if(pass_input == False
                     and (inp.attrib[attrib].lower() in PASS_KEYWORDS
                     or inp.attrib['type'].lower() == "password")):
-                        form_prop[2] = inp.attrib['id']
+                        form_prop[2] = inp.attrib['name']
                         pass_input = True
 
         if(user_input and pass_input):
@@ -156,7 +155,7 @@ def detect_login(html, base_url):
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -189,7 +188,7 @@ def detect_login(html, base_url):
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
     else:
         return None
     
