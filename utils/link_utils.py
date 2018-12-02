@@ -85,8 +85,8 @@ def detect_login(html, base_url):
 
     Returns
     ---
-    form_info: namedtuple File
-        File :
+    form_info: namedtuple Form
+        Form :
             url: string
                 Url that the form posts to
                 The url is relative to the domain
