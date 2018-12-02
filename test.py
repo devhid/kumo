@@ -7,11 +7,7 @@ from http_requests.HttpRequest import HttpRequest
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-<<<<<<< HEAD
-    test = "http_local"
-=======
     test = "test_link_utils"
->>>>>>> feature/list_utils
     if test == "http_requests":
         host = "httpbin.org"
         port = 80

@@ -36,7 +36,7 @@ def close(mysocket):
         the socket describing a connection, created by connect(url,port)
     """
     if mysocket is not None:
-        mysocket.shutdown(socket.SHUT_RDWR)
+        #mysocket.shutdown(socket.SHUT_RDWR)
         mysocket.close()
 
 # Sending and Receiving Functions
