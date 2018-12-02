@@ -8,7 +8,7 @@ from bruteforce.bruteforce import *
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "configs"
+    test = "brute_force"
     if test == "http_requests":
         host = "httpbin.org"
         port = 80
@@ -160,7 +160,7 @@ if __name__ == "__main__":
         # url = "/login"
         # ua = "googlebot"
 
-        host = "email.kumo.x10host.com"
+        host = "forum.3.17.9.125.xip.io"
         port = 80
         url = "/login/"
         ua = "chrome"
@@ -171,19 +171,19 @@ if __name__ == "__main__":
         if sent_get:
             response = request.receive()
             body = request.get_body(response)
-            # print(body)
+            print(body)
 
             # Detect if login form is present and get the login fields
             login = detect_login(body,host+url)
             if login is not None:
-                form_url, user_key, pass_key = login
+                print(login)
+                form_url, user_key, pass_key, action_val = login
 
                 words = tokenize_html(body)
-                # if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-                #     words = {"bawofafefe@kulmeo.com","Test12345!"}
-                # print(words)
+                if "yalofaputu@autowb.com" in words and "test" in words:
+                    words = {"yalofaputu@autowb.com","test"}
                 post_req = HttpRequest(host, port, "POST")
-                success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, words)
+                success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
                 
                 print("Successful Logins:")
                 for cred in success:
