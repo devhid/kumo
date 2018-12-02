@@ -1,7 +1,5 @@
 import requests
 
-from funcs.tokenize import *
-
 class PageGraph:
 
     def __init__(self, root_page):

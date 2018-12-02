@@ -1,4 +1,9 @@
-if __name__ = "__main__":
+
+HTTP_UA_CHROME = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+
+from funcs.crawler import Crawler
+
+if __name__ == "__main__":
     url = "http://kumo.x10host.com"
     method = "dfs"
     agent = HTTP_UA_CHROME

@@ -2,7 +2,6 @@ from utils.constants import *
 from utils.namedtuples import Form
 
 from pyquery import PyQuery as pq
-import tldextract
 from urllib.parse import urlparse
 from urllib.parse import urljoin
 from urllib.parse import urldefrag
@@ -34,7 +33,7 @@ def tokenize_html(html):
     wordset = set()
 
     sentences = d('body').text()
-    print(sentences)
+    # print(sentences)
 
     for word in sentences.split():
         wordset.add(word)
@@ -240,13 +239,7 @@ def in_domain(domain, url):
         Return whether the url's root domain is equivalent to the provided domain
     """
 
-<<<<<<< HEAD:funcs/tokenize.py
-    dom_ext = tldextract.extract(domain)
-    url_ext = tldextract.extract(url)
-    return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
-=======
     dom_ext = tld.extract(domain)
     url_ext = tld.extract(url)
     return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
 
->>>>>>> cdf34369f233bf8a1dff3d47ab6fc4cde1664a7f:utils/link_utils.py
