@@ -21,8 +21,15 @@ def tokenize_html(html):
     wordset: set<string>
         Set containing all the words on the current page
     """
+    start = html.find("<!doctype html>")
+    if(start == -1):
+        start = html.find("<html")
+
+    html = html[start:len(html)]
+
     d = pq(html)
     d('svg').remove()
+    d('script').remove()
     wordset = set()
 
     sentences = d('body').text()
@@ -78,7 +85,9 @@ def detect_login(html, base_url):
     Returns
     ---
     form_prop: 3 element array
-        0: FORM_
+        0: FORM_URL
+        1: USER_INPUT_NAME
+        2: PASS_INPUT_NAME
     """
 
     #if(detect_login_from_url(base_url)):
@@ -88,7 +97,7 @@ def detect_login(html, base_url):
         return None
 
     form_prop = ["", "", ""] # [form action url, user input name, password input name]
-
+    
     d = pq(html)
 
     # HTML Form (Standard HTML)
@@ -145,19 +154,18 @@ def detect_login(html, base_url):
     # HTML Forms (Bootstrap)
     for form in d('form'):
         wordset = tokenize_html(form)
-        """
-        for word in wordset:
-            word = word.lower()
-            if(user_input == False):
-                user_input = word in USER_KEYWORDS
-                if(user_input):
-                    form_prop[USER_INPUT_NAME] = .attrib['name']
-            if(pass_input == False):
-                pass_input = word in PASS_KEYWORDS
-                if(pass_input):
-                    form_prop[PASS_INPUT_NAME] = .attrib['name']
-        """
-
+       
+        # for word in wordset:
+        #     word = word.lower()
+        #     if(user_input == False):
+        #         user_input = word in USER_KEYWORDS
+        #         if(user_input):
+        #             form_prop[USER_INPUT_NAME] = .attrib['name']
+        #     if(pass_input == False):
+        #         pass_input = word in PASS_KEYWORDS
+        #         if(pass_input):
+        #             form_prop[PASS_INPUT_NAME] = .attrib['name']
+        
         e = pq(form)
         for button in e('button'):
             word = e(button).text().lower()

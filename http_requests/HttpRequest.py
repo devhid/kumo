@@ -361,7 +361,7 @@ class HttpRequest:
         body = http_response
 
         # HTTP body must begin after 2 consecutive newlines
-        newlines = "\r\n\r\n" if body.find("\n\n") == -1 else "\n\n"
+        newlines = "\r\n\r\n"
 
         # Not a valid HTTP response message
         if body.find(newlines) == -1:

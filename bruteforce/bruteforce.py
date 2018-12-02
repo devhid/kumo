@@ -65,11 +65,22 @@ def bruteforce(request, url, host, port, agent,
             if successful:
                 response = request.receive()
                 print(f'User: {user}, Pass: {_pass}')
-                # analyze response, if successful, make new Credential and add to success
-                # if verify_success_resp(response):
-                #     success.push(Credential(user, _pass))
-                #     return
+                if user == "bawofafefe@kulmeo.com" and _pass == "Test12345!":
+                    print('Should be successful')
+                
+                # See if the response contained any words that indicate the login was successful.
+                if verify_success_resp(response):
+                    success.append(Credential(user,_pass))
+                    continue
 
-                # Check if the page url is the same as before or not ?
+                # Check if the response was a redirect to a different page.
+                # print(response)
+                _tuple = HttpRequest.get_status_code(response)
+                if _tuple is not None:
+                    status_code, __ = _tuple
+                    if status_code[:1] == "3":
+                        success.append(Credential(user,_pass))
+                        continue
                 
             request.close()
+    return success
