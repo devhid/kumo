@@ -76,6 +76,7 @@ def bruteforce(request, url, host, port, agent,
                     
                     # See if the response contained any words that indicate the login was successful.
                     if verify_success_resp(tokenize_html(response)):
+                        print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
                         success.append(Credential(user,_pass))
                         too_many_req = False
                         continue
@@ -91,7 +92,7 @@ def bruteforce(request, url, host, port, agent,
                             too_many_req = False
                         # If we are redirected, assume login was successful.
                         if status_code[:1] == "3":
-                            if verify_success_resp(tokenize_html(response, True)): # We want to analyze the redirection url as well
+                            if verify_success_resp(tokenize_html(response, True)): # We want to analyze the redirection url
                                 success.append(Credential(user,_pass))
                                 print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
                                 continue

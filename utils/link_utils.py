@@ -22,6 +22,7 @@ def tokenize_html(html, include_all = False):
     wordset: set<string>
         Set containing all the words on the current page
     """
+    old_html = html
     if not include_all:
         start = html.find("<!doctype html>")
         if(start == -1):
@@ -29,7 +30,11 @@ def tokenize_html(html, include_all = False):
 
         html = html[start:]
 
-    d = pq(html)
+    try:
+        d = pq(html)
+    except:
+        # Page was invalid somehow
+        d = pq(old_html)
     d('svg').remove()
     d('script').remove()
     d('style').remove()
@@ -157,8 +162,8 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
-            form_prop[0] = form_url.path
-            form_prop[3] = form_url.path.replace('/', '')
+            form_prop[0] = form_url.path.replace('localhost', '')
+            form_prop[3] = form_prop[0].replace('/', '')
             break
 
     if(user_input and pass_input and login_submit):
@@ -190,8 +195,8 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
-            form_prop[0] = form_url.path
-            form_prop[3] = form_url.path.replace('/', '')
+            form_prop[0] = form_url.path.replace('localhost', '')
+            form_prop[3] = form_prop[0].replace('/', '')
             break
 
     if(user_input and pass_input and login_submit):
