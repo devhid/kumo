@@ -6,7 +6,6 @@ from http_requests.HttpRequest import HttpRequest
 from utils.link_utils import *
 from bruteforce.bruteforce import *
 
-
 if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "brute_force"
@@ -178,11 +177,10 @@ if __name__ == "__main__":
             login = detect_login(body,host+url)
             if login is not None:
                 form_url, user_key, pass_key = login
-                # print(f'form_url={form_url},user_id={user_key},pass_id={pass_key}')
 
                 words = tokenize_html(body)
-                if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-                    words = {"bawofafefe@kulmeo.com","Test12345!"}
+                # if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
+                #     words = {"bawofafefe@kulmeo.com","Test12345!"}
                 # print(words)
                 post_req = HttpRequest(host, port, "POST")
                 success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, words)

