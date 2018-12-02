@@ -1,6 +1,6 @@
 # kumo - the simple web brute-forcer
 
-### Mikey Gulati, Andy Liang, Stanley Lim, Johnny So
+### Mankirat Gulati, Andy Liang, Stanley Lim, Johnny So
 
 This project is an implementation of a **web crawler** and **form brute-forcer** that can "**autonomously navigate websites**, collecting and tokenizing all the words that it finds which it will later use as potential passwords on the website's login form". In addition, the crawler will "**autonomously identify the login page** and also detect whether a **combination of username and password was successful** or not".
 
@@ -25,6 +25,8 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 ## Prerequisites & Dependencies
 
 - :zap: [Click](https://click.palletsprojects.com/en/7.x/) - A python package for creating beautiful command line interfaces.
+- :globe_with_meridians: [TLDExtract](https://github.com/john-kurkowski/tldextract) - A url parsing library to easily extract domains and subdomains.
+- :moneybag: [PyQuery](https://pythonhosted.org/pyquery/) - A python equivalent of JQuery.
 
 
 
@@ -85,56 +87,69 @@ max_total = 100
 
 ### 1. Data Structures
 
-#### Domain Graph
+- ### Domain Graph
 
-A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. 
+  A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. 
 
-##### Vertices
+  #### Vertices
 
-Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
+  Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
 
-We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
+  We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
 
-- **Subdomains and Parent Domains**
+  - **Subdomains and Parent Domains**
 
-  Now what does it mean for domain `A` to be a **subdomain** of domain `B`, or for `A` to be a **parent domain** of `B`? It is best explained with an example. Let us say the user enters the starting domain to be `c.b.a.com`, and we find links to the following domains on the pages on `c.b.a.com`:
-  - `a.com`
-  - `b.a.com`
-  - `e.d.c.b.a.com`
-  - `f.e.d.c.b.a.com`
-  - `b.com`
+    Now what does it mean for domain `A` to be a **subdomain** of domain `B`, or for `A` to be a **parent domain** of `B`? It is best explained with an example. Let us say the user enters the starting domain to be `c.b.a.com`, and we find links to the following domains on the pages on `c.b.a.com`:
 
-  Then we define the following pairs `(d,p)` such that `p` is a **parent domain** of `d`:
+    - `a.com`
+    - `b.a.com`
+    - `e.d.c.b.a.com`
+    - `f.e.d.c.b.a.com`
+    - `b.com`
 
-  - `(c.b.a.com, a.com)`
-  - `(c.b.a.com, b.a.com)`
+    Then we define the following pairs `(d,p)` such that `p` is a **parent domain** of `d`:
 
-  We define the following pairs `(d,s)` such that `s` is a **subdomain** of `d`:
+    - `(c.b.a.com, a.com)`
+    - `(c.b.a.com, b.a.com)`
 
-  - `(c.b.a.com, e.d.c.b.a.com)`
-  - `(c.b.a.com, f.e.d.c.b.a.com)`
+    We define the following pairs `(d,s)` such that `s` is a **subdomain** of `d`:
 
-  One other term that may come in handy is a **direct subdomain** which we shall define as `(d,direct)` such that `direct` is a **direct subdomain** of `d`:
+    - `(c.b.a.com, e.d.c.b.a.com)`
+    - `(c.b.a.com, f.e.d.c.b.a.com)`
 
-  - `(a.com, b.a.com)`
-  - `(b.a.com, c.b.a.com)`
-  - `(e.d.c.b.a.com, f.e.d.c.b.a.com)`
+    One other term that may come in handy is a **direct subdomain** which we shall define as `(d,direct)` such that `direct` is a **direct subdomain** of `d`:
 
-  Hence, if `D = c.b.a.com`, then `F(D) = {a.com, b.a.com, e.d.c.b.a.com, f.e.d.c.b.a.com}`. Note that `b.com` is **not in** `F(D)`.
+    - `(a.com, b.a.com)`
+    - `(b.a.com, c.b.a.com)`
+    - `(e.d.c.b.a.com, f.e.d.c.b.a.com)`
 
-##### Edges
+    Hence, if `D = c.b.a.com`, then `F(D) = {a.com, b.a.com, e.d.c.b.a.com, f.e.d.c.b.a.com}`. Note that `b.com` is **not in** `F(D)`.
 
-An edge from vertex `A` to vertex `B` exists if and only if at least one of the following holds:
+  #### Edges
 
-+ there is a link on some webpage in domain `A` that goes to some webpage in domain `B`
+  An edge from vertex `A` to vertex `B` exists if and only if at least one of the following holds:
 
-+ vertex `B` is found from combining [this list of popular subdomains](https://github.com/rbsec/dnscan/blob/master/subdomains-100.txt) with the domain of `A`
+  - there is a link on some webpage in domain `A` that goes to some webpage in domain `B`
+
+  - vertex `B` is found from combining [this list of popular subdomains](https://github.com/rbsec/dnscan/blob/master/subdomains-100.txt) with the domain of `A`
 
 
-#### Tokenized Words
+- ### Page Graph
 
-Library.
+  #### Vertices
 
+  Vertices in the **page graph** correspond to pages within a certain domain `D`. To completely process a domain `D`, **kumo** must crawl all the pages it can find under domain `D` before it can move onto a different domain `D'`.
+
+  #### Edges
+
+    An edge from vertex `A` to vertex `B` exists if and only if:
+
+  - there is a link on webpage `A` to webpage `B`
+  - webpage `A` is our root domain page and `B` is one of the links in `robots.txt`
+
+- ### Tokenized Words
+
+  Words are tokenized from a html body via the `PyQuery` library and stored inside a regular, global `set()`. As the crawler continues to traverse other pages, the set of tokenized words is updated with more words that are found.
 
 
 ### 2. Feature Implementation
@@ -382,7 +397,6 @@ Library.
       ```
 
       **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
-
       **Returns**: `True` if the message was sent successfully, `False` otherwise
 
       **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
@@ -391,9 +405,7 @@ Library.
 
       Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
 
-      **Returns**: the HTTP body of the `POST` request as a string 
-
-      ​		(e.g. `key1=val1&key2=val2`)
+      **Returns**: the HTTP body of the `POST` request as a string (e.g. `key1=val1&key2=val2`)
 
       **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
 
@@ -419,30 +431,30 @@ Library.
 
       **Note**: the body begins after two consecutive newline characters in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, an empty string is returned.
 
-  ## Example Usage of `HttpRequest`
+      ## Example Usage of `HttpRequest`
 
-  An example usage of client code interacting with the `http_requests` module is shown below.
+      An example usage of client code interacting with the `http_requests` module is shown below.
 
-  ```python
-  # example usage of client code using HttpRequest to send a GET request
-  request = HttpRequest(url,port,method)
-  for i in range(num_req):
-      request.connect()
-      successful = request.send_get_request(self, url, host, agent)
-      if successful:
-          response = request.receive()
-          print(response)
-          tuple_ = HttpRequest.get_status_code(response)
-          if tuple_ is not None:
-              status_code, redirect_url = tuple_
-              print("status code %s" % (status_code))
-              if status_code[:1] == "3":
-                  if redirect_url is not None:
-                      print("redirect url %s" % (redirect_url))
-                  else:
-                      print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
-      request.close()
-  ```
+      ```python
+      # example usage of client code using HttpRequest to send a GET request
+      request = HttpRequest(url,port,method)
+      for i in range(num_req):
+          request.connect()
+          successful = request.send_get_request(self, url, host, agent)
+          if successful:
+              response = request.receive()
+              print(response)
+              tuple_ = HttpRequest.get_status_code(response)
+              if tuple_ is not None:
+                  status_code, redirect_url = tuple_
+                  print("status code %s" % (status_code))
+                  if status_code[:1] == "3":
+                      if redirect_url is not None:
+                          print("redirect url %s" % (redirect_url))
+                      else:
+                          print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
+          request.close()
+      ```
 
 - #### Tokenizing Words
 
@@ -452,7 +464,7 @@ Library.
 
     **Uses:** tokenize_html(html)
 
-    ****Note:** Text in the body from JavaScript code and SVGs are not considered as valid words
+    **Note:** Text in the body from JavaScript code and SVGs are not considered as valid words
 
 - #### Text Transformation
 
@@ -501,11 +513,11 @@ Library.
 
       Generates the leet-speak version of a given string by performing the following **case-insensitive** replacements:
 
-        * 'a' -> '4'
-        * 'e' -> '3'
-        * 'l' -> '1'
-        * 't' -> '7'
-        * 'o' -> '0'
+      - 'a' -> '4'
+      - 'e' -> '3'
+      - 'l' -> '1'
+      - 't' -> '7'
+      - 'o' -> '0'
 
       **Uses**: `_generate_leet(string)`
 
@@ -515,41 +527,40 @@ Library.
 - #### Link Retrieval
 
 
-  - `retrieve_links(html, base_url)`
+    - `retrieve_links(html, base_url)`
 
-    Retrieves all links in the webpage represented by the url.
+      Retrieves all links in the webpage represented by the url.
 
-    **Uses:** `retrieve_links(html, base_url)`
+      **Uses:** `retrieve_links(html, base_url)`
 
-    **Returns:** Returns a set of all urls in the html
+      **Returns:** Returns a set of all urls in the html
 
-    **Note:** All relative urls are converted to absolute urls based off the provided `base_url`
+      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`
 
 - #### Detecting Login Forms
 
 
   - **Detection Method** 
 
+    **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
 
-    - **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
+  - `detect_login(html, base_url)`
 
-    - `detect_login(html, base_url)`
+    Determine whether a login form is present in the webpage. If it is, identify its input names.
 
-      Determines whether a login form is present and identifies their input names
+    **Uses:** `detect_login(html, base_url)`
 
-      **Uses:** `detect_login(html, base_url)`
+    **Returns:** A namedtuple of the following form:
 
-      **Returns:** A namedtuple of the following form:
+    ```Python
+    namedtuple('Form', ['url', 'username', 'passname'])
+    ```
 
-      ```Python
-      namedtuple('Form', ['url', 'username', 'passname'])
-      ```
+    if a login form is found in the current webpage, `None` otherwise.
 
-      if a login form is found in the current webpage, `None` otherwise.
-
-      - `url`: The action url that the form submits to. If none is provided, the input `base_url` is used instead.
-      - `username`: The value of the name attribute in the username input tag. 
-      - `passname`: The value of the name attribute in the password input tag.
+    - `url`: The action url that the form submits to. If none is provided, the input `base_url` is used instead.
+    - `username`: The value of the name attribute in the username input tag. 
+    - `passname`: The value of the name attribute in the password input tag.
 
 - #### Bruteforcing
 
@@ -595,33 +606,84 @@ Refer to [Properties](#Properties) for an explanation of the main configurations
 This section of the report describes how to use **kumo** after it is [Setup](#Setup).
 
 
-# Testing
-The repository provides a small Flask powered application with a few forms to test the crawler. It should demonstrate **kumo's** ability to distinguish between different types of login and register forms along with being able to use tokenized words to break into forms.
-
-To get it setup, refer to `README.md` inside the `fake-website` directory.
 
 <h1 align=center>References</h1>
 
-# Overall Guides
+### Internet Standards
 
-# Feature Implementation
+- ### HTTP
 
-### HTTP Requests
+  - #### Headers and Message Format
 
-  + [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
-  + [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
-  + 
+    - [RFC 2616: HTTP](https://tools.ietf.org/html/rfc2616#section-4.2)
 
+- ### SMTP
+
+  - [Case-Insensitive Email Addresses StackOverflow Question](https://stackoverflow.com/questions/9807909/are-email-addresses-case-sensitive)
+    - References [RFC 5321: SMTP, Section 2.3-11](https://tools.ietf.org/html/rfc5321#section-2.3.11)
+
+### Programming Guidelines
+
+- ### Socket Programming
+
+    - [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
+    - [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
 
 
 <h1 align=center>Team Dynamics & Journey</h1>
 
 [Talk about initial splitting, meeting, brainstorming. Include design decisions.]
 
-[Talk about each person's implementation of each feature.]
+## Workflow
+
+The first topic we decided before we began our project was how to structure our workflow. We decided that we could all just choose a feature or component we wanted to work on, create a feature branch on Git, work on it, and merge on completion. Overall, this type of workflow worked very well for this type of project.
+
+## Brainstorming
+
+#### Command Line Interface vs. Web Application
+
+* We were first thinking about whether to control the crawler through a simple command line interface or through an online web application. We decided that we should just build a simple command line interface and build a web application version if we had extra time (we didn't).
+
+#### Domain Vertices vs. Pages Vertices
+
+* At first, we were stuck on how we wanted to design our graph. We had a choice between designating each page as a vertex or each domain as a vertex. Ultimately, we realized that we wanted both.
+
+#### Testing the Crawler
+
+* In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
+
+## Feature Contributions
+
+#### Stanley Lim
+
+* Worked on **text transformation**, created the **test websites**, and helped out with **bruteforcing**.
+
+#### Johnny So
+
+* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, and helped design **graph traversal strategies**.
+
+#### Mankirat Gulati
+
+* Started implementing **command line interface**, helped design the **graph data structures**, combined other components to implement the **main crawling logic**.
+
+#### Andy Liang
+
+* Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
 
 [Talk about tying it together.]
 
-[Talk about major blockers.]
+## Major Blockers
+
+#### Request Limits
+
+* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts.
+
+#### Testing Issues
+
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. 
+
+#### Graph Design and Traversal Strategies
+
+* Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
 [Talk about presentation planning.]
