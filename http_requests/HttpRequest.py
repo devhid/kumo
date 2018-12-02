@@ -355,8 +355,24 @@ class HttpRequest:
 
         Returns
         -------
-        body : string
-            HTML body of the HTTP response
+        body : string or None
+            HTML body of the HTTP response, or None if http_response is not valid
         """
+        body = http_response
+
+        # HTTP body must begin after 2 consecutive newlines
+        carriage_return = body.find("\r\n\r\n") != -1
+        if carriage_return:
+            index = body.find("\r\n\r\n") + 4
+        else:
+            index = body.find("\n\n")
+            if index == -1:
+                # Not a valid HTTP response
+                return None
+            index += 2
+        body = body[index:]
+        return body
+        
+            
 
 

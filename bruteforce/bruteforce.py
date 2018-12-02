@@ -66,9 +66,9 @@ def bruteforce(request, url, host, port, agent,
                 response = request.receive()
                 print(f'User: {user}, Pass: {_pass}')
                 # analyze response, if successful, make new Credential and add to success
-                if verify_success_resp(response):
-                    success.push(Credential(user, _pass))
-                    return
+                # if verify_success_resp(response):
+                #     success.push(Credential(user, _pass))
+                #     return
 
                 # Check if the page url is the same as before or not ?
                 

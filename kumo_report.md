@@ -388,50 +388,54 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
 
         The `GET` request is formatted as follows:
 
-        ```
-        GET [url] HTTP/1.1
-        Host: [host]
-        User-Agent: [agent]
-        Cache-Control: max-age=0
-        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-        Accept-Language: en-US,en;q=0.9
-        Accept-Encoding: gzip, deflate, br
-        Accept-Charset: utf-8
-        Connection: close
-        \\r\\n\\r\\n
-        ```
+      ```
+      GET [url] HTTP/1.1
+      Host: [host]
+      User-Agent: [agent]
+      Cache-Control: max-age=0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+      Accept-Language: en-US,en;q=0.9
+      Accept-Encoding: 
+      Accept-Charset: utf-8
+      Connection: close
+      \\r\\n\\r\\n
+      ```
 
         **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
         **Returns**: `True` if the message was sent successfully, `False` otherwise
 
-      - `send_post_request(self, url, host, agent, content_type, content_length, body)`
+      **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
+
+    - `send_post_request(self, url, host, agent, content_type, content_length, body)`
 
         Sends an HTTP `POST` request to the specified `socket` (`self.socket`).
 
         The `POST` request is formatted as follows:
 
-        ```
-         POST [url] HTTP/1.1
-         Host: [host]
-         User-Agent: [agent]
-         Content-Type: [content_type]
-         Content-Length: [content_length]
-         Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
-         Accept-Language: en-US,en;q=0.9,ja;q=0.8"
-         Accept-Encoding: gzip, deflate, br
-         Accept-Charset: utf-8
-         Connection: close
-         \\r\\n
-         [body]
-         \\r\\n\\r\\n
-        ```
+      ```
+       POST [url] HTTP/1.1
+       Host: [host]
+       User-Agent: [agent]
+       Content-Type: [content_type]
+       Content-Length: [content_length]
+       Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
+       Accept-Language: en-US,en;q=0.9,ja;q=0.8"
+       Accept-Encoding: 
+       Accept-Charset: utf-8
+       Connection: close
+       \\r\\n
+       [body]
+       \\r\\n\\r\\n
+      ```
 
         **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
         **Returns**: `True` if the message was sent successfully, `False` otherwise
 
-      - `generate_post_body(self, content_type, data)`
+      **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
+
+    - `generate_post_body(self, content_type, data)`
 
         Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
 
@@ -455,7 +459,15 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
 
           If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
 
-  ### Example Usage of `HttpRequest`
+    - `get_body(http_response)`
+
+      Gets the HTTP body from an HTTP response.
+
+      **Returns**: the HTML body of the response or `None` if the response was not valid
+
+      **Note**: the body begins after two consecutive newline characters in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, an empty string is returned.
+
+  ## Example Usage of `HttpRequest`
 
   An example usage of client code interacting with the `http_requests` module is shown below.
 
