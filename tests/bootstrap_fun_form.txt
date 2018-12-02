@@ -1,9 +1,36 @@
-{% extends "base.html" %}
-{% block title %}Fun Form - Mizio{% endblock %}
-{% block externalcss %}
-<link href="{{ url_for('static', filename='funform.css') }}" type="text/css" rel="stylesheet"/>
-{% endblock %}
-{% block body %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <meta charset="UTF-8">
+        <title>Fun Form - Mizio</title>
+
+        <link href="/static/cirrus.min.css" type="text/css" rel="stylesheet"/>
+        <link href="/static/app.css" type="text/css" rel="stylesheet"/>
+
+        <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
+
+        
+<link href="/static/funform.css" type="text/css" rel="stylesheet"/>
+
+
+        <script
+        src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>      
+        
+        
+    </head>
+
+    <body>
+        
 <div class="hero fullscreen">
     <div class="hero-body">
         <div class="content">
@@ -18,7 +45,7 @@
                                     <div class="form-section">
                                         <label>Email</label>
                                         <div class="input-control">
-                                            {{ form_login.email(class="input-contains-icon", placeholder="Email") }}
+                                            <input class="input-contains-icon" id="email" name="email" placeholder="Email" type="text" value="">
                                             <span class="icon">
                                                 <i class="far fa-wrapper fa-envelope-open small"></i>
                                             </span>
@@ -27,7 +54,7 @@
                                     <div class="form-section">
                                         <label>Password</label>
                                         <div class="input-control">
-                                            {{ form_login.password(class="input-contains-icon", placeholder="Password") }}
+                                            <input class="input-contains-icon" id="password" name="password" placeholder="Password" type="password" value="">
                                             <span class="icon">
                                                 <i class="fas fa-wrapper fa-key small"></i>
                                             </span>
@@ -35,7 +62,7 @@
                                     </div>
                                     <space></space>
                                     <button class="btn-info u-pull-right" name="btn" value="login" type="submit">Log In</button>
-                                    <span class="fg-danger info">{{ error }}</span>
+                                    <span class="fg-danger info"></span>
                                     <p class="info">No account? <a class="u u-LR" href="/register">Register</a> today!</p>
                                     <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
                                 </div>
@@ -48,7 +75,7 @@
                                     <div class="form-section">
                                         <label>Name</label>
                                         <div class="input-control">
-                                            {{ form_register.name(class="input-contains-icon", placeholder="Name") }}
+                                            <input class="input-contains-icon" id="name" name="name" placeholder="Name" type="text" value="">
                                             <span class="icon">
                                                 <i class="far fa-wrapper fa-user-circle small"></i>
                                             </span>
@@ -56,18 +83,18 @@
                                     </div>
                                     <div class="form-section">
                                         <p>Gender</p>
-                                        {{ form_register.gender }}
+                                        <ul id="gender"><li><input id="gender-0" name="gender" type="radio" value="male"> <label for="gender-0">Male</label></li><li><input id="gender-1" name="gender" type="radio" value="female"> <label for="gender-1">Female</label></li><li><input id="gender-2" name="gender" type="radio" value="other"> <label for="gender-2">Other</label></li></ul>
                                     </div>
                                     <div class="form-section">
                                         <div class="input-control">
-                                            {{ form_register.email(class="input-contains-icon", placeholder="Email", id="register-email") }}
+                                            <input class="input-contains-icon" id="register-email" name="email" placeholder="Email" type="text" value="">
                                             <span class="icon">
                                                 <i class="far fa-wrapper fa-envelope-open small"></i>
                                         </div>
                                     </div>
                                     <div class="form-section">
                                         <div class="input-control">
-                                            {{ form_register.password(class="input-contains-icon", placeholder="Password", id="register-password") }}
+                                            <input class="input-contains-icon" id="register-password" name="password" placeholder="Password" type="password" value="">
                                             <span class="icon">
                                                 <i class="fas fa-wrapper fa-key small"></i>
                                         </div>
@@ -75,14 +102,14 @@
                                     <div class="row u-no-padding fluid-container">
                                         <div class="col-fluid">
                                                 <div class="input-control">
-                                                    {{ form_register.city(class="input-contains-icon", placeholder="City") }}
+                                                    <input class="input-contains-icon" id="city" name="city" placeholder="City" type="text" value="">
                                                     <span class="icon">
                                                         <i class="fas fa-wrapper fa-map-marker-alt small"></i>
                                                 </div>
                                         </div>
                                         <div class="col-fluid">
                                                 <div class="input-control">
-                                                    {{ form_register.country(class="input-contains-icon", placeholder="Country") }}
+                                                    <input class="input-contains-icon" id="country" name="country" placeholder="Country" type="text" value="">
                                                     <span class="icon">
                                                         <i class="fas fa-wrapper fa-globe-americas small"></i>
                                                 </div>
@@ -90,11 +117,11 @@
                                     </div>
                                     <div class="form-section">
                                             <div class="input-control">
-                                                {{ form_register.subscription }}
+                                                <select id="subscription" name="subscription"><option value="Free">Free</option><option value="Plus">Plus</option><option value="Premium">Premium</option></select>
                                             </div>
                                     </div>
                                     <button class="btn-info u-pull-right" name="btn" value="register" type="submit">Sign Up</button>
-                                    <span class="fg-danger info">{{ error }}</span>
+                                    <span class="fg-danger info"></span>
                                     <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
                                 </div>
                             </form>
@@ -106,4 +133,6 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
+    </body>
+</html>

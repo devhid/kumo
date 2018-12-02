@@ -17,6 +17,6 @@ HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
 
 # Sets of keywords for login page detection
 USER_KEYWORDS = set(["log in", "login", "log", "user", "username", "user_login", "user login", "user_id", "user id", "email"])
-PASS_KEYWORDS = set(["passwd", "pass", "password"])
+PASS_KEYWORDS = set(["pwd", "passwd", "pass", "password"])
 LOGIN_KEYWORDS = set(["log in", "login", "signin", "sign in"])
 REGISTER_KEYWORDS = set(["register", "signup", "sign up"])

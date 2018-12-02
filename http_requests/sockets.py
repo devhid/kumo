@@ -1,6 +1,7 @@
 # Python Imports
 import socket
 import sys
+import platform
 
 # Connection Functions
 
@@ -36,7 +37,8 @@ def close(mysocket):
         the socket describing a connection, created by connect(url,port)
     """
     if mysocket is not None:
-        # mysocket.shutdown(socket.SHUT_RDWR)
+        if platform.system != "Darwin":
+            mysocket.shutdown(socket.SHUT_RDWR)
         mysocket.close()
 
 # Sending and Receiving Functions
