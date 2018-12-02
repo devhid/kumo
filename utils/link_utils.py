@@ -33,10 +33,6 @@ def tokenize_html(html):
     wordset = set()
 
     sentences = d('body').text()
-<<<<<<< HEAD
-    # print(sentences)
-=======
->>>>>>> 20c8d562483f705ec3a77e18174bd75e28c152d8
 
     for word in sentences.split():
         wordset.add(word)
