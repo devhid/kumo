@@ -494,9 +494,16 @@ max_total = 100
 
 - #### Tokenizing Words
 
-  - 
+  - `tokenize_html(html)`
+
+    Retrieves all the words in the body section of a webpage's html document.
+
+    **Uses:** tokenize_html(html)
+
+    **Note:** Text in the body from JavaScript code and SVGs are not considered as valid words
 
 - #### Text Transformation
+
   * **Transformation**
     The text transformation in **kumo** is included to encode or transform passwords in several different ways to simulate how some users would modify their passwords. The different transformations supported by **kumo**:
       * `lower` - converts given string to lowercase.
@@ -530,6 +537,12 @@ max_total = 100
 
     - `generate_transformations(strings)`
 
+      Function designed to generate all the different transformations as listed above for the given list of strings, `strings`.
+
+      **Uses**: `generate_transformations(strings)`
+
+      **Returns**: A map where the word is the key and the transformation object as the value.
+
   - **Private**
 
     - `_generate_leet(string)`
@@ -547,13 +560,42 @@ max_total = 100
       **Returns**: Returns the leet-speak version of the string.
 
 
-- #### Detecting Login Form
-
-  **Uses**: `generate_transformations(strings)`
-
-  **Returns**: A map where the word is the key and the transformation object as the value.
+- #### Link Retrieval
 
 
+  - `retrieve_links(html, base_url)`
+
+    Retrieves all links in the webpage represented by the url.
+
+    **Uses:** `retrieve_links(html, base_url)`
+
+    **Returns:** Returns a set of all urls in the html
+
+    **Note:** All relative urls are converted to absolute urls based off the provided `base_url`
+
+- #### Detecting Login Forms
+
+    - `detect_login(html, base_url)`
+
+      Determine whether a login form is present in the webpage. If it is, identify its input names.
+
+      **Uses:** `detect_login(html, base_url)`
+
+      **Returns:** A namedtuple of the following form:
+
+      ```Python
+      namedtuple('Form', ['url', 'username', 'passname'])
+      ```
+
+      if a login form is found in the current webpage, `None` otherwise.
+
+      - `url`: The action url that the form submits to. If none is provided, the input `base_url` is used instead.
+      - `username`: The value of the name attribute in the username input tag. 
+      - `passname`: The value of the name attribute in the password input tag.
+
+  - **Detection Method** 
+
+    **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
 
 - #### Brute-forcing
 
