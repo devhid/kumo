@@ -9,11 +9,7 @@ from utils.constants import *
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-<<<<<<< HEAD
-    test = "http_requests"
-=======
     test = "test_link_utils"
->>>>>>> cdf34369f233bf8a1dff3d47ab6fc4cde1664a7f
     if test == "http_requests":
         host = "httpbin.org"
         port = 80
