@@ -407,6 +407,14 @@ Library.
 
         If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
 
+    - `get_body(http_response)`
+
+      Gets the HTTP body from an HTTP response.
+
+      **Returns**: the HTML body of the response or `None` if the response was not valid
+
+      **Note**: the body begins after two consecutive newline characters in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, an empty string is returned.
+
   ## Example Usage of `HttpRequest`
 
   An example usage of client code interacting with the `http_requests` module is shown below.

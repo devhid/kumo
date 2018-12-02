@@ -6,9 +6,9 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "http_requests"
     if test == "http_requests":
-        host = "facebook.com"
+        host = "httpbin.org"
         port = 80
-        url = "/"
+        url = "/get"
         ua = "chrome"
         num_get_req = 1
 
@@ -21,6 +21,8 @@ if __name__ == "__main__":
             if sent_get:
                 response = request.receive()
                 print(response)
+                body = request.get_body(response)
+                print(body)
                 tuple_ = HttpRequest.get_status_code(response)
                 status_code = tuple_[0] if tuple_ is not None else None
                 redirect_url = tuple_[1] if tuple_ is not None else None
