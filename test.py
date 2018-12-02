@@ -3,11 +3,13 @@ from tests.test_tokenize import *
 from configs import configs
 from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
+from funcs.crawler import Crawler
+from utils.constants import *
 
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "http_local"
+    test = "http_requests"
     if test == "http_requests":
         host = "facebook.com"
         port = 80

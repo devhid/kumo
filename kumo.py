@@ -2,6 +2,7 @@ import click
 import os
 
 from utils.constants import *
+from funcs.crawler import Crawler
 
 # Some random defaults for configuration options.
 default_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
@@ -23,7 +24,6 @@ def main():
 @click.argument('url', type=click.STRING, metavar='<url>', required=True)
 def crawl(a, m, depth, pages, url):
     print(url)
-    pass
 
 # Sub-command that displays information about the project.
 @main.command(name='info')

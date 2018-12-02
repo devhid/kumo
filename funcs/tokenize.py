@@ -1,4 +1,5 @@
 from pyquery import PyQuery as pq
+import tldextract
 from urllib.parse import urlparse
 from urllib.parse import urljoin
 from utils.constants import USER_KEYWORDS
@@ -6,7 +7,6 @@ from utils.constants import PASS_KEYWORDS
 from utils.constants import LOGIN_KEYWORDS
 from utils.constants import REGISTER_KEYWORDS
 import re
-
 
 def tokenize_html(html):
     """Return all tokenized strings from an html document passed as a string
@@ -52,10 +52,11 @@ def retrieve_links(html, base_url):
     d.make_links_absolute(base_url)
     wordset = set()
     for link in d('a'):
-        url = link.attrib['href']
-        if(url[len(url) - 1] == "/"):
-            url = url[0:len(url) - 1]
-        wordset.add(url)
+        if 'href' in link.attrib:
+            url = link.attrib['href']
+            if(url[len(url) - 1] == "/"):
+                url = url[0:len(url) - 1]
+            wordset.add(url)
     return wordset
 
 def detect_login(html, base_url):
@@ -181,3 +182,23 @@ def detect_login_from_url(base_url):
             return True
 
     return False
+
+def in_domain(domain, url):
+    """Determine whether a url resides within the provided domain
+
+    Parameters
+    ---
+    domain: string
+        Domain or subdomain of a webpage
+    url: string
+        Url of the webpage to be checked
+
+    Returns
+    ---
+    login: boolean
+        Return whether the url's root domain is equivalent to the provided domain
+    """
+
+    dom_ext = tldextract.extract(domain)
+    url_ext = tldextract.extract(url)
+    return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
