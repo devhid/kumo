@@ -1,11 +1,9 @@
 import configparser
 import os.path
 
-config_file = 'configs.ini'
-config_section = 'BFS'
-required_vals = ['user_agent','traversal','max_depth','max_total']
+from utils.constants import CFG_FILE, CFG_DEF, CFG_VALS
 
-def load_config_section(config_file,config_section,required_vals):
+def load_config_section(config_file=CFG_FILE,config_section=CFG_DEF,required_vals=CFG_VALS):
     """ Loads in the specified configuration section.
 
     Parameters
@@ -33,4 +31,4 @@ def load_config_section(config_file,config_section,required_vals):
             return None
     return config[config_section]
 
-config = load_config_section(config_file,config_section,required_vals)
+DEFAULT_CONFIGS = load_config_section(CFG_FILE,CFG_DEF,CFG_VALS)

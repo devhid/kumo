@@ -171,7 +171,6 @@ def detect_login(html, base_url):
         #         pass_input = word in PASS_KEYWORDS
         #         if(pass_input):
         #             form_prop[PASS_INPUT_NAME] = .attrib['name']
-
         e = pq(form)
         for button in e('button'):
             word = e(button).text().lower()
@@ -266,5 +265,28 @@ def dom_family(dom_one, dom_two):
     done = '.'.join(done_ext[:])
     dtwo = '.'.join(dtwo_ext[:])
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
+
+def verify_success_resp(html):
+    """Determines if the user successfully logged in based on keywords
+    Parameters
+    ---
+    html: string
+        String represention of a page's html document
+    Returns
+    ---
+    success : boolean
+        Whether the login request was successful
+    """
+    if len(html) == 0:
+        return False
+    d = pq(html)
+    
+    sentences = d.text()[30:]
+
+    for word in sentences.split():
+        if word.lower() in SUCCESS_KEYWORDS:
+            return True
+    
+    return False
     
 
