@@ -25,6 +25,3 @@ USER_KEYWORDS = set(["log in", "login", "log", "user", "username", "user_login",
 PASS_KEYWORDS = set(["pwd", "passwd", "pass", "password"])
 LOGIN_KEYWORDS = set(["log in", "login", "signin", "sign in"])
 REGISTER_KEYWORDS = set(["register", "signup", "sign up"])
-FORM_URL = 0
-USER_INPUT_NAME = 1
-PASS_INPUT_NAME = 2

@@ -1,10 +1,12 @@
 import unittest
 from utils.link_utils import *
+from utils.namedtuples import Form
 
 class LinkUtilsTest(unittest.TestCase):
 
     def test_one_layer(self):
-        tokenize_one_layer = tokenize_html('<html><head><title>Title</title></head><body><p>TestP TestP</p><h1>TestH1 TestH1</h1><span>TestSpan TestSpan</span><svg></svg></body></html>')
+        tokenize_one_layer = tokenize_html('0000<html><head><title>Title</title></head><body><p>TestP TestP</p><h1>TestH1 TestH1</h1><span>TestSpan TestSpan</span><svg></svg></body></html>')
+        print(tokenize_one_layer)
         assert tokenize_one_layer == set(['TestP', 'TestP', 'TestH1', 'TestH1', 'TestSpan', 'TestSpan'])
 
     def test_multiple_layers(self):
@@ -28,30 +30,32 @@ class LinkUtilsTest(unittest.TestCase):
         assert links == set(['https://github.com', 'https://github.com/devhid', 'https://github.com/devhid/kumo'])
 
     def test_login_detection(self):
-        #login_detected = detect_login("", "http://kumo.x10host.com/login/")
-        #assert login_detected == True
+        #form_info = detect_login("", "http://kumo.x10host.com/login/")
+        #assert form_info == True
 
         with open('./tests/login_test.txt', 'r') as login_file:
             login_html = login_file.read().replace('\n', '')
-        login_detected = detect_login(login_html, "http://kumo.x10host.com")
-        assert login_detected == ["http://kumo.x10host.com/login/", "user_login", "user_pass"]
+        #print(tokenize_html(login_html))
+        form_info = detect_login(login_html, "http://kumo.x10host.com/login/")
+        print(form_info)
+        assert form_info == Form(url='/login/', userid='user_login', passid='user_pass')
 
         with open('./tests/register_test.txt', 'r') as register_file:
             register_html = register_file.read().replace('\n', '')
-        login_detected = detect_login(register_html, "http://kumo.x10host.com")
-        assert login_detected == None
+        form_info = detect_login(register_html, "http://kumo.x10host.com/register/")
+        assert form_info == None
 
         with open('./tests/bootstrap_login_test.txt', 'r') as login_file:
             login_html = login_file.read().replace('\n', '')
-        login_detected = detect_login(login_html, "http://base_url.com")
-        assert login_detected == ["http://base_url.com", "email", "password"]
+        form_info = detect_login(login_html, "http://base_url.com")
+        assert form_info == Form(url='', userid='email', passid='password')
 
         with open('./tests/bootstrap_register_test.txt', 'r') as register_file:
             register_html = register_file.read().replace('\n', '')
-        login_detected = detect_login(register_html, "http://kumo.x10host.com")
-        assert login_detected == None
+        form_info = detect_login(register_html, "http://kumo.x10host.com")
+        assert form_info == None
 
         with open('./tests/bootstrap_fun_form.txt', 'r') as fun_file:
             fun_html = fun_file.read().replace('\n', '')
-        login_detected = detect_login(fun_html, "http://base_url.com")
-        assert login_detected == ["http://base_url.com", "email", "password"]
+        form_info = detect_login(fun_html, "http://base_url.com")
+        assert form_info == Form(url='', userid='email', passid='password')
