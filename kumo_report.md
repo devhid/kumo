@@ -482,7 +482,62 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
 
 - ## Tokenizing Words
 
-- ## Text Transformation
+- #### Text Transformation
+  * **Transformation**
+    The text transformation in **kumo** is included to encode or transform passwords in several different ways to simulate how some users would modify their passwords. The different transformations supported by **kumo**:
+      * `lower` - converts given string to lowercase.
+      * `upper` - converts given string to uppercase.
+      * `reverse` - reverses given string.
+      * `leet` - changes string with following changes:
+        * 'a' -> '4'
+        * 'e' -> '3'
+        * 'l' -> '1'
+        * 't' -> '7'
+        * 'o' -> '0'
+
+  ## transform.py
+  `transform.py` is a module designed to store all the different versions of the strings as outlined above.
+
+  - **Constructor**
+    - `__init__(self, lower, upper, reverse, leet)`
+        The constructor takes in the `lower`, `upper`, `reverse`, and `leet` version of a given string.
+
+    - `__repr__(self)`
+      Returns a string representation with all instance variables.
+
+  - **Instance Variables**
+  
+    - `lower` - the lowercased version of the given word.
+    - `upper` - the uppercased version of the given word.
+    - `reverse` - the reversed version of the given word.
+    - `leet` - the leet code version of a given word.
+
+  - **Public**
+  
+    - `generate_transformations(strings)`
+
+      Function designed to generate all the different transformations as listed above for the given list of strings, `strings`.
+
+      **Uses**: `generate_transformations(strings)`
+
+      **Returns**: A map where the word is the key and the transformation object as the value.
+
+  - **Private**
+  
+    - `_generate_leet(string)`
+
+      Generates the leet-speak version of a given string by performing the following **case-insensitive** replacements:
+
+        * 'a' -> '4'
+        * 'e' -> '3'
+        * 'l' -> '1'
+        * 't' -> '7'
+        * 'o' -> '0'
+
+      **Uses**: `_generate_leet(string)`
+
+      **Returns**: Returns the leet-speak version of the string.
+
 
 - ## Detecting Login Forms
 
@@ -529,6 +584,10 @@ Refer to [Properties](#Properties) for an explanation of the main configurations
 This section of the report describes how to use **kumo** after it is [Setup](#Setup).
 
 
+# Testing
+The repository provides a small Flask powered application with a few forms to test the crawler. It should demonstrate **kumo's** ability to distinguish between different types of login and register forms along with being able to use tokenized words to break into forms.
+
+To get it setup, refer to `README.md` inside the `fake-website` directory.
 
 <h1 align=center>References</h1>
 

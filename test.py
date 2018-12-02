@@ -13,9 +13,9 @@ if __name__ == "__main__":
     if test == "http_requests":
         host = "facebook.com"
         port = 80
-        url = "/safetycheck/"
-        ua = "googlebot"
-        num_get_req = 10
+        url = "/"
+        ua = "chrome"
+        num_get_req = 1
 
         # Test GET requests
         request = HttpRequest(host,port,"GET")
@@ -60,6 +60,95 @@ if __name__ == "__main__":
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
             request.close()
+    
+    elif test == "http_local":
+        host = "localhost"
+        port = 5000
+        url = "/"
+        ua = "chrome"
+
+        # Test GET
+        request = HttpRequest(host, port, "GET")
+        request.connect()
+        sent_get = request.send_get_request(url, host, ua)
+        if sent_get:
+            response = request.receive()
+            print(response)
+        request.close()
+
+        print("---------------")
+
+        # Test POST login success
+        request = HttpRequest(host, port, "POST")
+        url = "/login"
+        receive = True
+        data = {"email":"admin@mizio.io", "password":"admin"}
+        content_type = "application/x-www-form-urlencoded"
+        body = request.generate_post_body(content_type,data)
+        content_length = len(body)
+
+        if body is not None:
+            request.connect()
+            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if sent_get and receive:
+                response = request.receive()
+                print(response)
+            request.close()
+
+        print("---------------")
+
+        # Test POST login fail
+        request = HttpRequest(host, port, "POST")
+        url = "/login"
+        receive = True
+        content_type = "application/x-www-form-urlencoded"
+        data = {"email":"bademail@email.com", "password":"wrongpass"}
+        body = request.generate_post_body(content_type,data)
+        content_length = len(body)
+        if body is not None:
+            request.connect()
+            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if sent_get and receive:
+                response = request.receive()
+                print(response)
+            request.close()
+
+        print("---------------")
+
+        # Test POST funform fail
+        url = "/login"
+        receive = True
+        content_type = "application/x-www-form-urlencoded"
+        data = {"email":"admin@mizio.net", "password":"admin"}
+        request = HttpRequest(host, port, "POST")
+        body = request.generate_post_body(content_type,data)
+        content_length = len(body)
+        if body is not None:
+            request.connect()
+            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if sent_get and receive:
+                response = request.receive()
+                print(response)
+            request.close()
+
+        print("---------------")
+
+        # Test POST funform fail
+        url = "/funform"
+        receive = True
+        content_type = "application/x-www-form-urlencoded"
+        data = {"email":"admin", "password":"wrongpass", "btn":"login"}
+        request = HttpRequest(host, port, "POST")
+        body = request.generate_post_body(content_type,data)
+        content_length = len(body)
+        if body is not None:
+            request.connect()
+            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if sent_get and receive:
+                response = request.receive()
+                print(response)
+            request.close()
+
     elif test == "brute_force":
         host = "localhost"
         port = 5000
@@ -85,7 +174,12 @@ if __name__ == "__main__":
 
             # Send info for bruteforce
         request.close()
-        
+
+    elif test == "configs":
+        config = configs.config
+        for val in config:
+            print("%s : %s" % (val,config[val]))
+            request.close()
     elif test == "test_transform":
         test_transform = TransformTest()
         test_transform.test_upper()

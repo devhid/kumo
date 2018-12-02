@@ -29,7 +29,7 @@ def tokenize_html(html):
 
     wordset = set()
 
-    sentences = d.text()
+    sentences = d.text()[30:]
 
     for word in sentences.split():
         wordset.add(word)
@@ -305,8 +305,7 @@ def verify_success_resp(html):
     """
     d = pq(html)
     
-    sentences = d.text()
-    print(sentences)
+    sentences = d.text()[30:]
 
     for word in sentences.split():
         if word.lower() in SUCCESS_KEYWORDS:

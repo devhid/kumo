@@ -39,7 +39,9 @@ def funform():
 
     # Split between two form types
     if request.method == 'POST':
-        print(request.form['btn'])
+        if not 'btn' in request.form.keys():
+            return render_template('fun-form.html', form_login = StandardLogin(), form_register = Register())
+
         if request.form['btn'] == 'login':
             return login_helper(form_login)
 

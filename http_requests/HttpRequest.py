@@ -179,7 +179,7 @@ class HttpRequest:
             Cache-Control: max-age=0
             Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
             Accept-Language: en-US,en;q=0.9
-            Accept-Encoding: gzip, deflate, br
+            Accept-Encoding: 
             Accept-Charset: utf-8
             Connection: close
             \\r\\n\\r\\n
@@ -209,7 +209,7 @@ class HttpRequest:
                             cache_control="max-age=0",
                             accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
                             accept_lang="en-US,en;q=0.9,ja;q=0.8",
-                            accept_encoding="gzip, deflate, br",
+                            accept_encoding="",
                             accept_charset="utf-8",
                             connection="close",
                             body=None)
@@ -226,7 +226,7 @@ class HttpRequest:
             Content-Length: [content_length]
             Accept: application/json;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
             Accept-Language: en-US,en;q=0.9,ja;q=0.8"
-            Accept-Encoding: gzip, deflate, br
+            Accept-Encoding: 
             Accept-Charset: utf-8
             Connection: close
             \\r\\n
@@ -262,9 +262,9 @@ class HttpRequest:
                             content_type=content_type,
                             content_length=content_length,
                             cache_control=None,
-                            accept="appplication/json;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                            accept="application/json;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
                             accept_lang="en-US,en;q=0.9,ja;q=0.8",
-                            accept_encoding="gzip, deflate, br",
+                            accept_encoding="",
                             accept_charset="utf-8",
                             connection="close",
                             body=body)
@@ -305,7 +305,7 @@ class HttpRequest:
 
     @staticmethod
     def get_status_code(http_response):
-        """ Gets the HTTP status code from an HTTP response.
+        """ Gets the HTTP status code from an HTTP response. 
             Does basic validity checking on http_response.
 
         Parameters
@@ -343,4 +343,20 @@ class HttpRequest:
                 if len(words) > 0 and words[0] == "Location:":
                     interesting_info = words[1]
         return (status_code,interesting_info)
+
+    @staticmethod
+    def get_body(http_response):
+        """ Gets the body from an HTTP response.
+
+        Parameters
+        ----------
+        http_response : string
+            string representing an HTTP response
+
+        Returns
+        -------
+        body : string
+            HTML body of the HTTP response
+        """
+
 
