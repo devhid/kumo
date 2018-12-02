@@ -6,6 +6,9 @@ setup(
     py_modules=['kumo'],
     install_requires=[
         'Click',
+        'PyQuery',
+        'urllib3',
+        'tldextract'
     ],
     entry_points='''
         [console_scripts]

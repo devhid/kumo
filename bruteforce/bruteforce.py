@@ -5,10 +5,11 @@ from collections import namedtuple
 from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
 from utils.constants import SUCCESS_KEYWORDS
 
-Credential = namedtuple('Credential', ['user', 'pass'])
+from utils.link_utils import verify_success_resp
 
-def bruteforce(request, url, host, agent, 
-                content_type, content_length, 
+Credential = namedtuple('Credential', ["user", "password"])
+
+def bruteforce(request, url, host, port, agent, 
                 user_key, pass_key, words):
     """ Bruteforces every combination of username and password for a specific form.
 
@@ -20,6 +21,8 @@ def bruteforce(request, url, host, agent,
         url to which the HTTP POST request will send
     host : string
         HTTP Host header
+    port : int
+        port of the connection
     agent : string
         HTTP User-Agent header
     content_type : string
@@ -54,17 +57,19 @@ def bruteforce(request, url, host, agent,
     for user in all_words:
         for _pass in all_words:
             request.connect()
-            data = {user_key: user, pass_key:_pass}
+            data = {user_key: user, pass_key: _pass}
             body = request.generate_post_body(content_type,data)
             content_length = len(body)
             successful = request.send_post_request(url, host, agent, content_type, content_length, body)
+
             if successful:
                 response = request.receive()
-                print(response)
+                print(f'User: {user}, Pass: {_pass}')
                 # analyze response, if successful, make new Credential and add to success
-                success.push(Credential(user, _pass))
+                if verify_success_resp(response):
+                    success.push(Credential(user, _pass))
+                    return
 
-                # Check if the page url is the same as before or not
-                # TODO:
-
+                # Check if the page url is the same as before or not ?
+                
             request.close()

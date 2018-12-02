@@ -1,7 +1,11 @@
 from tests.test_transform import *
+from tests.test_link_utils import *
 from configs import configs
 from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
+from utils.link_utils import *
+from bruteforce.bruteforce import *
+
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
@@ -68,11 +72,32 @@ if __name__ == "__main__":
         if sent_get:
             response = request.receive()
             print(response)
-        request.close()
 
+            # Detect if login form is present and get the login fields
+            login_detected, user_key, pass_key, login_key = fetch_login_fields(response, "")
+            print(f'Resp=[{login_detected}, {user_key}, {pass_key}, {login_key}]')
+
+            if login_detected:
+                words = tokenize_html(response) # Get list of words
+                print(words)
+                request = HttpRequest(host, port, "POST")
+                bruteforce(request, url, host, port, ua, user_key, pass_key, words)
+
+            # Send info for bruteforce
+        request.close()
+        
     elif test == "test_transform":
         test_transform = TransformTest()
         test_transform.test_upper()
         test_transform.test_lower()
         test_transform.test_reverse()
         test_transform.test_leet()
+    elif test == "test_link_utils":
+        test_link_utils = LinkUtilsTest()
+        test_link_utils.test_one_layer()
+        test_link_utils.test_multiple_layers()
+        test_link_utils.test_link_layer()
+        test_link_utils.test_link_retrieval()
+        test_link_utils.test_link_retrieval_layers()
+        test_link_utils.test_link_retrieval_relative()
+        test_link_utils.test_login_detection()

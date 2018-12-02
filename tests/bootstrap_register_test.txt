@@ -64,7 +64,7 @@
                                             {{ form.subscription }}
                                         </div>
                                 </div>
-                                <button class="btn-info u-pull-right" name="register" type="submit">Sign Up</button>
+                                <button class="btn-info u-pull-right" type="submit">Sign Up</button>
                                 <span class="fg-danger info">{{ error }}</span>
                                 <span class="info">If there are any issues, please email our admin at admin@mizio.io.</span>
                             </div>

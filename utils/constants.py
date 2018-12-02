@@ -19,3 +19,9 @@ HTTP_CONTENTTYPE_MULTIFORMDATA = "multipart/form-data"
 
 # Sets of words for login success detection
 SUCCESS_KEYWORDS = set(["success", "logged in", "authenticated"]) # TODO: Might need to try to expand this list
+
+# Sets of keywords for login page detection
+USER_KEYWORDS = set(["log in", "login", "log", "user", "username", "user_login", "user login", "user_id", "user id", "email"])
+PASS_KEYWORDS = set(["passwd", "pass", "password"])
+LOGIN_KEYWORDS = set(["log in", "login", "signin", "sign in"])
+REGISTER_KEYWORDS = set(["register", "signup", "sign up"])
