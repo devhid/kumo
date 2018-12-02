@@ -1,6 +1,6 @@
 # kumo - the simple web brute-forcer
 
-### Mikey Gulati, Andy Liang, Stanley Lim, Johnny So
+### Mankirat Gulati, Andy Liang, Stanley Lim, Johnny So
 
 This project is an implementation of a **web crawler** and **form brute-forcer** that can "**autonomously navigate websites**, collecting and tokenizing all the words that it finds which it will later use as potential passwords on the website's login form". In addition, the crawler will "**autonomously identify the login page** and also detect whether a **combination of username and password was successful** or not".
 
@@ -25,6 +25,8 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 ## Prerequisites & Dependencies
 
 - :zap: [Click](https://click.palletsprojects.com/en/7.x/) - A python package for creating beautiful command line interfaces.
+- :globe_with_meridians: [TLDExtract](https://github.com/john-kurkowski/tldextract) - A url parsing library to easily extract domains and subdomains.
+- :moneybag: [PyQuery](https://pythonhosted.org/pyquery/) - A python equivalent of JQuery.
 
 
 
@@ -141,10 +143,11 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
   An edge from vertex `A` to vertex `B` exists if and only if:
 
   - there is a link on webpage `A` to webpage `B`
+  - webpage `A` is our root domain page and `B` is one of the links in `robots.txt`
 
 - ### Tokenized Words
 
-  Library.
+  Words are tokenized from a html body via the `PyQuery` library and stored inside a regular, global `set()`. As the crawler continues to traverse other pages, the set of tokenized words is updated with more words that are found.
 
 
 
@@ -430,7 +433,7 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
       ```
 
         **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
-
+    
         **Returns**: `True` if the message was sent successfully, `False` otherwise
 
       **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
@@ -613,19 +616,64 @@ To get it setup, refer to `README.md` inside the `fake-website` directory.
 ### HTTP Requests
 
   + [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
-  + [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
-  + 
 
+  + [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
 
 
 <h1 align=center>Team Dynamics & Journey</h1>
 
 [Talk about initial splitting, meeting, brainstorming. Include design decisions.]
 
-[Talk about each person's implementation of each feature.]
+##Workflow
+
+The first topic we decided before we began our project was how to structure our workflow. We decided that we could all just choose a feature or component we wanted to work on, create a feature branch on Git, work on it, and merge on completion. Overall, this type of workflow worked very well for this type of project.
+
+##Brainstorming
+
+####Command Line Interface vs. Web Application
+
+* We were first thinking about whether to control the crawler through a simple command line interface or through an online web application. We decided that we should just build a simple command line interface and build a web application version if we had extra time (we didn't).
+
+####Domain Vertices vs. Pages Vertices
+
+* At first, we were stuck on how we wanted to design our graph. We had a choice between designating each page as a vertex or each domain as a vertex. Ultimately, we realized that we wanted both.
+
+####Testing the Crawler
+
+* In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
+
+## Feature Contributions
+
+####Stanley Lim
+
+* Worked on **text transformation**, created the **test websites**, and helped out with **bruteforcing**.
+
+####Johnny So
+
+* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, and helped design **graph traversal strategies**.
+
+####Mankirat Gulati
+
+* Started implementing **command line interface**, helped design the **graph data structures**, combined other components to implement the **main crawling logic**.
+
+####Andy Liang
+
+* Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
 
 [Talk about tying it together.]
 
-[Talk about major blockers.]
+## Major Blockers
+
+####Request Limits
+
+* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts.
+
+####Testing Issues
+
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. 
+
+####Graph Design and Traversal Strategies
+
+* Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
 [Talk about presentation planning.]
