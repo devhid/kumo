@@ -22,10 +22,10 @@ def tokenize_html(html):
         Set containing all the words on the current page
     """
     d = pq(html)
-
+    d('svg').remove()
     wordset = set()
 
-    sentences = d.text()
+    sentences = d('body').text()
 
     for word in sentences.split():
         wordset.add(word)
