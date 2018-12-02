@@ -560,6 +560,7 @@ A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that t
 ### 3. Future Improvements
 
 - Support for HTTPS servers
+- Support for the `Accept-Encoding` for messages sent using `HttpRequest.send_get_request` and `HttpRequest.send_post_request`
 
 <h1 align=center> User Guide </h1>
 
