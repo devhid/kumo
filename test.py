@@ -7,6 +7,7 @@ from funcs.crawler import Crawler
 from utils.constants import *
 
 
+
 if __name__ == "__main__":
     # Change the value of test to change what is tested
     test = "crawler"
@@ -14,8 +15,8 @@ if __name__ == "__main__":
         url = "http://kumo.x10host.com"
         method = "dfs"
         agent = HTTP_UA_CHROME
-        depth = 5
-        pages = 10
+        depth = 10
+        pages = 30
         
         crawler = Crawler()
         crawler.crawl(url, method, agent, depth, pages)

@@ -8,6 +8,7 @@ class Crawler:
         self.tokenized = set()
         self.login_page_urls = set()
         self.page_count = 0
+        self.visited_urls = set()
 
     # def crawl()
     #   start_domain = DomainNode(user_input)
@@ -90,26 +91,34 @@ class Crawler:
 
     """
     def crawl(self, url, method, user_agent, max_depth, max_pages):
+        print("crawler started: url={}, method={}, max_depth={}, max_pages={}\n---------------------------------".format(url, method, max_depth, max_pages) )
         root_domain = DomainGraph.DomainNode(url, user_agent, max_depth, max_pages)
         domain_graph = DomainGraph(root_domain)
 
-        visited, to_traverse = set(), [root_domain] if method.casefold() == "dfs" else deque(root_domain)
+        visited, to_traverse = set(), [root_domain] if method.casefold() == "dfs" else deque([root_domain])
 
         while to_traverse:
             domain = self._pop(method, to_traverse)
+            domain.page_count = self.page_count
 
             if domain.url not in visited:
                 visited.add(domain.url)
-                domain.process()
+                print("new domain found: " + domain.url)
+                visited = domain.process()
+
+                self.page_count = len(visited)
 
                 if domain.page_count >= max_pages:
+                    break
+                
+                if domain.reached_max_depth:
                     break
 
                 for link in domain.get_connected_domains():
                     if link not in visited:
-                        print("domains: " + link)
                         to_traverse.append(DomainGraph.DomainNode(link, user_agent, max_depth, max_pages))
 
+        print("domain visited: {}".format(visited))
         return visited
     
     def _pop(self, method, to_traverse):

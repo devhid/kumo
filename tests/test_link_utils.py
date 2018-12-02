@@ -65,4 +65,5 @@ class LinkUtilsTest(unittest.TestCase):
         assert dom_family('b.com', 'a.b.com') == True
         assert dom_family('a.com', 'a.b.com') == False
         assert dom_family('a.b.c.d.e.com', 'a.b.c.e.com') == False
+        assert dom_family('x.com', 'x.com/login') == False
         

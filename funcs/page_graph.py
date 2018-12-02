@@ -1,5 +1,7 @@
 import requests
 
+from .link_utils import *
+
 class PageGraph:
 
     def __init__(self, root_page):
@@ -47,8 +49,11 @@ class PageGraph:
                             self.login_pages.add(link)
 
                         self.connected_pages.add(link)
-                    else:
+                    elif dom_family(self.url, link):
                         self.other_domains.add(link)
+                    else:
+                        pass
+                    
 
         def get_other_domains(self):
             return self.other_domains
