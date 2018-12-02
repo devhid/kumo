@@ -57,9 +57,7 @@ if __name__ == "__main__":
                     print("status code %s" % (status_code))
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
-<<<<<<< HEAD
-            socket.close()
-<<<<<<< HEAD
+            request.close()
     
     elif test == "http_local":
         host = "localhost"
@@ -68,78 +66,86 @@ if __name__ == "__main__":
         ua = "chrome"
 
         # Test GET
-        socket = Socket("localhost",5000)
-        request = HttpRequest(socket, "GET")
-        socket.connect()
-        sent_get = request.send_get_request(url,host,ua)
+        request = HttpRequest(host, port, "GET")
+        request.connect()
+        sent_get = request.send_get_request(url, host, ua)
         if sent_get:
-            response = socket.recv()
+            response = request.receive()
             print(response)
-        socket.close()
+        request.close()
+
+        print("---------------")
 
         # Test POST login success
+        request = HttpRequest(host, port, "POST")
         url = "/login"
         receive = True
-        content_type = "application/x-www-form-urlencoded"
         data = {"email":"admin@mizio.io", "password":"admin"}
-        request = HttpRequest(socket,"POST")
+        content_type = "application/x-www-form-urlencoded"
         body = request.generate_post_body(content_type,data)
         content_length = len(body)
+
         if body is not None:
-            socket.connect()
+            request.connect()
             sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
             if sent_get and receive:
-                response = socket.recv()
+                response = request.receive()
                 print(response)
-            socket.close()
+            request.close()
+
+        print("---------------")
 
         # Test POST login fail
+        request = HttpRequest(host, port, "POST")
         url = "/login"
         receive = True
         content_type = "application/x-www-form-urlencoded"
         data = {"email":"bademail@email.com", "password":"wrongpass"}
-        request = HttpRequest(socket,"POST")
         body = request.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            socket.connect()
+            request.connect()
             sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
             if sent_get and receive:
-                response = socket.recv()
+                response = request.receive()
                 print(response)
-            socket.close()
+            request.close()
+
+        print("---------------")
 
         # Test POST funform fail
         url = "/login"
         receive = True
         content_type = "application/x-www-form-urlencoded"
         data = {"email":"admin@mizio.net", "password":"admin"}
-        request = HttpRequest(socket,"POST")
+        request = HttpRequest(host, port, "POST")
         body = request.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            socket.connect()
+            request.connect()
             sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
             if sent_get and receive:
-                response = socket.recv()
+                response = request.receive()
                 print(response)
-            socket.close()
+            request.close()
+
+        print("---------------")
 
         # Test POST funform fail
         url = "/funform"
         receive = True
         content_type = "application/x-www-form-urlencoded"
-        data = {"email":"admin", "password":"wrongpass"}
-        request = HttpRequest(socket,"POST")
+        data = {"email":"admin", "password":"wrongpass", "btn":"login"}
+        request = HttpRequest(host, port, "POST")
         body = request.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            socket.connect()
+            request.connect()
             sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
             if sent_get and receive:
-                response = socket.recv()
+                response = request.receive()
                 print(response)
-            socket.close()
+            request.close()
 
     elif test == "configs":
         config = configs.config
