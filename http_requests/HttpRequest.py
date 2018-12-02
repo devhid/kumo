@@ -2,7 +2,8 @@
 from http_requests.Socket import Socket
 
 # utils Imports
-from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED, HTTP_CONTENTTYPE_MULTIFORMDATA
+from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED
+from utils.namedtuples import StatusCode
 
 class HttpRequest:
    
@@ -30,6 +31,9 @@ class HttpRequest:
 
     def __init__(self, url, port, method):
         """ Initializes a new HttpRequest.
+
+        The same HttpRequest object can be re-used for requests to the same (url,port) 
+        with the same HTTP method by calling the connect() and close() methods.
         
         Parameters
         ----------
@@ -118,8 +122,11 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
+        # Obtain instance variables
         socket = self.__socket
         method = self.__method
+
+        # Basic validity checking
         if socket is None or method is None or url is None or \
             protocol is None or host is None or agent is None:
             return False
@@ -135,10 +142,13 @@ class HttpRequest:
         if method == "POST" and content_type is None:
             return False
         
+        # Check if the user-agent is a pre-defined one, 
+        # and if so replace it by its value.
         user_agent = agent
         if user_agent in HTTP_UA:
             user_agent = HTTP_UA[user_agent]
 
+        # Construct the HTTP request message.
         request = method + " " + url + " " + protocol + "\r\n"
         request += "Host: " + host + "\r\n"
         request += "User-Agent: " + user_agent
@@ -159,12 +169,19 @@ class HttpRequest:
         if connection is not None:
             request += "\r\nConnection: " + connection
         request += "\r\n\r\n"
+
+        # If the HTTP method is POST, then append the body
         if method == "POST":
             request += body
 
+        # Attempt to send the HTTP request.
         sent = socket.send(request)
+        
+        # Indicate success.
         if sent > 0:
             return True
+
+        # Indicate the HTTP request faile to (completely) send.
         return False
     
     # Sending GET/POST requests
@@ -198,8 +215,11 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
+        # Ensure the instance of the HttpRequest was made for GET requests
         if self.__method != "GET":
             return False
+
+        # Defer to __send_request and specify arguments
         return self.__send_request(url=url,
                             protocol="HTTP/1.1",
                             host=host,
@@ -253,8 +273,11 @@ class HttpRequest:
         status : boolean
             True if the request was sent, False if not
         """
+        # Ensure the instance of the HttpRequest was made for POST requests
         if self.__method != "POST":
             return False
+
+        # Defer to __send_request and specify arguments
         return self.__send_request(url=url,
                             protocol="HTTP/1.1",
                             host=host,
@@ -269,8 +292,13 @@ class HttpRequest:
                             connection="close",
                             body=body)
 
-    def generate_post_body(self, content_type, data):
+    # Static Methods
+
+    @staticmethod
+    def generate_post_body(content_type, data):
         """ Generates the HTTP Body of a POST request given a Content-Type and data.
+
+        Only a Content-Type of "application/x-www-form-urlencoded" is supported.
 
         Parameters
         ----------
@@ -284,24 +312,22 @@ class HttpRequest:
         body : string
             body of the HTTP POST request, or None if the Content-Type was invalid
         """
-        if self.__method != "POST":
-            return None
-        if not isinstance(data,dict):
-            return None
+        # Initalize our return value.
         body = ""
-        if content_type == HTTP_CONTENTTYPE_FORMENCODED:
-            # Expect data to be a dictionary.
-            for key in data:
-                body += key + "=" + data[key] + "&"
-        elif content_type == "multipart/form-data":
-            # Not suppported; this is for uploading files
-            return None
-        else:
-            # Anything else is not supported
-            return None 
-        return body[:len(body)-1] if len(body) >= 1 else body
 
-    # Static Methods
+        # Basic validity checking. 
+        # Only "application/x-www-form-urlencoded" is supported.
+        #       "multipart/form-data" is necessary for binary data or large payloads,
+        #           both of which are unnecessary in brute-forcing login forms.
+        if not isinstance(data,dict) or content_type != HTTP_CONTENTTYPE_FORMENCODED:
+            return None
+
+        # We have ensured that data is a dictionary.
+        for key in data:
+            body += key + "=" + data[key] + "&"
+             
+        # Strip the last & character if necessary.
+        return body[:len(body)-1] if len(body) >= 1 else body
 
     @staticmethod
     def get_status_code(http_response):
@@ -320,29 +346,44 @@ class HttpRequest:
             not None only if status_code == '3xx' and a preferred redirect
             link is in the http_response
         """
+        # Initialize needed variables.
         lines = http_response.split("\n")
         status_code = 0
         interesting_info = None
         find_interesting_info = False
-        if len(lines) > 0:
-            words = lines[0].split(" ")
-            if len(words) >= 3:
-                status_code = words[1]
-                if len(status_code) != 3:
-                    return None
-                if status_code[:1] == "3":
-                    # Extract the preferred redirect URL.
-                    find_interesting_info = True
-            else:
-                return None
-        else:
+
+        # Invalid HTTP response.
+        if len(lines) == 0:
             return None
+
+        # Analyze the first line in the response.
+        words = lines[0].split(" ")
+
+        # Invalid HTTP response.
+        if len(words) < 3:
+            return None
+
+        # Extract the status code.
+        status_code = words[1]
+
+        # Invalid HTTP response.
+        if len(status_code) != 3:
+            return None
+        
+        # Check if the status code is a redirect status code (3xx).
+        if status_code[:1] == "3":
+            # Extract the preferred redirect URL if there is one.
+            find_interesting_info = True
+
+        # Status code is a redirect status code, try to find a preferred redirect URL.
         if find_interesting_info:
             for line in lines:
                 words = line.split(" ")
-                if len(words) > 0 and words[0] == "Location:":
+                if len(words) > 1 and words[0] == "Location:":
                     interesting_info = words[1]
-        return (status_code,interesting_info)
+
+        # Return the tuple.
+        return StatusCode(status_code=status_code,interesting_info=interesting_info)
 
     @staticmethod
     def get_body(http_response):
@@ -358,16 +399,17 @@ class HttpRequest:
         body : string or None
             HTML body of the HTTP response, or None if http_response is not valid
         """
+        # Initialize return value.
         body = http_response
 
-        # HTTP body must begin after 2 consecutive newlines
+        # HTTP body must begin after 2 consecutive newlines (\r\n\r\n)
         newlines = "\r\n\r\n"
 
-        # Not a valid HTTP response message
+        # Invalid HTTP response
         if body.find(newlines) == -1:
             return None
             
-        # Set index to be the start of the body
+        # Set index to be the start of the body, and return everything after.
         index = body.find(newlines) + len(newlines)
         body = body[index:]
         return body

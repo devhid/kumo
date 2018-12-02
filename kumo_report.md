@@ -437,6 +437,8 @@ max_total = 100
 
       **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
 
+  - **Static Methods**
+
     - `generate_post_body(self, content_type, data)`
 
       Generates the HTTP body of a `POST` request given a `Content-Type` and `data`.
@@ -444,8 +446,6 @@ max_total = 100
       **Returns**: the HTTP body of the `POST` request as a string (e.g. `key1=val1&key2=val2`)
 
       **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
-
-  - **Static Methods**
 
     - `get_status_code(http_response)`
 

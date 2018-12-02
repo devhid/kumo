@@ -46,7 +46,7 @@ if __name__ == "__main__":
         data = {"hi":"world"}
         num_post_req = 10
         request = HttpRequest(host,port,"POST")
-        body = request.generate_post_body(content_type,data)
+        body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
         for i in range(num_post_req):
             print(f'request {i}')
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         sent_get = request.send_get_request(url, host, ua)
         if sent_get:
             response = request.receive()
-            body = request.get_body(response)
+            body = HttpRequest.get_body(response)
 
             # Detect if login form is present and get the login fields
             login = detect_login(body,host+url)
