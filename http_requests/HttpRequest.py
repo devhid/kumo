@@ -2,7 +2,7 @@
 from http_requests.Socket import Socket
 
 # utils Imports
-from utils.constants import HTTP_UA
+from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED, HTTP_CONTENTTYPE_MULTIFORMDATA
 
 class HttpRequest:
    
@@ -289,7 +289,7 @@ class HttpRequest:
         if not isinstance(data,dict):
             return None
         body = ""
-        if content_type == "application/x-www-form-urlencoded":
+        if content_type == HTTP_CONTENTTYPE_FORMENCODED:
             # Expect data to be a dictionary.
             for key in data:
                 body += key + "=" + data[key] + "&"
@@ -361,7 +361,7 @@ class HttpRequest:
         body = http_response
 
         # HTTP body must begin after 2 consecutive newlines
-        newlines = "\r\n\r\n" if body.find("\n\n") == -1 else "\n\n"
+        newlines = "\r\n\r\n"
 
         # Not a valid HTTP response message
         if body.find(newlines) == -1:

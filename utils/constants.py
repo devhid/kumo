@@ -1,3 +1,8 @@
+# configs
+CFG_FILE = "configs.ini"
+CFG_VALS = ['user_agent','traversal','max_depth','max_total']
+CFG_DEF = "DEFAULT"
+
 # Help messages for all the configuration options.
 HELP_AGENT = 'A custom user-agent for use with each GET/POST request.'
 HELP_SEARCH_METHOD = 'The search traversal method for crawling: bfs|dfs.'
@@ -14,6 +19,11 @@ HTTP_UA_GOOGLEBOT = 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
             'opera':HTTP_UA_OPERA,'safari':HTTP_UA_SAFARI,
             'ie':HTTP_UA_IE,'googlebot':HTTP_UA_GOOGLEBOT}
+HTTP_CONTENTTYPE_FORMENCODED = "application/x-www-form-urlencoded"
+HTTP_CONTENTTYPE_MULTIFORMDATA = "multipart/form-data"
+
+# Sets of words for login success detection
+SUCCESS_KEYWORDS = set(["success", "logged in", "authenticated"]) # TODO: Might need to try to expand this list
 
 # Sets of keywords for login page detection
 USER_KEYWORDS = set(["log in", "login", "log", "user", "username", "user_login", "user login", "user_id", "user id", "email"])
