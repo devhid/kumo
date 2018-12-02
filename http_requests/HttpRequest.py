@@ -361,15 +361,14 @@ class HttpRequest:
         body = http_response
 
         # HTTP body must begin after 2 consecutive newlines
-        carriage_return = body.find("\r\n\r\n") != -1
-        if carriage_return:
-            index = body.find("\r\n\r\n") + 4
-        else:
-            index = body.find("\n\n")
-            if index == -1:
-                # Not a valid HTTP response
-                return None
-            index += 2
+        newlines = "\r\n\r\n" if body.find("\n\n") == -1 else "\n\n"
+
+        # Not a valid HTTP response message
+        if body.find(newlines) == -1:
+            return None
+            
+        # Set index to be the start of the body
+        index = body.find(newlines) + len(newlines)
         body = body[index:]
         return body
         
