@@ -8,9 +8,9 @@ if __name__ == "__main__":
     if test == "http_requests":
         host = "facebook.com"
         port = 80
-        url = "/safetycheck/"
-        ua = "googlebot"
-        num_get_req = 10
+        url = "/"
+        ua = "chrome"
+        num_get_req = 1
 
         # Test GET requests
         request = HttpRequest(host,port,"GET")
