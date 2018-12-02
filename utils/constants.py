@@ -1,3 +1,8 @@
+# configs
+CFG_FILE = "configs.ini"
+CFG_VALS = ['user_agent','traversal','max_depth','max_total']
+CFG_DEF = "DEFAULT"
+
 # Help messages for all the configuration options.
 HELP_AGENT = 'A custom user-agent for use with each GET/POST request.'
 HELP_SEARCH_METHOD = 'The search traversal method for crawling: bfs|dfs.'

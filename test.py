@@ -8,7 +8,7 @@ from bruteforce.bruteforce import *
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "brute_force"
+    test = "configs"
     if test == "http_requests":
         host = "httpbin.org"
         port = 80
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         request.close()
 
     elif test == "configs":
-        config = configs.config
+        config = configs.DEFAULT_CONFIGS
         for val in config:
             print("%s : %s" % (val,config[val]))
     elif test == "test_transform":

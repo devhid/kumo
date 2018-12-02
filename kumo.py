@@ -2,12 +2,14 @@ import click
 import os
 
 from utils.constants import *
+from configs import configs
 
 # Some random defaults for configuration options.
-default_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
-default_search_method = 'dfs'
-default_max_depth = 5
-default_max_pages = 10
+default_config = configs.DEFAULT_CONFIGS
+default_agent = default_config['user_agent']
+default_search_method = default_config['traversal']
+default_max_depth = default_config['max_depth']
+default_max_pages = default_config['max_total']
 
 # The entry point for our CLI.
 @click.group()
@@ -16,13 +18,21 @@ def main():
 
 # Sub-command for actually crawling the website.
 @main.command(name='crawl')
-@click.option('--a', default=default_agent, help=HELP_AGENT)
-@click.option('--m', default=default_search_method, help=HELP_SEARCH_METHOD)
-@click.option('--depth', default=default_max_depth, help=HELP_MAX_DEPTH)
-@click.option('--pages', default=default_max_pages, help=HELP_MAX_PAGES)
+# @click.option('--a', default=default_agent, help=HELP_AGENT)
+# @click.option('--m', default=default_search_method, help=HELP_SEARCH_METHOD)
+# @click.option('--depth', default=default_max_depth, help=HELP_MAX_DEPTH)
+# @click.option('--pages', default=default_max_pages, help=HELP_MAX_PAGES)
 @click.argument('url', type=click.STRING, metavar='<url>', required=True)
-def crawl(a, m, depth, pages, url):
+@click.argument('cfgs', type=click.STRING, metavar='<cfgs>', required=True)
+def crawl(url, cfgs):
     print(url)
+    print(cfgs)
+    config = configs.load_config_section(config_section=cfgs)
+    if config is None:
+        print(f"Invalid config {cfgs}")
+    else:
+        for val in config:
+            print("%s : %s" % (val,config[val]))
     pass
 
 # Sub-command that displays information about the project.
