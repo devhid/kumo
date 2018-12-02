@@ -1,10 +1,10 @@
+from utils.constants import *
+
 from pyquery import PyQuery as pq
 from urllib.parse import urlparse
 from urllib.parse import urljoin
-from utils.constants import USER_KEYWORDS
-from utils.constants import PASS_KEYWORDS
-from utils.constants import LOGIN_KEYWORDS
-from utils.constants import REGISTER_KEYWORDS
+from urllib.parse import urldefrag
+import tldextract as tld
 import re
 
 
@@ -22,10 +22,10 @@ def tokenize_html(html):
         Set containing all the words on the current page
     """
     d = pq(html)
-
+    d('svg').remove()
     wordset = set()
 
-    sentences = d.text()
+    sentences = d('body').text()
 
     for word in sentences.split():
         wordset.add(word)
@@ -53,6 +53,8 @@ def retrieve_links(html, base_url):
     wordset = set()
     for link in d('a'):
         url = link.attrib['href']
+        defrag_result = urldefrag(url) # Remove url fragment
+        url = defrag_result.url
         if(url[len(url) - 1] == "/"):
             url = url[0:len(url) - 1]
         wordset.add(url)
@@ -60,6 +62,11 @@ def retrieve_links(html, base_url):
 
 def detect_login(html, base_url):
     """Return all links from an html document passed as a string
+
+    Compares all input tag attribute values and button text in the post forms of a webpage 
+    with predefined constants in utils/constant.py to determine whether the form contains
+    a username input field, password input field, and a login submit button which would
+    indicate that the form is a login page.
 
     Parameters
     ---
@@ -70,18 +77,21 @@ def detect_login(html, base_url):
 
     Returns
     ---
-    login: boolean
-        Return whether the current page is a login 
+    form_prop: 3 element array
+        0: FORM_
     """
-    if(detect_login_from_url(base_url)):
-        return True
+
+    #if(detect_login_from_url(base_url)):
+    #    return True
     
-    if(html == ""):
-        return False
+    if(html == "" or len(base_url) < 8):
+        return None
+
+    form_prop = ["", "", ""] # [form action url, user input name, password input name]
 
     d = pq(html)
 
-    # HTML Form
+    # HTML Form (Standard HTML)
     user_input = False
     pass_input = False
     login_submit = False
@@ -112,32 +122,42 @@ def detect_login(html, base_url):
                     if(user_input == False
                     and inp.attrib[attrib].lower() in USER_KEYWORDS
                     and inp.attrib['type'].lower() == "text"):
+                        form_prop[USER_INPUT_NAME] = inp.attrib['id']
                         user_input = True
                     
                     # Password input 
                     if(pass_input == False
                     and (inp.attrib[attrib].lower() in PASS_KEYWORDS
                     or inp.attrib['type'].lower() == "password")):
+                        form_prop[PASS_INPUT_NAME] = inp.attrib['id']
                         pass_input = True
 
+        if(user_input and pass_input):
+            if('action' in form.attrib):
+                form_prop[FORM_URL] = form.attrib['action']
+            else:
+                form_prop[FORM_URL] = base_url
+            break
+
     if(user_input and pass_input and login_submit):
-        """
-        print(user_input)
-        print(pass_input)
-        print(login_submit)
-        print(register_submit)
-        """
-        return True
+        return form_prop
     
-    # HTML Forms Text or Bootstrap
+    # HTML Forms (Bootstrap)
     for form in d('form'):
         wordset = tokenize_html(form)
+        """
         for word in wordset:
             word = word.lower()
             if(user_input == False):
                 user_input = word in USER_KEYWORDS
+                if(user_input):
+                    form_prop[USER_INPUT_NAME] = .attrib['name']
             if(pass_input == False):
                 pass_input = word in PASS_KEYWORDS
+                if(pass_input):
+                    form_prop[PASS_INPUT_NAME] = .attrib['name']
+        """
+
         e = pq(form)
         for button in e('button'):
             word = e(button).text().lower()
@@ -145,13 +165,16 @@ def detect_login(html, base_url):
                 login_submit = word in LOGIN_KEYWORDS
             if(register_submit == False):
                 register_submit = word in REGISTER_KEYWORDS
-    """
-    print(user_input)
-    print(pass_input)
-    print(login_submit)
-    print(register_submit)
-    """
-    return user_input and pass_input and login_submit
+
+        if(user_input and pass_input and login_submit):
+            if('action' in form.attrib):
+                form_prop[FORM_URL] = form.attrib['action'] 
+            break
+
+    if(user_input and pass_input and login_submit):
+        return form_prop
+    else:
+        return None
     
 def detect_login_from_url(base_url):
     """Determine whether a url is a login page based of RESTful path standards
@@ -181,3 +204,24 @@ def detect_login_from_url(base_url):
             return True
 
     return False
+
+def in_domain(domain, url):
+    """Determine whether a url resides within the provided domain
+
+    Parameters
+    ---
+    domain: string
+        Domain or subdomain of a webpage
+    url: string
+        Url of the webpage to be checked
+
+    Returns
+    ---
+    login: boolean
+        Return whether the url's root domain is equivalent to the provided domain
+    """
+
+    dom_ext = tld.extract(domain)
+    url_ext = tld.extract(url)
+    return dom_ext.subdomain == url_ext.subdomain and dom_ext.domain == url_ext.domain
+

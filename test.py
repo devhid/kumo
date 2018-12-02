@@ -1,5 +1,5 @@
 from tests.test_transform import *
-from tests.test_tokenize import *
+from tests.test_link_utils import *
 from configs import configs
 from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
@@ -7,7 +7,11 @@ from http_requests.HttpRequest import HttpRequest
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
+<<<<<<< HEAD
     test = "http_local"
+=======
+    test = "test_link_utils"
+>>>>>>> feature/list_utils
     if test == "http_requests":
         host = "httpbin.org"
         port = 80
@@ -160,12 +164,12 @@ if __name__ == "__main__":
         test_transform.test_lower()
         test_transform.test_reverse()
         test_transform.test_leet()
-    elif test == "test_tokenize":
-        test_tokenize = TokenizeTest()
-        test_tokenize.test_one_layer()
-        test_tokenize.test_multiple_layers()
-        test_tokenize.test_link_layer()
-        test_tokenize.test_link_retrieval()
-        test_tokenize.test_link_retrieval_layers()
-        test_tokenize.test_link_retrieval_relative()
-        test_tokenize.test_login_detection()
+    elif test == "test_link_utils":
+        test_link_utils = LinkUtilsTest()
+        test_link_utils.test_one_layer()
+        test_link_utils.test_multiple_layers()
+        test_link_utils.test_link_layer()
+        test_link_utils.test_link_retrieval()
+        test_link_utils.test_link_retrieval_layers()
+        test_link_utils.test_link_retrieval_relative()
+        test_link_utils.test_login_detection()
