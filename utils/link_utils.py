@@ -9,7 +9,7 @@ import tldextract as tld
 import re
 
 
-def tokenize_html(html):
+def tokenize_html(html, include_all):
     """Return all tokenized strings from an html document passed as a string
 
     Parameters
@@ -22,18 +22,28 @@ def tokenize_html(html):
     wordset: set<string>
         Set containing all the words on the current page
     """
-    start = html.find("<!doctype html>")
-    if(start == -1):
-        start = html.find("<html")
+    old_html = html
+    if not include_all:
+        start = html.find("<!doctype html>")
+        if(start == -1):
+            start = html.find("<html")
 
-    html = html[start:]
+        html = html[start:]
 
-    d = pq(html)
+    try:
+        d = pq(html)
+    except:
+        # Page was invalid somehow
+        d = pq(old_html)
     d('svg').remove()
     d('script').remove()
+    d('style').remove()
     wordset = set()
 
-    sentences = d('body').text()
+    if not include_all:
+        sentences = d('body').text()
+    else:
+        sentences = d.text()
 
     for word in sentences.split():
         wordset.add(word)
@@ -105,7 +115,7 @@ def detect_login(html, base_url):
     d = pq(html)
 
     # HTML Form (Standard HTML)
-    form_prop = ["", "", ""] # [form action url, user input name, password input name]
+    form_prop = ["", "", "", ""] # [form action url, user input name, password input name]
     user_input = False
     pass_input = False
     login_submit = False
@@ -151,11 +161,12 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
-            form_prop[0] = form_url.path
+            form_prop[0] = form_url.path.replace('localhost', '')
+            form_prop[3] = form_prop[0].replace('/', '')
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
+        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2], action=form_prop[3])
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -183,11 +194,12 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
-            form_prop[0] = form_url.path
+            form_prop[0] = form_url.path.replace('localhost', '')
+            form_prop[3] = form_prop[0].replace('/', '')
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
+        return Form(url=form_prop[0], userid=form_prop[1], passid=form_prop[2], action=form_prop[3])
     else:
         return None
     
@@ -265,24 +277,21 @@ def dom_family(dom_one, dom_two):
     dtwo = '.'.join(dtwo_ext[:])
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
 
-def verify_success_resp(html):
+def verify_success_resp(words):
     """Determines if the user successfully logged in based on keywords
     Parameters
     ---
-    html: string
-        String represention of a page's html document
+    words: set<string>
+        Set of words in the page's body
     Returns
     ---
     success : boolean
         Whether the login request was successful
     """
-    if len(html) == 0:
+    if len(words) == 0:
         return False
-    d = pq(html)
-    
-    sentences = d.text()[30:]
 
-    for word in sentences.split():
+    for word in words:
         if word.lower() in SUCCESS_KEYWORDS:
             return True
     
