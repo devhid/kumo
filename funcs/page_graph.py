@@ -46,11 +46,13 @@ class PageGraph:
                 if response.status_code >= 200 and response.status_code <= 300:
                     if in_domain(self.url, link):
                         if detect_login(response.content, link):
-                            self.login_pages.add(link)
+                            if link not in self.login_pages:
+                                self.login_pages.add(link)
 
                         self.connected_pages.add(link)
                     elif dom_family(self.url, link):
-                        self.other_domains.add(link)
+                        if link not in self.other_domains:
+                            self.other_domains.add(link)
                     else:
                         pass
                     

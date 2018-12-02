@@ -61,7 +61,7 @@ class LinkUtilsTest(unittest.TestCase):
     def test_domain_family(self):
         assert dom_family('a.b.c.com', 'c.com') == True
         assert dom_family('a.b.c.com', 'b.c.com') == True
-        assert dom_family('a.b.c.com', 'a.b.c.com') == True
+        assert dom_family('a.b.c.com', 'a.b.c.com') == False
         assert dom_family('b.com', 'a.b.com') == True
         assert dom_family('a.com', 'a.b.com') == False
         assert dom_family('a.b.c.d.e.com', 'a.b.c.e.com') == False

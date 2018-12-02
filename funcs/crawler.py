@@ -2,6 +2,7 @@ from collections import deque
 import requests
 
 from .domain_graph import DomainGraph
+from .link_utils import *
 
 class Crawler:
     def __init__(self):
@@ -91,7 +92,8 @@ class Crawler:
 
     """
     def crawl(self, url, method, user_agent, max_depth, max_pages):
-        print("crawler started: url={}, method={}, max_depth={}, max_pages={}\n---------------------------------".format(url, method, max_depth, max_pages) )
+        url = clean_url(url)
+
         root_domain = DomainGraph.DomainNode(url, user_agent, max_depth, max_pages)
         domain_graph = DomainGraph(root_domain)
 
@@ -102,23 +104,21 @@ class Crawler:
             domain.page_count = self.page_count
 
             if domain.url not in visited:
-                visited.add(domain.url)
-                print("new domain found: " + domain.url)
-                visited = domain.process()
+                print("> New Domain Detected: " + domain.url)
 
-                self.page_count = len(visited)
+                visited.add(clean_url(domain.url))
+                visited_pages = domain.process()
 
-                if domain.page_count >= max_pages:
+                self.page_count = len(visited_pages)
+
+                if domain.page_count >= max_pages or domain.reached_max_depth:
                     break
                 
-                if domain.reached_max_depth:
-                    break
-
                 for link in domain.get_connected_domains():
-                    if link not in visited:
+                    if link and get_domain(link) not in visited:
                         to_traverse.append(DomainGraph.DomainNode(link, user_agent, max_depth, max_pages))
 
-        print("domain visited: {}".format(visited))
+        print("Total Domains Visited: {}".format(visited))
         return visited
     
     def _pop(self, method, to_traverse):

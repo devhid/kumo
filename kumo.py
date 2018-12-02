@@ -2,11 +2,8 @@ import click
 import os
 
 from utils.constants import *
-<<<<<<< HEAD
 from funcs.crawler import Crawler
-=======
 from configs import configs
->>>>>>> 019d1728d19a6555440a9d70b7f2d0dd162b61c1
 
 # Some random defaults for configuration options.
 default_config = configs.DEFAULT_CONFIGS
@@ -29,18 +26,16 @@ def main():
 @click.argument('url', type=click.STRING, metavar='<url>', required=True)
 @click.argument('cfgs', type=click.STRING, metavar='<cfgs>', required=True)
 def crawl(url, cfgs):
-    print(url)
-<<<<<<< HEAD
-=======
-    print(cfgs)
+    click.secho("Crawler will begin on '{url}' with below settings:\n".format(url=url), fg='green')
     config = configs.load_config_section(config_section=cfgs)
     if config is None:
         print(f"Invalid config {cfgs}")
     else:
         for val in config:
             print("%s : %s" % (val,config[val]))
-    pass
->>>>>>> 019d1728d19a6555440a9d70b7f2d0dd162b61c1
+    click.echo()
+    crawler = Crawler()
+    crawler.crawl(url, config['traversal'], config['user_agent'], int(config['max_depth']), int(config['max_total']))
 
 # Sub-command that displays information about the project.
 @main.command(name='info')

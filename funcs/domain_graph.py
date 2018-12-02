@@ -52,28 +52,33 @@ class DomainGraph:
                 current_page = queue.popleft()
 
                 if current_page.url not in visited:
+                    response = requests.get(current_page.url).status_code
+                    if not response:
+                        return
+
                     if 200 >= requests.get(current_page.url).status_code <= 300:
-                        print("current page: " + current_page.url)
+                        print('------------------------------------------------------------')
+                        print("> New Page: " + current_page.url)
 
                         if current_page.url in current_page.get_login_pages():
-                            print("login page found: " + current_page.url)
+                            print("> Login Page Detected: " + current_page.url)
                 
-                        print("depth: " + str(self.depths[current_page.url]))
+                        print("Depth: " + str(self.depths[current_page.url]))
                         if self.depths[current_page.url] >= self.max_depth:
-                            print("reached max depth: " + str(self.depths[current_page.url]))
+                            print("> Reached Max Depth: " + str(self.depths[current_page.url]))
                             self.reached_max_depth = True
                             break
                             
                         self.page_count += 1
-                        print("page count: " + str(self.page_count))
+                        print("Page Count: " + str(self.page_count))
                 
                         if self.page_count == self.max_pages:
-                            print("reached max page count: " + str(self.page_count))
+                            print("> Reached Max Page Count: " + str(self.page_count))
                             break
 
                         visited.add(current_page.url)
                         current_page.process() 
-
+                        
                         for link in current_page.get_connected_pages():
                             if link not in visited:
                                 new_page_node = PageGraph.PageNode(link)
@@ -88,10 +93,11 @@ class DomainGraph:
                             if link not in self.login_urls:
                                 self.login_urls.add(link)
             
-            print("page visited: {}".format(visited))
+            print('------------------------------------------------------------')
+            print("Pages Visited: {}".format(visited))
+            print('------------------------------------------------------------\n')
             return visited
                         
-        
         def get_connected_domains(self):
             return self.connected_domains
 

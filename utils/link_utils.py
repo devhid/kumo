@@ -264,6 +264,10 @@ def dom_family(dom_one, dom_two):
     
     done = '.'.join(done_ext[:])
     dtwo = '.'.join(dtwo_ext[:])
+
+    if done == dtwo:
+        return False
+
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
 
 def verify_success_resp(html):

@@ -287,12 +287,30 @@ def dom_family(dom_one, dom_two):
     """
 
     done_ext = tld.extract(dom_one)
+    # print(done_ext)
     dtwo_ext = tld.extract(dom_two)
+    # print(dtwo_ext)
     if(done_ext.domain != dtwo_ext.domain):
         return False
     
     done = '.'.join(done_ext[:])
+    # print(done)
     dtwo = '.'.join(dtwo_ext[:])
+    # print(dtwo)
+
+    if done == dtwo:
+        return False
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
+
+def clean_url(url):
+    if url[-1] == '/':
+        return url[:-1]
     
+    return url
+
+def get_domain(url):
+    
+    o = urlparse(url)
+    link = o.scheme + "://" + o.netloc
+    return link
 

@@ -8,9 +8,12 @@ from bruteforce.bruteforce import *
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "configs"
+    test = "test_link_utils"
+    if test == "test_dom_family":
+        dom_family("a.com", "b.a.com")
+        dom_family("x.com", "x.com/login")
     if test == "crawler":
-        url = "http://kumo.x10host.com"
+        url = "http://3.17.9.125.xip.io/"
         method = "dfs"
         agent = HTTP_UA_CHROME
         depth = 10
