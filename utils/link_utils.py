@@ -9,7 +9,7 @@ import tldextract as tld
 import re
 
 
-def tokenize_html(html, include_all = False):
+def tokenize_html(html, include_all):
     """Return all tokenized strings from an html document passed as a string
 
     Parameters

