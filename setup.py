@@ -6,6 +6,8 @@ setup(
     py_modules=['kumo'],
     install_requires=[
         'Click',
+        'PyQuery',
+        'urllib3',
     ],
     entry_points='''
         [console_scripts]
