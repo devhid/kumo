@@ -9,6 +9,7 @@ setup(
         'Click',
         'PyQuery',
         'urllib3',
+        'tldextract'
     ],
     entry_points='''
         [console_scripts]
