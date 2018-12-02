@@ -3,6 +3,7 @@ from http_requests.Socket import Socket
 from http_requests.HttpRequest import HttpRequest
 from collections import namedtuple
 from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
+from utils.constants import SUCCESS_KEYWORDS
 
 Credential = namedtuple('Credential', ['user', 'pass'])
 
@@ -59,5 +60,11 @@ def bruteforce(request, url, host, agent,
             successful = request.send_post_request(url, host, agent, content_type, content_length, body)
             if successful:
                 response = request.receive()
+                print(response)
                 # analyze response, if successful, make new Credential and add to success
+                success.push(Credential(user, _pass))
+
+                # Check if the page url is the same as before or not
+                # TODO:
+
             request.close()

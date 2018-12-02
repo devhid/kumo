@@ -16,3 +16,6 @@ HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
             'ie':HTTP_UA_IE,'googlebot':HTTP_UA_GOOGLEBOT}
 HTTP_CONTENTTYPE_FORMENCODED = "application/x-www-form-urlencoded"
 HTTP_CONTENTTYPE_MULTIFORMDATA = "multipart/form-data"
+
+# Sets of words for login success detection
+SUCCESS_KEYWORDS = set(["success", "logged in", "authenticated"]) # TODO: Might need to try to expand this list

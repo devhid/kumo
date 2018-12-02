@@ -5,7 +5,7 @@ from http_requests.HttpRequest import HttpRequest
 
 if __name__ == "__main__":
     # Change the value of test to change what is tested
-    test = "http_requests"
+    test = "brute_force"
     if test == "http_requests":
         host = "facebook.com"
         port = 80
@@ -56,6 +56,20 @@ if __name__ == "__main__":
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
             request.close()
+    elif test == "brute_force":
+        host = "localhost"
+        port = 5000
+        url = "/login"
+        ua = "googlebot"
+
+        request = HttpRequest(host, port, "GET")
+        request.connect()
+        sent_get = request.send_get_request(url, host, ua)
+        if sent_get:
+            response = request.receive()
+            print(response)
+        request.close()
+
     elif test == "test_transform":
         test_transform = TransformTest()
         test_transform.test_upper()
