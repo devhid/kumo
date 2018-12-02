@@ -1,3 +1,4 @@
+# http_requests imports
 from http_requests import sockets
 
 class Socket:

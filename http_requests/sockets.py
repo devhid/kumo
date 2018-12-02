@@ -1,4 +1,4 @@
-# Python Imports
+# python imports
 import socket
 import sys
 import platform

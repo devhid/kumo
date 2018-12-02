@@ -1,7 +1,7 @@
-# http_requests Imports
+# http_requests imports
 from http_requests.Socket import Socket
 
-# utils Imports
+# utils imports
 from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED
 from utils.namedtuples import StatusCode
 

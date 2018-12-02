@@ -1,6 +1,8 @@
+# python imports
 import configparser
 import os.path
 
+# utils imports
 from utils.constants import CFG_FILE, CFG_DEF, CFG_VALS
 
 def load_config_section(config_file=CFG_FILE,config_section=CFG_DEF,required_vals=CFG_VALS):
