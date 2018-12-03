@@ -1,4 +1,4 @@
-from .domain_node import DomainNode
+from graphs.domain_node import DomainNode
 
 class DomainGraph:
     """ A custom graph data structure to store the family of a given root domain. """

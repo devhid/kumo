@@ -1,8 +1,8 @@
 import requests
 from collections import deque
 
-from .page_graph import PageGraph
-from .page_node import PageNode
+from graphs.page_graph import PageGraph
+from graphs.page_node import PageNode
 from utils.link_utils import get_domain, get_robot_links
 
 class DomainNode:
@@ -49,7 +49,7 @@ class DomainNode:
                     print('------------------------------------------------------------')
                     print("> New Page: " + current_page.url)
                     visited.add(current_page.url)
-                    current_page.process() 
+                    current_page.process(self.user_agent) 
 
                     if current_page.url in current_page.get_login_pages():
                         print("> Login Page Detected: " + current_page.url)
