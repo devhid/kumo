@@ -28,7 +28,7 @@ class PageNode:
         dom = '.'.join(ext[:])
         dom = dom[1:] if dom[:1] == "." else dom
         relative = '/' if urlparse(self.url).path == '' else urlparse(self.url).path
-                
+        relative = relative.replace("\r","")
         request = HttpRequest(dom,80,"GET")
         status_code = 0
         while True:

@@ -60,7 +60,7 @@ class DomainNode:
                     continue
                 status_tuple = response.status_code
                 if status_tuple is not None:
-                    status_code, __ = status_tuple
+                    status_code, redirect_url = status_tuple
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
                         queue.append(current_page)
@@ -104,6 +104,11 @@ class DomainNode:
                     
                     for word in current_page.get_tokenized_words():
                         self.tokenized_words.add(word)
+                elif redirect_url is not None:
+                    self.depths[redirect_url] = self.depths[current_page.url]
+                    self.depths.pop(current_page.url,None)
+                    current_page.url = redirect_url
+                    queue.append(current_page)
         
         print('------------------------------------------------------------')
         print("Pages Visited: {}".format(visited))
