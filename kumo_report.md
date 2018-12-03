@@ -197,11 +197,9 @@ max_total = 100
 
 - #### Completely Processing the Current Domain
 
-- #### HTTP Requests
+- HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
 
-  HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
-
-  The sections below describe how the sockets and HTTP request interfaces are implemented in **kumo**. An [example usage of client code using `HttpRequest`](#example-usage-of-`httprequest`) can be found at the end of this section.
+  The sections below describe how the sockets and HTTP request/response interfaces are implemented in **kumo**. An [example usage of client code using `network`](#example-usage-of-`network`) can be found at the end of this section.
 
   ## Sockets
 
@@ -307,13 +305,79 @@ max_total = 100
 
       **Returns**: message received from the `Socket` (`string`)
 
-  ## Requests
+  ## Requests/Responses
 
-  HTTP request functionality is implemented in the `HttpRequest.py` class, and depends on the `Socket.py` class.
+  HTTP request functionality is implemented in the `HttpRequest` class, and depends on the `Socket.py` class. HTTP response functionality is implemented in the `HttpResponse` class and they are returned from `HttpRequest` methods.
 
-  ### HttpRequest.py
+  ### HttpResponse
 
-  `HttpRequest.py` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
+  `HttpResponse` is a class that represents an HTTP response message. It provides easy access to important information needed in the response, or the raw response string itself.
+
+  An `HttpResponse` object is returned from the `send_post_request` and `send_get_request` methods of an `HttpRequest` instance if the request was successfully sent.
+
+  - **Constructor**
+
+  - **Instance Variables**
+
+    - `headers` : `string` or `None`
+
+      The HTTP headers of the HTTP response message.
+
+    - `status_code` : `StatusCode` or `None`
+
+      A `namedtuple('StatusCode', ['status_code, interesting_info'])`. Refer to the static method `HttpResponse.get_status_code()` for more information about `StatusCode`.
+
+    - `body` : `string` or `None`
+
+      The body/payload of the HTTP response message.
+
+    - `response` : `string`
+
+      The entire HTTP response message.
+
+      **Note**: `headers`, `status_code`, and `body` may be `None` if `response` is an invalid HTTP response message.
+
+  - **Static Methods**
+
+    - `get_status_code(http_response)`
+
+      Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
+
+      **Returns**: 
+
+      - `None` if `http_response` is invalid
+
+      - `StatusCode(status_code, interesting_info)`
+
+        If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
+
+    - `get_data(http_response,headers_body)`
+
+      Gets specified data from `http_response`, depending on whether `headers_body` is set to `HTTP_HEADERS` or `HTTP_BODY`.
+
+      **Returns**: the headers from `http_response` if `headers_body == HTTP_HEADERS`, the body if `headers_body == HTTP_BODY`, or `None` if `headers_body` was neither
+
+  - **Class Methods**
+
+    - `__get_headers(cls, http_response)`
+
+      Gets the HTTP headers from an HTTP response.
+
+      **Returns**: the HTTP headers of the response or `None` if the response was not valid
+
+    - `__get_body(cls, http_response)`
+
+      Gets the HTTP body from an HTTP response.
+
+      **Returns**: the HTML body of the response or `None` if the response was not valid
+
+      **Note**: the HTTP headers is separated by the body by two consecutive newline characters (`\r\n\r\n`) in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, `__get_body` returns an empty string.
+
+
+
+  ### HttpRequest
+
+  `HttpRequest` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
 
   An instance of an `HttpRequest` can be reused to perform multiple HTTP requests of the same type to a specified `url` and `port`, by calling `connect()`, sending/receiving a request, and then calling `close()`.
 
@@ -323,7 +387,7 @@ max_total = 100
 
       Initializes the `HttpRequest` instance by constructing a `Socket` to the specified `url` and `port` and setting the specified `method`.
 
-  - **Private Instance Variables**
+  - **Instance Variables**
 
     - `self.__socket`
 
@@ -353,13 +417,15 @@ max_total = 100
 
       **Returns**: does not return
 
-    - `receive(self)`
+    - `__receive(self)`
 
       Receives a message from the underlying `Socket` (`self.__socket`)  that represents the connection.
 
       **Uses**: `Socket.recv()`
 
       **Returns**: message received from the `Socket` (`string`)
+
+      **Note**: this method `__receive(self)` is private as a `HttpResponse` object is returned by the `send_get_request` and `send_post_request` methods
 
     - `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
@@ -407,7 +473,7 @@ max_total = 100
 
       **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
 
-      **Returns**: `True` if the message was sent successfully, `False` otherwise
+      **Returns**: `None` if the request failed to send, or an `HttpResponse` object describing the HTTP response message that was received
 
       **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
 
@@ -434,9 +500,11 @@ max_total = 100
       ```
 
       **Uses**: `__send_request(self, url, protocol, host, agent, content_type, content_length, cache_control, accept, accept_lang, accept_encoding, accept_charset, connection, body)`
-      **Returns**: `True` if the message was sent successfully, `False` otherwise
+      **Returns**: `None` if the request failed to send, or an `HttpResponse` object describing the HTTP response message that was received
 
       **Note**: `Accept-Encoding` is blank because it would add unnecessary complexity. When receiving a response with the current socket, we cannot know how long the headers of the response will be. Thus we cannot know where the heading `Content-Encoding` will appear in order to read that value and apply the appropriate decoding(s). We could read up until we hit two consecutive newlines to get the headers and then read that for the `Content-Encoding` header, but it is left as a potential future improvement.
+
+  - **Static Methods**
 
     - `generate_post_body(self, content_type, data)`
 
@@ -446,52 +514,31 @@ max_total = 100
 
       **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
 
-  - **Static Methods**
 
-    - `get_status_code(http_response)`
+  ### Example Usage of `network`
 
-      Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
+  An example usage of client code interacting with the `network` module is shown below.
 
-      **Returns**: 
+  ```python
+  # example usage of client code using the network module to send a GET request
+  request = HttpRequest(url,port,method)
+  for i in range(num_req):
+      response = request.send_get_request(url,host,agent)
+      if response is not None:
+          status_tuple = response.status_code
+          if status_tuple is not None:
+              print(status_tuple)
+          headers = response.headers
+          if headers is not None:
+              print(status_tuple)
+          body = response.body
+          if body is not None:
+              print(body)
+          response_str = response.response
+              print(response_str)
+  ```
 
-      - `None` if `http_response` is invalid
 
-      - `(status_code, interesting_info)`
-
-        If `status_code` is a redirect status code (of form `3xx`) then `interesting_info` is the preferred redirect URL. If there is no preferred redirect URL, `interesting_info` is `None`.
-
-    - `get_body(http_response)`
-
-      Gets the HTTP body from an HTTP response.
-
-      **Returns**: the HTML body of the response or `None` if the response was not valid
-
-      **Note**: the body begins after two consecutive newline characters in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, an empty string is returned.
-
-      ## Example Usage of `HttpRequest`
-
-      An example usage of client code interacting with the `http_requests` module is shown below.
-
-      ```python
-      # example usage of client code using HttpRequest to send a GET request
-      request = HttpRequest(url,port,method)
-      for i in range(num_req):
-          request.connect()
-          successful = request.send_get_request(self, url, host, agent)
-          if successful:
-              response = request.receive()
-              print(response)
-              tuple_ = HttpRequest.get_status_code(response)
-              if tuple_ is not None:
-                  status_code, redirect_url = tuple_
-                  print("status code %s" % (status_code))
-                  if status_code[:1] == "3":
-                      if redirect_url is not None:
-                          print("redirect url %s" % (redirect_url))
-                      else:
-                          print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
-          request.close()
-      ```
 
 - #### Tokenizing Words
 

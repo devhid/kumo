@@ -1,4 +1,5 @@
-from http_requests import sockets
+# network imports
+from network import sockets
 
 class Socket:
     
@@ -6,6 +7,9 @@ class Socket:
 
     def __init__(self,url,port):
         """ Initializes a new Socket. This Socket should represent a connection to the (url,port).
+
+        The same Socket object can be re-used for connections to the same (url,port) by calling
+        the connect() and close() methods.
 
         Parameters
         ----------
