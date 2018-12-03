@@ -31,7 +31,7 @@ class Crawler:
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
 
-        if not Crawler.validate_url(clean_url(url),user_agent):
+        if not Crawler.validate_url(url,user_agent):
             print(f'Invalid target URL {url}')
             return
 
@@ -91,7 +91,10 @@ class Crawler:
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
 
-            print(f'Cracked Users for {host}{form_url}')
+            if len(success) == 0:
+                print(f'Unable to crack {host}{form_url}')
+            else:
+                print(f'Cracked users for {host}{form_url}')
             for cred in success:
                 self.cracked[cred.user] = cred.password
                 print(f'    user = {cred.user}, pass = {cred.password}')
@@ -129,10 +132,13 @@ class Crawler:
 
     @staticmethod
     def validate_url(url,user_agent):
+        if url.find("http://") == -1:
+            url = "http://" + url
         ext = tldextract.extract(url)
         dom = '.'.join(ext[:])
         dom = dom[1:] if dom[:1] == "." else dom
-        relative = '/' if urlparse(url).path == '' else urlparse(url).path
+        rel = urlparse(url).path
+        relative = '/' if rel == '' else rel
         
         request = HttpRequest(dom,80,"GET")
         response = request.send_get_request(relative,dom,user_agent)
