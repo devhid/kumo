@@ -53,6 +53,12 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    <div style="page-break-after: always;"></div>
    ```
 
+   1. [Workflow](#Workflow)
+   2. [Brainstorming](#Brainstorming)
+   3. [Feature Contributions](#Feature-Contributions)
+   4. [Tying It Together](#Tying-It-Together)
+   5. [Major Blockers](#Major-Blockers)
+   6. [Presentation Planning](#Presentation-Planning)
 
 <h1 align=center> Functional Specifications </h1>
 
@@ -771,7 +777,7 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 <div style="page-break-after: always;"></div>
 
-<h1 align=center>References</h1>
+## Local (Flask)
 
 # Testing
 
