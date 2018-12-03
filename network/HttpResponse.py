@@ -15,7 +15,7 @@ class HttpResponse:
             3) the HTTP body of the response,
             4) the raw HTTP response as a string
         
-        All three attributes may be None if the http_response passed during
+        The first three attributes may be None if the http_response passed during
         construction was invalid.
 
         For the StatusCode, refer to get_status_code for more information.
