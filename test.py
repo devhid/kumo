@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     tests = ["brute_force", "configs", "http_local", "http_requests",
             "test_link_utils", "test_login_utils", "test_transform"]
-    test = "brute_force"
+    test = "test_login_utils"
 
     if test not in tests:
         print(f"Test {test} is invalid.")

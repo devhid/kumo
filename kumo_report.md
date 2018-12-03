@@ -542,13 +542,15 @@ max_total = 100
 
 - #### Tokenizing Words
 
-  - `tokenize_html(html)`
+  - `tokenize_html(html, include_all)`
 
     Retrieves all the words in the body section of a webpage's html document.
 
-    **Uses:** tokenize_html(html)
+    If include_all is true, words are retrieved from the entire html documet. If false, only words within the body section are retrieved. 
 
-    **Note:** Text in the body from JavaScript code and SVGs are not considered as valid words
+    **Uses:** tokenize_html(html, include_all)
+
+    **Note:** Text in the body from JavaScript scripts, CSS styles, and SVGs are not considered as valid words.
 
 - #### Text Transformation
 
@@ -611,17 +613,18 @@ max_total = 100
 - #### Link Retrieval
 
 
-  - `retrieve_links(html, base_url)`
+    - `retrieve_links(html, base_url)`
 
-    Retrieves all links in the webpage represented by the url.
+      Retrieves all links in the webpage represented by the url.
 
-    **Uses:** `retrieve_links(html, base_url)`
+      **Uses:** `retrieve_links(html, base_url)`
 
-    **Returns:** Returns a set of all urls in the html
+      **Returns:** Returns a set of all urls in the html
 
-    **Note:** All relative urls are converted to absolute urls based off the provided `base_url`
+      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page. 
 
 - #### Detecting Login Forms
+
 
     - `detect_login(html, base_url)`
 
@@ -632,18 +635,19 @@ max_total = 100
       **Returns:** A namedtuple of the following form:
 
       ```Python
-      namedtuple('Form', ['url', 'username', 'passname'])
+      namedtuple('Form', ['url', 'username', 'passname', 'action'])
       ```
 
       if a login form is found in the current webpage, `None` otherwise.
 
-      - `url`: The action url that the form submits to. If none is provided, the input `base_url` is used instead.
+      - `url`: The action url that the form submits to, relative to the `base_url`. If none is provided, the input `base_url` is used instead.
       - `username`: The value of the name attribute in the username input tag. 
       - `passname`: The value of the name attribute in the password input tag.
+      - `action`: `url` with "/" removed
 
-  - **Detection Method** 
+      - **Detection Method** 
 
-    **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
+        **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
 
 - #### Brute-forcing
 
@@ -780,6 +784,7 @@ The first topic we decided before we began our project was how to structure our 
 * In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
 
 
+
 ## Feature Contributions
 
 #### Stanley Lim
@@ -797,6 +802,7 @@ The first topic we decided before we began our project was how to structure our 
 #### Andy Liang
 
 * Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
+
 
 
 ## Tying It Together

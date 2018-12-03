@@ -8,6 +8,9 @@ def tokenize_html(html, include_all):
     ---
     html: string
         String represention of a page's html document
+    include_all: boolean
+        True: retrieve words from the entire html document
+        False: retrieve words from only within the body section of the html document
 
     Returns
     ---
