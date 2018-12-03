@@ -531,27 +531,27 @@ max_total = 100
       **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
 
 
-  ### Example Usage of `network`
+    ### Example Usage of `network`
 
-  An example usage of client code interacting with the `network` module is shown below.
+   An example usage of client code interacting with the `network` module is shown below.
 
   ```python
   # example usage of client code using the network module to send a GET request
-  request = HttpRequest(url,port,method)
-  for i in range(num_req):
-      response = request.send_get_request(url,host,agent)
-      if response is not None:
-          status_tuple = response.status_code
-          if status_tuple is not None:
-              print(status_tuple)
-          headers = response.headers
-          if headers is not None:
-              print(status_tuple)
-          body = response.body
-          if body is not None:
-              print(body)
-          response_str = response.response
-              print(response_str)
+    request = HttpRequest(url,port,method)
+    for i in range(num_req):
+        response = request.send_get_request(url,host,agent)
+        if response is not None:
+            status_tuple = response.status_code
+            if status_tuple is not None:
+                print(status_tuple)
+            headers = response.headers
+            if headers is not None:
+                print(status_tuple)
+            body = response.body
+            if body is not None:
+                print(body)
+            response_str = response.response
+                print(response_str)
   ```
 
 - #### Tokenizing Words
@@ -629,15 +629,15 @@ max_total = 100
 - #### Link Retrieval
 
 
-  - `retrieve_links(html, base_url)`
+    - `retrieve_links(html, base_url)`
 
-    Retrieves all links in the webpage represented by the url.
+      Retrieves all links in the webpage represented by the url.
 
-    **Uses:** `retrieve_links(html, base_url)`
+      **Uses:** `retrieve_links(html, base_url)`
 
-    **Returns:** Returns a set of all urls in the html
+      **Returns:** Returns a set of all urls in the html
 
-    **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page. 
+      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page. 
 
 - #### Detecting Login Forms
 
