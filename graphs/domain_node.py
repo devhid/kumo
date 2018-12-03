@@ -1,9 +1,16 @@
-import requests
+
 from collections import deque
 
 from graphs.page_graph import PageGraph
 from graphs.page_node import PageNode
 from utils.link_utils import get_domain, get_robot_links
+
+# network imports
+from network.HttpRequest import HttpRequest
+from network.HttpResponse import HttpResponse
+
+import tldextract
+from urllib.parse import urlparse
 
 class DomainNode:
     
@@ -41,11 +48,26 @@ class DomainNode:
             current_page = queue.popleft()
 
             if current_page.url not in visited:
-                response = requests.get(current_page.url).status_code
-                if not response:
-                    return
+                ext = tldextract.extract(current_page.url)
+                dom = '.'.join(ext[:])
+                dom = dom[1:] if dom[:1] == "." else dom
+                relative = '/' if urlparse(current_page.url).path == '' else urlparse(current_page.url).path
+                
+                request = HttpRequest(dom,80,"GET")
+                response = request.send_get_request(relative,dom,self.user_agent)
 
-                if 200 >= requests.get(current_page.url).status_code <= 300:
+                if response is None:
+                    continue
+                status_tuple = response.status_code
+                if status_tuple is not None:
+                    status_code, __ = status_tuple
+                    status_code = int(status_code)
+                    if status_code >= 400 and status_code <= 599:
+                        continue
+                else:
+                    continue
+
+                if status_code >= 200 and status_code <= 300:
                     print('------------------------------------------------------------')
                     print("> New Page: " + current_page.url)
                     visited.add(current_page.url)
@@ -96,9 +118,11 @@ class DomainNode:
         return self.login_forms
 
     def check_robots(self):
-        domain = get_domain(self.url)
-        response = requests.get(domain + "/robots.txt")
+        domain = get_domain(self.url).replace("http://","")
+        request = HttpRequest(domain,80,"GET")
+        response = request.send_get_request("/robots.txt",domain,self.user_agent)
 
-        if response:
-            return get_robot_links(response.content, self.url)
+        if response is not None:
+            if response.body is not None:
+                return get_robot_links(response.body, self.url)
         return []

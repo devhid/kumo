@@ -158,9 +158,9 @@ if __name__ == "__main__":
 
     # http_requests
     elif test == "http_requests":
-        host = "httpbin.org"
+        host = "3.17.9.125.xip.io"
         port = 80
-        url = "/get"
+        url = "/"
         ua = "chrome"
         num_get_req = 1
 
@@ -185,28 +185,28 @@ if __name__ == "__main__":
         print("---------------")
 
         # Test POST requests
-        url = "/post"
-        receive = True
-        content_type = "application/x-www-form-urlencoded"
-        data = {"hi":"world"}
-        num_post_req = 10
-        request = HttpRequest(host,port,"POST")
-        body = HttpRequest.generate_post_body(content_type,data)
-        content_length = len(body)
-        for i in range(num_post_req):
-            print(f'Request {i}')
-            print('-------------')
-            if body is not None:
-                response = request.send_post_request(url, host, ua, content_type, content_length, body)
-                if response is not None:
-                    print(response.response)
-                    tuple_ = response.status_code
-                    status_code = tuple_[0] if tuple_ is not None else None
-                    redirect_url = tuple_[1] if tuple_ is not None else None
-                    if status_code is not None:
-                        print("status code %s" % (status_code))
-                        if status_code[:1] == "3":
-                            print("redirect url %s" % (redirect_url))
+        # url = "/post"
+        # receive = True
+        # content_type = "application/x-www-form-urlencoded"
+        # data = {"hi":"world"}
+        # num_post_req = 1
+        # request = HttpRequest(host,port,"POST")
+        # body = HttpRequest.generate_post_body(content_type,data)
+        # content_length = len(body)
+        # for i in range(num_post_req):
+        #     print(f'Request {i}')
+        #     print('-------------')
+        #     if body is not None:
+        #         response = request.send_post_request(url, host, ua, content_type, content_length, body)
+        #         if response is not None:
+        #             print(response.response)
+        #             tuple_ = response.status_code
+        #             status_code = tuple_[0] if tuple_ is not None else None
+        #             redirect_url = tuple_[1] if tuple_ is not None else None
+        #             if status_code is not None:
+        #                 print("status code %s" % (status_code))
+        #                 if status_code[:1] == "3":
+        #                     print("redirect url %s" % (redirect_url))
     
     # test_link_utils
     elif test == "test_link_utils":

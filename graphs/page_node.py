@@ -1,4 +1,4 @@
-import requests
+
 from funcs.tokenizer import tokenize_html
 from utils.link_utils import retrieve_links, in_domain, dom_family
 from utils.login_utils import detect_login
@@ -21,15 +21,18 @@ class PageNode:
     
     def process(self,agent):
         ext = tldextract.extract(self.url)
-        dom = ext.domain
-        relative = urlparse(self.url).path
-        request = HttpRequest(self.url,80,"GET")
+        dom = '.'.join(ext[:])
+        dom = dom[1:] if dom[:1] == "." else dom
+        relative = '/' if urlparse(self.url).path == '' else urlparse(self.url).path
+                
+        request = HttpRequest(dom,80,"GET")
         response = request.send_get_request(relative,dom,agent)
         status_code = 0
         if response is not None:
             status_tuple = response.status_code
             if status_tuple is not None:
                 status_code, __ = status_tuple
+                status_code = int(status_code)
                 if status_code >= 400 and status_code <= 599:
                     return
             else:
@@ -41,9 +44,11 @@ class PageNode:
 
         for link in all_links:
             ext = tldextract.extract(link)
-            dom = ext.domain
-            relative = urlparse(link).path
-            request = HttpRequest(link,80,"GET")
+            dom = '.'.join(ext[:])
+            if dom[:1] == ".":
+                dom = dom[1:]
+            relative = '/' if urlparse(link).path == '' else urlparse(link).path
+            request = HttpRequest(dom,80,"GET")
             response = request.send_get_request(relative,dom,agent)
 
             # Continue wtih the next link if there are errors.
@@ -53,6 +58,7 @@ class PageNode:
                 status_tuple = response.status_code
                 if status_tuple is not None:
                     status_code, redirect_url = status_tuple
+                    status_code = int(status_code)
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
@@ -64,12 +70,14 @@ class PageNode:
             if status_code >= 301 and status_code <= 308:
 
                 if in_domain(self.url, redirect_url):
-
-                    inner_request = HttpRequest(redirect_url,80,"GET")
-                    inner_ext = tldextract.extract(self.url)
-                    inner_relative = inner_ext.domain
-                    inner_dom = urlparse(redirect_url).path
+                    inner_ext = tldextract.extract(redirect_url)
+                    inner_dom = '.'.join(inner_ext[:])
+                    inner_dom = inner_dom[1:] if inner_dom[:1] == "." else inner_dom
+                    inner_relative = '/' if urlparse(redirect_url).path == '' \
+                                        else urlparse(redirect_url).path
+                    inner_request = HttpRequest(inner_dom,80,"GET")
                     inner_response = inner_request.send_get_request(inner_relative,inner_dom,agent)
+
 
                     # Continue wtih the next link if there are errors.
                     inner_status_code = 0
@@ -78,6 +86,7 @@ class PageNode:
                         inner_status_tuple = inner_response.status_code
                         if inner_status_tuple is not None:
                             inner_status_code, inner_redirect_url = inner_status_tuple
+                            inner_status_code = int(inner_status_code)
                             if inner_status_code >= 400 and inner_status_code <= 599:
                                 continue
                         else:

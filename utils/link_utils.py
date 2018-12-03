@@ -113,7 +113,7 @@ def add_subdomain(url, subdomain):
 def get_robot_links(html, base_url):
     rp = urllib.robotparser.RobotFileParser()
     
-    rp.parse(html.decode('utf-8').splitlines())
+    rp.parse(html.splitlines())
 
     paths = [clean_url(base_url + str(rule).split()[1]) for rule in rp.default_entry.rulelines]
     
