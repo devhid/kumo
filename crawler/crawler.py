@@ -51,10 +51,10 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                # for subdomain in self.validate_subdomains(domain.url, user_agent):
-                #     print("> Found Subdomain: " + subdomain)
-                #     if subdomain not in visited:
-                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                for subdomain in self.validate_subdomains(domain.url, user_agent):
+                    print("> Found Subdomain: " + subdomain)
+                    if subdomain not in visited:
+                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()
@@ -84,10 +84,10 @@ class Crawler:
             ua = "chrome"
 
             words = self.tokenized
-            if "yalofaputu@autowb.com" in words and "test" in words:
-                words = {"yalofaputu@autowb.com", "test"}
-            if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-                words = {"bawofafefe@kulmeo.com", "Test12345!"}
+            # if "yalofaputu@autowb.com" in words and "test" in words:
+            #     words = {"yalofaputu@autowb.com", "test"}
+            # if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
+            #     words = {"bawofafefe@kulmeo.com", "Test12345!"}
 
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)

@@ -54,13 +54,13 @@ def bruteforce(request, url, host, port, agent,
 
     # Add all transformations for each word
     all_words = set(words)
-    # transformations = transform.generate_transformations(list(words))
-    # for word in words:
-    #     transformation = transformations[word]
-    #     all_words.add(transformation.lower)
-    #     all_words.add(transformation.upper)
-    #     all_words.add(transformation.reverse)
-    #     all_words.add(transformation.leet)
+    transformations = transform.generate_transformations(list(words))
+    for word in words:
+        transformation = transformations[word]
+        all_words.add(transformation.lower)
+        all_words.add(transformation.upper)
+        all_words.add(transformation.reverse)
+        all_words.add(transformation.leet)
     
     # Try all combinations for the form described by url on host
     content_type = HTTP_CONTENTTYPE_FORMENCODED
