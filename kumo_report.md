@@ -549,7 +549,9 @@ max_total = 100
 
     **Uses:** tokenize_html(html, include_all)
 
-    **Note:** Text in the body from JavaScript scripts, CSS styles, and SVGs are not considered as valid words.
+    **Return:** A set of all tokenized words in the html document within the specified bounds.
+
+    **Note:** Text in the body from JavaScript scripts, CSS styles, and SVGs are not considered as valid words and are not added to the set.
 
 - #### Text Transformation
 
@@ -649,7 +651,23 @@ max_total = 100
 
 - #### Brute-forcing
 
+  - `bruteforce(request, url, host, port, agent, user_key, pass_key, action_val, words)`
 
+    Bruteforce every combination of username and password for a specific form
+
+    **Uses:** `bruteforce(request, url, host, port, agent, user_key, pass_key, action_val, words)`
+
+    **Returns:** A list of namedtuples of the form:
+
+    ```Python
+    Credential = namedtuple('Credential', ["user", "password"])
+    ```
+
+    where the `user` and `password` represent a credential pair that successfully logged into the form.
+
+  - **Words used to bruteforce** 
+
+    Username and password are selected from the passed `words` argument, which is a set containing all collected words from the domains and subdomains of crawled webpages. The set also contains all transformed versions of the word, created using the [Text Transformation](#Text-Transformation) that **kumo** supports.
 
 ### 3. Future Improvements
 
@@ -698,12 +716,6 @@ Refer to [Properties](#Properties) for an explanation of the main configurations
 
 This section of the report describes how to use **kumo** after it is [Setup](#Setup).
 
-```html
-<div style="page-break-after: always;"></div>
-```
-
-<h1 align=center>References</h1>
-
 # Testing
 
 The project itself comes with a local website along with deployed instances of **Wordpress**.
@@ -718,27 +730,35 @@ Follow the setup guide found in `README.md` inside the `fake-website` directory.
 ## Wordpress
 
 > Note that the original deployment on x10Host is no longer supported, however they can still be used for testing.
-  - [Kumo Blog](http://kumo.x10host.com/)
-  - [Subdomain Blog](http://email.kumo.x10host.com/)
+>
+> - [Kumo Blog](http://kumo.x10host.com/)
+> - [Subdomain Blog](http://email.kumo.x10host.com/)
 
 For testing, multiple Wordpress sites have been deployed on AWS with text scattered around each page that corresponding to accounts of actual users.
-  - [Kumo Blog](http://3.17.9.125.xip.io/)
-  - [Kumo Forum](http://forum.3.17.9.125.xip.io/)
-  - [Beta Site](http://beta.3.17.9.125.xip.io/)
+
+- [Kumo Blog](http://3.17.9.125.xip.io/)
+- [Kumo Forum](http://forum.3.17.9.125.xip.io/)
+- [Beta Site](http://beta.3.17.9.125.xip.io/)
 
 *Note that users are shared across the blogs.*
 
 To test the crawler effectively, it is recommended to set the starting page to **Kumo Blog** since that page would link to the other two subdomains.
 
-### Internet Standards
+```html
+<div style="page-break-after: always;"></div>
+```
 
-- #### HTTP
+<h1 align=center>References</h1>
+
+## Internet Standards
+
+- ### HTTP
 
   - ##### Headers and Message Format
 
     - [RFC 2616: HTTP](https://tools.ietf.org/html/rfc2616#section-4.2)
 
-- #### SMTP
+- ### SMTP
 
   - ##### [Case-Insensitive Email Addresses StackOverflow Question](https://stackoverflow.com/questions/9807909/are-email-addresses-case-sensitive)
 
@@ -746,9 +766,9 @@ To test the crawler effectively, it is recommended to set the starting page to *
 
 
 
-### Programming Guidelines
+## Programming Guidelines
 
-- #### Socket Programming
+- ### Socket Programming
 
     - [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
     - [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
@@ -804,6 +824,10 @@ The first topic we decided before we began our project was how to structure our 
 
 
 ## Tying It Together
+
+Each team member was responsible for creating subcomponents that were essential to create the main crawler. The domain that **kumo** starts crawling at, as well as the various configuration options, are specified using the **command line interface**. The crawler uses the **graph data structures** to traverses the domains and subdomains, using **http requests** to retrieve the http body. From the body, links and words are **tokenized** and stored into their respective sets while **login detection** checks whether the current url contains a login page. After the crawler completely traverses a domain and its subdomains or reaches the [configuration](#Config) limits of `max_depth` or `max_total` of pages, the crawler **bruteforces** all of the login forms that it finds, returning a list of successful username-password pair.
+
+To get all the components running together, we communicated through a group call. Everytime a feature was finished, the feature branch was merged with the master branch in GitHub. Eventually, all the features were completed and merged to master, allowing us to import all the components and implement the crawler. 
 
 
 
