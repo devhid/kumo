@@ -710,7 +710,7 @@ The first topic we decided before we began our project was how to structure our 
 
 #### Stanley Lim
 
-* Worked on **text transformation**, created the **test websites**, and helped out with **bruteforcing**.
+* Worked on **text transformation**, created the **test websites** using Flask and Wordpress to help test live usage of the crawler, and helped out with **bruteforcing**.
 
 #### Johnny So
 
@@ -733,7 +733,7 @@ The first topic we decided before we began our project was how to structure our 
 
 #### Request Limits
 
-* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts.
+* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts. In order to circumvent this, the initial deployment of Wordpress switched from x10Host to AWS and tests were run using a VPN when the host machine's IP was blacklisted. When these solutions failed, a check was added in **kumo** to handle 429 and 503 status codes, which were errors for **too many requests** and **service unavailable** respectively.
 
 #### Testing Issues
 
