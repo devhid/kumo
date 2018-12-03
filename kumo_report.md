@@ -49,7 +49,9 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    5. [Major Blockers](#Major-Blockers)
    6. [Presentation Planning](#Presentation-Planning)
 
+   ```html
    <div style="page-break-after: always;"></div>
+   ```
 
 
 <h1 align=center> Functional Specifications </h1>
@@ -188,8 +190,6 @@ max_total = 100
 ### 2. Feature Implementation
 
 - #### Breadth-First Search (BFS)
-
-  - The 
 
 - #### Depth-First Search (DFS)
 
@@ -673,6 +673,10 @@ Via SSH:
 Via HTTPS:
 
 ​	```git clone https://github.com/devhid/kumo.git	```
+
+
+
+### Extracting ZIP
 
 
 

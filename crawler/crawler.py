@@ -9,11 +9,21 @@ from network.HttpResponse import HttpResponse
 from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
 from utils.namedtuples import StatusCode
+<<<<<<< HEAD
+=======
+from utils.login_utils import detect_login
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
 # graphs imports
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
 from bruteforce.bruteforce import bruteforce
+<<<<<<< HEAD
+=======
+
+# tokenize imports
+from funcs.tokenizer import tokenize_html
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
 class Crawler:
     def __init__(self):
@@ -39,10 +49,17 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
+<<<<<<< HEAD
                 for subdomain in self.validate_subdomains(domain.url, user_agent):
                     print("> Found Subdomain: " + subdomain)
                     if subdomain not in visited:
                         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+=======
+                # for subdomain in self.validate_subdomains(domain.url, user_agent):
+                #     print("> Found Subdomain: " + subdomain)
+                #     if subdomain not in visited:
+                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()
@@ -64,6 +81,23 @@ class Crawler:
         print("Total Domains Visited: {}".format(visited))
         print("Login Forms: {}".format(self.login_forms))
         print("Tokenized Words: {}".format(self.tokenized))
+
+        # Begin bruteforcing forms
+        for login_form in self.login_forms:
+            host, form_url, user_key, pass_key, action_val = login_form
+            port = 80
+            ua = "chrome"
+
+            words = tokenize_html(response.response, False)
+
+            post_req = HttpRequest(host, port, "POST")
+            success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
+
+            print('Cracked Users:')
+            for cred in success:
+                self.cracked[cred.user] = cred.password
+                print(f'    user = {cred.user}, pass = {cred.password}')
+
         return visited
     
     def _pop(self, method, to_traverse):

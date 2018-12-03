@@ -49,7 +49,11 @@ def detect_login(html, base_url):
     d = pq(html)
 
     # HTML Form (Standard HTML)
+<<<<<<< HEAD
     form_prop = ["", "", "", ""] # [form action url, user input name, password input name]
+=======
+    form_prop = ["", "", "", "", ""] # [form action url, user input name, password input name, host name]
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
     user_input = False
     pass_input = False
     login_submit = False
@@ -97,11 +101,19 @@ def detect_login(html, base_url):
             form_url = urlparse(form_url)
             form_prop[0] = form_url.path.replace('localhost', '')
             form_prop[3] = form_prop[0].replace('/', '')
+<<<<<<< HEAD
+=======
+            form_prop[4] = form_url.hostname
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
             break
 
     if(user_input and pass_input and login_submit):
         return Form(url=form_prop[0], username=form_prop[1], 
+<<<<<<< HEAD
                     passname=form_prop[2], action=form_prop[3])
+=======
+                    passname=form_prop[2], action=form_prop[3], host=form_prop[4])
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -131,11 +143,19 @@ def detect_login(html, base_url):
             form_url = urlparse(form_url)
             form_prop[0] = form_url.path.replace('localhost', '')
             form_prop[3] = form_prop[0].replace('/', '')
+<<<<<<< HEAD
+=======
+            form_prop[4] = form_url.hostname
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
             break
 
     if(user_input and pass_input and login_submit):
         return Form(url=form_prop[0], username=form_prop[1], 
+<<<<<<< HEAD
                     passname=form_prop[2], action=form_prop[3])
+=======
+                    passname=form_prop[2], action=form_prop[3], host=form_prop[4])
+>>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
     else:
         return None
     
