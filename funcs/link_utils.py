@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from urllib.parse import urldefrag
 import tldextract as tld
 import re
+import urllib.robotparser
 
 # Help messages for all the configuration options.
 HELP_AGENT = 'A custom user-agent for use with each GET/POST request.'
@@ -419,4 +420,15 @@ def add_subdomain(url, subdomain):
     o = urlparse(url)
 
     return o.scheme + "://" + subdomain.strip() + "." + o.netloc + o.path
+
+def get_robot_links(html, base_url):
+    rp = urllib.robotparser.RobotFileParser()
+    
+    rp.parse(html.decode('utf-8').splitlines())
+
+    paths = [clean_url(base_url + str(rule).split()[1]) for rule in rp.default_entry.rulelines]
+    
+    return paths
+    
+
 

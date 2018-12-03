@@ -3,6 +3,7 @@ import requests
 
 import tokenize
 from .page_graph import PageGraph
+from .link_utils import *
 
 class DomainGraph:
     """ A custom graph data structure to store the family of a given root domain. """
@@ -34,7 +35,6 @@ class DomainGraph:
             self.depths = { self.url: 0 }
             self.connected_domains = set()
             self.login_urls = set()
-            self.reached_max_depth = False
 
         def __repr__(self):
             return 'DomainNode(url={}, connected_domains={})'.format(self.url, self.connected_domains)
@@ -45,8 +45,13 @@ class DomainGraph:
 
             visited, queue = set(), deque([root_page])
 
-            # Account for robots.txt later.
-            # Maybe make a page node for each url in robots.txt and add it to the queue.
+            # Account for robots.txt.
+            print("\n> Currently checking for valid links in robots.txt...")
+            for robot_url in self.check_robots():
+                print("> Found Robot Path: " + robot_url)
+                robot_page = PageGraph.PageNode(robot_url)
+                queue.append(robot_page)
+                self.depths[robot_url] = 1
 
             while queue:
                 current_page = queue.popleft()
@@ -68,7 +73,6 @@ class DomainGraph:
                         print("Depth: " + str(self.depths[current_page.url]))
                         if self.depths[current_page.url] >= self.max_depth:
                             print("> Reached Max Depth: " + str(self.depths[current_page.url]))
-                            self.reached_max_depth = True
                             break
                             
                         self.page_count += 1
@@ -102,6 +106,14 @@ class DomainGraph:
 
         def get_login_urls(self):
             return self.login_urls
+
+        def check_robots(self):
+            domain = get_domain(self.url)
+            response = requests.get(domain + "/robots.txt")
+
+            if response:
+                return get_robot_links(response.content, self.url)
+            return []
 
 
 
