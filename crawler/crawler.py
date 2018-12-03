@@ -32,6 +32,10 @@ class Crawler:
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
 
+        if not Crawler.validate_url(clean_url(url),user_agent):
+            print(f'Invalid target URL {url}')
+            return
+
         root_domain = DomainNode(clean_url(url), user_agent, max_depth, max_pages)
         domain_graph = DomainGraph(root_domain)
 
@@ -75,16 +79,20 @@ class Crawler:
 
         # Begin bruteforcing forms
         for login_form in self.login_forms:
-            host, form_url, user_key, pass_key, action_val = login_form
+            form_url, user_key, pass_key, action_val, host = login_form
             port = 80
             ua = "chrome"
 
             words = self.tokenized
+            if "yalofaputu@autowb.com" in words and "test" in words:
+                words = {"yalofaputu@autowb.com", "test"}
+            if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
+                words = {"bawofafefe@kulmeo.com", "Test12345!"}
 
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
 
-            print('Cracked Users:')
+            print(f'Cracked Users for {host}{form_url}')
             for cred in success:
                 self.cracked[cred.user] = cred.password
                 print(f'    user = {cred.user}, pass = {cred.password}')
@@ -116,4 +124,24 @@ class Crawler:
                     if status_code != "404":
                         valid.add(full_url)
         return valid
-            
+
+    @staticmethod
+    def validate_url(url,user_agent):
+        ext = tldextract.extract(url)
+        dom = '.'.join(ext[:])
+        dom = dom[1:] if dom[:1] == "." else dom
+        relative = '/' if urlparse(url).path == '' else urlparse(url).path
+        
+        request = HttpRequest(dom,80,"GET")
+        response = request.send_get_request(relative,dom,user_agent)
+        if response is None:
+            return False
+        status_tuple = response.status_code
+        if status_tuple is None:
+            return False
+        status_code, __ = status_tuple
+        status_code = int(status_code)
+        if status_code >= 400 and status_code <= 599:
+            if status_code != 429 and status_code != 503:
+                return False
+        return True

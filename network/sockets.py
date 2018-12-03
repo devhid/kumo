@@ -23,7 +23,7 @@ def connect(url, port):
         the socket that is binded to the URL, or None if it could not be created
     """
     try:
-        client_socket = socket.create_connection((url,port))
+        client_socket = socket.create_connection((url,port),timeout=10)
         return client_socket
     except socket.error as err:
         return None

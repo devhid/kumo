@@ -47,12 +47,12 @@ class DomainNode:
         while queue:
             current_page = queue.popleft()
 
-            if current_page.url not in visited:
+            if current_page.url is not None and current_page.url not in visited:
                 ext = tldextract.extract(current_page.url)
                 dom = '.'.join(ext[:])
                 dom = dom[1:] if dom[:1] == "." else dom
                 relative = '/' if urlparse(current_page.url).path == '' else urlparse(current_page.url).path
-                
+                relative = relative.replace("\r","")
                 request = HttpRequest(dom,80,"GET")
                 response = request.send_get_request(relative,dom,self.user_agent)
 
@@ -62,6 +62,8 @@ class DomainNode:
                 if status_tuple is not None:
                     status_code, __ = status_tuple
                     status_code = int(status_code)
+                    if status_code == 429 or status_code == 503:
+                        queue.append(current_page)
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
