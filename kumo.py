@@ -56,3 +56,6 @@ def info():
     click.secho(version, fg='yellow')
     click.secho(authors, fg='yellow')
     click.secho(github, fg='yellow')
+
+if __name__ == "__main__":
+    main()

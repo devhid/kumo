@@ -8,4 +8,4 @@ Credential = namedtuple('Credential', ["user", "password"])
 StatusCode = namedtuple('StatusCode', ['status_code', 'interesting_info'])
 
 # utils/login_utils.py -> detect_login()
-Form = namedtuple('Form', ['url', 'username', 'passname', 'action'])
+Form = namedtuple('Form', ['url', 'username', 'passname', 'action', 'host'])
