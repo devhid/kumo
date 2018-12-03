@@ -1,5 +1,5 @@
-# http_requests imports
-from http_requests import sockets
+# network imports
+from network import sockets
 
 class Socket:
     

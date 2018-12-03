@@ -7,9 +7,9 @@ from configs import configs
 # funcs imports
 from funcs.tokenizer import tokenize_html
 
-# http_requests imports
-from http_requests.Socket import Socket
-from http_requests.HttpRequest import HttpRequest
+# network imports
+from network.Socket import Socket
+from network.HttpRequest import HttpRequest
 
 # utils imports
 from utils.login_utils import detect_login
@@ -23,7 +23,8 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     tests = ["brute_force", "configs", "http_local", "http_requests",
             "test_link_utils", "test_login_utils", "test_transform"]
-    test = "brute_force"
+    test = "test_transform"
+
     if test not in tests:
         print(f"Test {test} is invalid.")
         pass
@@ -41,19 +42,15 @@ if __name__ == "__main__":
         ua = "chrome"
 
         request = HttpRequest(host, port, "GET")
-        request.connect()
-        sent_get = request.send_get_request(url, host, ua)
-        if sent_get:
-            response = request.receive()
-            body = HttpRequest.get_body(response)
+        response = request.send_get_request(url,host,ua)
+        if response is not None:
+            body = response.body
 
-            # Detect if login form is present and get the login fields
+            # Detect if there is a login form present, and get login fields
             login = detect_login(body,host+url)
             if login is not None:
-                print(login)
                 form_url, user_key, pass_key, action_val = login
-
-                words = tokenize_html(response, False)
+                words = tokenize_html(response.response, False)
                 if "yalofaputu@autowb.com" in words and "test" in words:
                     words = {"yalofaputu@autowb.com","test"}
                 # if "admin@mizio.io" in words:
@@ -64,9 +61,7 @@ if __name__ == "__main__":
                 print("Successful Logins:")
                 for cred in success:
                     print(f'    user = {cred.user}, pass = {cred.password}')
-
-        request.close()
-
+                    
     # configs
     elif test == "configs":
         config = configs.DEFAULT_CONFIGS
@@ -82,49 +77,38 @@ if __name__ == "__main__":
 
         # Test GET
         request = HttpRequest(host, port, "GET")
-        request.connect()
-        sent_get = request.send_get_request(url, host, ua)
-        if sent_get:
-            response = request.receive()
-            print(response)
-        request.close()
+        response = request.send_get_request(url, host, ua)
+        if response is not None:
+            print(response.response)
 
         print("---------------")
 
         # Test POST login success
         request = HttpRequest(host, port, "POST")
         url = "/login"
-        receive = True
         data = {"email":"admin@mizio.io", "password":"admin"}
         content_type = "application/x-www-form-urlencoded"
-        body = request.generate_post_body(content_type,data)
+        body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
 
         if body is not None:
-            request.connect()
-            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
-            if sent_get and receive:
-                response = request.receive()
-                print(response)
-            request.close()
+            response = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if response is not None:
+                print(response.response)
 
         print("---------------")
 
         # Test POST login fail
         request = HttpRequest(host, port, "POST")
         url = "/login"
-        receive = True
         content_type = "application/x-www-form-urlencoded"
         data = {"email":"bademail@email.com", "password":"wrongpass"}
-        body = request.generate_post_body(content_type,data)
+        body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            request.connect()
-            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
-            if sent_get and receive:
-                response = request.receive()
-                print(response)
-            request.close()
+            response = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if response is not None:
+                print(response.response)
 
         print("---------------")
 
@@ -134,15 +118,12 @@ if __name__ == "__main__":
         content_type = "application/x-www-form-urlencoded"
         data = {"email":"admin@mizio.net", "password":"admin"}
         request = HttpRequest(host, port, "POST")
-        body = request.generate_post_body(content_type,data)
+        body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            request.connect()
-            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
-            if sent_get and receive:
-                response = request.receive()
-                print(response)
-            request.close()
+            response = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if response is not None:
+                print(response.response)
 
         print("---------------")
 
@@ -152,15 +133,12 @@ if __name__ == "__main__":
         content_type = "application/x-www-form-urlencoded"
         data = {"email":"admin", "password":"wrongpass", "btn":"login"}
         request = HttpRequest(host, port, "POST")
-        body = request.generate_post_body(content_type,data)
+        body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
         if body is not None:
-            request.connect()
-            sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
-            if sent_get and receive:
-                response = request.receive()
-                print(response)
-            request.close()
+            response = request.send_post_request(url, host, ua, content_type, content_length, body)
+            if response is not None:
+                print(response.response)
 
     # http_requests
     elif test == "http_requests":
@@ -174,21 +152,18 @@ if __name__ == "__main__":
         request = HttpRequest(host,port,"GET")
         for i in range(num_get_req):
             print("request %d" % (i))
-            request.connect()
-            sent_get = request.send_get_request(url,host,ua)
-            if sent_get:
-                response = request.receive()
-                print(response)
-                body = request.get_body(response)
+            response = request.send_get_request(url,host,ua)
+            if response is not None:
+                print(response.response)
+                body = response.body
                 print(body)
-                tuple_ = HttpRequest.get_status_code(response)
+                tuple_ = response.status_code
                 status_code = tuple_[0] if tuple_ is not None else None
                 redirect_url = tuple_[1] if tuple_ is not None else None
                 if status_code is not None:
                     print("status code %s" % (status_code))
                     if status_code[:1] == "3":
                         print("redirect url %s" % (redirect_url))
-            request.close()
 
         # Separate the output.
         print("---------------")
@@ -203,22 +178,19 @@ if __name__ == "__main__":
         body = HttpRequest.generate_post_body(content_type,data)
         content_length = len(body)
         for i in range(num_post_req):
-            print(f'request {i}')
+            print(f'Request {i}')
             print('-------------')
             if body is not None:
-                request.connect()
-                sent_get = request.send_post_request(url, host, ua, content_type, content_length, body)
-                if sent_get and receive:
-                    response = request.receive()
-                    print(response)
-                    tuple_ = HttpRequest.get_status_code(response)
+                response = request.send_post_request(url, host, ua, content_type, content_length, body)
+                if response is not None:
+                    print(response.response)
+                    tuple_ = response.status_code
                     status_code = tuple_[0] if tuple_ is not None else None
                     redirect_url = tuple_[1] if tuple_ is not None else None
                     if status_code is not None:
                         print("status code %s" % (status_code))
                         if status_code[:1] == "3":
                             print("redirect url %s" % (redirect_url))
-                request.close()
     
     # test_link_utils
     elif test == "test_link_utils":

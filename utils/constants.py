@@ -9,7 +9,7 @@ HELP_SEARCH_METHOD = 'The search traversal method for crawling: bfs|dfs.'
 HELP_MAX_DEPTH = 'The maximum depth of pages to crawl.'
 HELP_MAX_PAGES = 'The maximum total number of crawled pages.'
 
-# http_requests 
+# network 
 HTTP_UA_FIREFOX = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
 HTTP_UA_CHROME = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 HTTP_UA_OPERA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36 OPR/38.0.2220.41'
@@ -20,6 +20,9 @@ HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
             'opera':HTTP_UA_OPERA,'safari':HTTP_UA_SAFARI,
             'ie':HTTP_UA_IE,'googlebot':HTTP_UA_GOOGLEBOT}
 HTTP_CONTENTTYPE_FORMENCODED = "application/x-www-form-urlencoded"
+
+HTTP_HEADERS = "headers"
+HTTP_BODY = "body"
 
 ## login_utils
 # keywords for login success detection

