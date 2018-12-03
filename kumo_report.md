@@ -777,8 +777,6 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 <div style="page-break-after: always;"></div>
 
-## Local (Flask)
-
 # Testing
 
 The project itself comes with a local website along with deployed instances of **Wordpress**.
