@@ -107,7 +107,7 @@ def detect_login(html, base_url):
     d = pq(html)
 
     # HTML Form (Standard HTML)
-    form_prop = ["", "", ""] # [form action url, user input name, password input name]
+    form_prop = ["", "", "", ""] # [form action url, user input name, password input name, host]
     user_input = False
     pass_input = False
     login_submit = False
@@ -153,11 +153,14 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
+            print(form_url.scheme + '-')
+            print(form_url.netloc + '-')
             form_prop[0] = form_url.path
+            form_prop[3] = form_url.netloc
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2], host=form_prop[3])
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -185,11 +188,14 @@ def detect_login(html, base_url):
             if('action' in form.attrib):
                 form_url = form.attrib['action']
             form_url = urlparse(form_url)
+            print(form_url.scheme + '+')
+            print(form_url.hostname + '+')
             form_prop[0] = form_url.path
+            form_prop[3] = form_url.netloc
             break
 
     if(user_input and pass_input and login_submit):
-        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2])
+        return Form(url=form_prop[0], username=form_prop[1], passname=form_prop[2], host=form_prop[3])
     else:
         return None
     

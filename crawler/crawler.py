@@ -5,6 +5,8 @@ from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
+from bruteforce.bruteforce import bruteforce
+
 
 class Crawler:
     def __init__(self):
@@ -31,10 +33,10 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                for subdomain in self.validate_subdomains(domain.url):
-                    print("> Found Subdomain: " + subdomain)
-                    if subdomain not in visited:
-                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                # for subdomain in self.validate_subdomains(domain.url):
+                #     print("> Found Subdomain: " + subdomain)
+                #     if subdomain not in visited:
+                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()
@@ -56,6 +58,10 @@ class Crawler:
         print("Total Domains Visited: {}".format(visited))
         print("Login Forms: {}".format(self.login_forms))
         print("Tokenized Words: {}".format(self.tokenized))
+
+        # Begin bruteforcing forms
+
+
         return visited
     
     def _pop(self, method, to_traverse):

@@ -1,3 +1,3 @@
 from collections import namedtuple
 
-Form = namedtuple('Form', ['url', 'username', 'passname'])
+Form = namedtuple('Form', ['url', 'username', 'passname', 'host'])
