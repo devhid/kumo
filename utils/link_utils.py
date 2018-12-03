@@ -5,6 +5,7 @@ from pyquery import PyQuery as pq
 from urllib.parse import urlparse
 from urllib.parse import urljoin
 from urllib.parse import urldefrag
+import urllib.robotparser
 import tldextract as tld
 import re
 
@@ -258,17 +259,46 @@ def dom_family(dom_one, dom_two):
     """
 
     done_ext = tld.extract(dom_one)
+    # print(done_ext)
     dtwo_ext = tld.extract(dom_two)
+    # print(dtwo_ext)
     if(done_ext.domain != dtwo_ext.domain):
         return False
     
     done = '.'.join(done_ext[:])
+    # print(done)
     dtwo = '.'.join(dtwo_ext[:])
+    # print(dtwo)
 
     if done == dtwo:
         return False
-
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
+
+def clean_url(url):
+    if url[-1] == '/':
+        return url[:-1]
+    
+    return url
+
+def get_domain(url):
+
+    o = urlparse(url)
+    link = o.scheme + "://" + o.netloc
+    return link
+
+def add_subdomain(url, subdomain):
+    o = urlparse(url)
+
+    return o.scheme + "://" + subdomain.strip() + "." + o.netloc + o.path
+
+def get_robot_links(html, base_url):
+    rp = urllib.robotparser.RobotFileParser()
+    
+    rp.parse(html.decode('utf-8').splitlines())
+
+    paths = [clean_url(base_url + str(rule).split()[1]) for rule in rp.default_entry.rulelines]
+    
+    return paths
 
 def verify_success_resp(html):
     """Determines if the user successfully logged in based on keywords

@@ -1,7 +1,7 @@
 import click
 import os
 
-from funcs.crawler import Crawler
+from crawler.crawler import Crawler
 from configs import configs
 
 # Some random defaults for configuration options.
