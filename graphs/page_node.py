@@ -67,9 +67,9 @@ class PageNode:
 
                     inner_request = HttpRequest(redirect_url,80,"GET")
                     inner_ext = tldextract.extract(self.url)
-                    inner_rel = ext.domain
+                    inner_relative = inner_ext.domain
                     inner_dom = urlparse(redirect_url).path
-                    inner_response = request.send_get_request(relative,dom,agent)
+                    inner_response = inner_request.send_get_request(inner_relative,inner_dom,agent)
 
                     # Continue wtih the next link if there are errors.
                     inner_status_code = 0
@@ -86,11 +86,11 @@ class PageNode:
                         continue
 
                     if inner_status_code == 200 or inner_status_code == 300:
-                        login_page = detect_login(response.body, redirect_url)
+                        login_page = detect_login(inner_response.body, inner_redirect_url)
                         if login_page:
                             self.login_pages.add(login_page)
 
-                        self.connected_pages.add(redirect_url)
+                        self.connected_pages.add(inner_redirect_url)
                         self.tokenized_words.update(tokenize_html(inner_response.body,False))
 
             # Handle status 300 the same as 200.
