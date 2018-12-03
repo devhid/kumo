@@ -773,6 +773,8 @@ A small Flask project to mock a regular website with different types of input fo
 To run the project, ensure that Flask is installed.
 Follow the setup guide found in `README.md` inside the `fake-website` directory.
 
+  - References [Flask - Routing](http://flask.pocoo.org/docs/1.0/quickstart/#routing)
+
 ## Wordpress
 
 > Note that the original deployment on x10Host is no longer supported, however they can still be used for testing.
@@ -789,6 +791,8 @@ For testing, multiple Wordpress sites have been deployed on AWS with text scatte
 *Note that users are shared across the blogs.*
 
 To test the crawler effectively, it is recommended to set the starting page to **Kumo Blog** since that page would link to the other two subdomains.
+
+  - References [Getting Started With Wordpress](https://codex.wordpress.org/Getting_Started_with_WordPress)
 
 <div style="page-break-after: always;"></div>
 
