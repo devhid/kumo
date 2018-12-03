@@ -693,10 +693,6 @@ Via HTTPS:
 
 
 
-### Extracting ZIP
-
-
-
 ## Configs
 
 This section of the report describes how **kumo** is configured. 
