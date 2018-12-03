@@ -1,7 +1,6 @@
 import click
 import os
 
-from utils.constants import *
 from funcs.crawler import Crawler
 from configs import configs
 
