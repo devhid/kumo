@@ -84,16 +84,17 @@ class Crawler:
             ua = "chrome"
 
             words = self.tokenized
-            if "yalofaputu@autowb.com" in words and "test" in words:
-                words = {"yalofaputu@autowb.com", "test"}
-            if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-                words = {"bawofafefe@kulmeo.com", "Test12345!"}
+            # if "yalofaputu@autowb.com" in words and "test" in words:
+            #     words = {"yalofaputu@autowb.com", "test"}
+            # if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
+            #     words = {"bawofafefe@kulmeo.com", "Test12345!"}
 
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
 
             if len(success) == 0:
                 print(f'Unable to crack {host}{form_url}')
+                continue
             else:
                 print(f'Cracked users for {host}{form_url}')
             for cred in success:
