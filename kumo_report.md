@@ -20,7 +20,6 @@ After **kumo** is done with a page, it moves onto the next page according to spe
 <h1 align=center> Table of Contents </h1>
 
 1. [Functional Specifications](#Functional-Specifications)
-
    - [Prerequisites & Dependencies](#Prerequisites-&-Dependencies)
    - [Properties](#Properties)
    - [Technical Design](#Technical-Design)
@@ -35,8 +34,7 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    1. [Internet Standards](#Internet-Standards)
    2. [Programming Guidelines](#Programming-Guidelines)
 
-4. [Team Dynamics & Journey](#Team-Dynamics-&-Journey)
-
+4. [Team Dynamics & Journey](#Team-Dynamics-Journey)
    1. [Workflow](#Workflow)
    2. [Brainstorming](#Brainstorming)
    3. [Feature Contributions](#Feature-Contributions)
@@ -45,16 +43,10 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    6. [Presentation Planning](#Presentation-Planning)
 
 
-      1. [Workflow](#Workflow)
-      2. [Brainstorming](#Brainstorming)
-      3. [Feature Contributions](#Feature-Contributions)
-      4. [Tying It Together](#Tying-It-Together)
-      5. [Major Blockers](#Major-Blockers)
-      6. [Presentation Planning](#Presentation-Planning)
 
 <div style="page-break-after: always;"></div>
 
-<h1 align=center> Functional Specifications </h1>
+<a name="Functional-Specifications"></a><h1 align=center> Functional Specifications </h1>
 
 ## Prerequisites & Dependencies
 
@@ -699,8 +691,7 @@ max_total = 100
 
 <div style="page-break-after: always;"></div>
 
-
-<h1 align=center> User Guide </h1>
+<a name="User-Guide"></a><h1 align=center> User Guide </h1>
 
 ## Downloading
 
@@ -801,7 +792,7 @@ To test the crawler effectively, it is recommended to set the starting page to *
 
 <div style="page-break-after: always;"></div>
 
-<h1 align=center>References</h1>
+<a name="References"></a><h1 align=center>References</h1>
 
 ## Internet Standards
 
@@ -828,13 +819,13 @@ To test the crawler effectively, it is recommended to set the starting page to *
 
 - ### URL Parsing
 
-    - [Urllib's Parsing Library Documentation][#https://docs.python.org/3/library/urllib.parse.html]
-    - [TLDExtract Library Documentation][#https://github.com/john-kurkowski/tldextract]
+    - [Urllib's Parsing Library Documentation](#https://docs.python.org/3/library/urllib.parse.html)
+    - [TLDExtract Library Documentation](#https://github.com/john-kurkowski/tldextract)
     - [PyQuery Library Documentation](#https://pythonhosted.org/pyquery/)
 
 <div style="page-break-after: always;"></div>
 
-<h1 align=center>Team Dynamics & Journey</h1>
+<a name="Team-Dynamics-Journey"></a><h1 align=center>Team Dynamics & Journey</h1>
 
 ## Workflow
 
