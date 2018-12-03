@@ -9,21 +9,15 @@ from network.HttpResponse import HttpResponse
 from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
 from utils.namedtuples import StatusCode
-<<<<<<< HEAD
-=======
 from utils.login_utils import detect_login
->>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
 # graphs imports
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
 from bruteforce.bruteforce import bruteforce
-<<<<<<< HEAD
-=======
 
 # tokenize imports
 from funcs.tokenizer import tokenize_html
->>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
 class Crawler:
     def __init__(self):
@@ -49,17 +43,10 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-<<<<<<< HEAD
-                for subdomain in self.validate_subdomains(domain.url, user_agent):
-                    print("> Found Subdomain: " + subdomain)
-                    if subdomain not in visited:
-                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
-=======
                 # for subdomain in self.validate_subdomains(domain.url, user_agent):
                 #     print("> Found Subdomain: " + subdomain)
                 #     if subdomain not in visited:
                 #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
->>>>>>> 78fb569b4649acb6a8585327c72a7692477be7d7
 
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()

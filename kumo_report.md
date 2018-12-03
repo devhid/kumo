@@ -189,11 +189,41 @@ max_total = 100
 
 ### 2. Feature Implementation
 
-- #### Breadth-First Search (BFS)
+- #### Breadth-First Search (BFS) and Depth-First Search (DFS)
 
-- #### Depth-First Search (DFS)
+  - The two algorithms are essentially the same with the exception of the data structure used. For a **BFS**, we need a **FIFO** (first in, first out) structure such as a **queue**, whereas for a **DFS**, we need a **LIFO** (last in, first out) structure such as a **stack**.
+
+  - In order to prevent creating two separate functions to handle the algorithms, one function was used instead that changed the data structure depending on the traversal.
+
+  - The pseudocode for our `crawl()` function can be found below:
+
+    ```python
+    def crawl(url, method, user_agent, max_depth, max_pages):
+        root_domain = DomainNode(url, user_agent, max_depth, max_depth)
+        
+        visited = set()
+        to_traverse = stack(root_domain) if method == "dfs" else queue(root_domain)
+        
+        while to_traverse:
+            domain = to_traverse.pop()
+            
+            if domain.url not in visited:
+            	visited.add(domain.url)
+                
+                domain.process() # Gets the links, other domains, page count, tokenized words.
+                
+                for link in domain.get_connected_domains():
+                    if get_domain(link) in visited:
+                        to_traverse.append(DomainNode(link, user_agent, max_depth, max_pages))
+         
+        return visited
+    ```
 
 - #### Completely Processing the Current Domain
+
+  A domain is considered **completely processed** when all links for that domain have been found and crawled. A link is considered *crawled*, when all the text in that link has been tokenized and the form values have been extracted from the login form (if there is a login form on that page).
+
+  ## Network
 
 - HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
 
@@ -674,11 +704,18 @@ Via HTTPS:
 
 ​	```git clone https://github.com/devhid/kumo.git	```
 
+## Installation
 
+There are several dependencies that are required to run the crawler.
 
-### Extracting ZIP
+To install the dependencies and install **kumo** as an executable in your command line, type the following commands:
 
+```
+cd kumo
+pip3 install .
+```
 
+**Note**: You must have **Python3** installed on your system to run the program.
 
 ## Configs
 
@@ -728,7 +765,7 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 * If you wanted to use the `DEFAULT` configuration, you can run: `kumo crawl <url> DEFAULT`.
 
-* The available user agents are `chrome`, `opera`,`safari`, `mozilla`, `ie` and `googlebot`.
+* The available user agents are `chrome`, `opera`, `safari`, `firefox`, `ie` and `googlebot`.
 
 * You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.   
 
