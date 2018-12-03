@@ -72,10 +72,10 @@ if __name__ == "__main__":
     elif test == "crawler":
         url = "http://forum.3.17.9.125.xip.io/login"
         # url = "http://email.kumo.x10host.com"
-        method = "dfs"
+        method = "bfs"
         agent = HTTP_UA_CHROME
-        depth = 10
-        pages = 30
+        depth = 20
+        pages = 100
         
         crawler = Crawler()
         crawler.crawl(url, method, agent, depth, pages)

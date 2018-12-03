@@ -1,10 +1,15 @@
+# python imports
+import time
+
 # network imports
 from network.HttpResponse import HttpResponse
 from network.Socket import Socket
 
 # utils imports
-from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED
-from utils.namedtuples import StatusCode
+from utils.constants import HTTP_UA, HTTP_CONTENTTYPE_FORMENCODED, \
+                            HTTP_GET, HTTP_POST, HTTP_PORT, HTTP_TOO_MANY_REQ
+from utils.namedtuples import StatusCode, RequestInfo
+from utils.link_utils import extract_host_rel
 
 class HttpRequest:
    
@@ -129,16 +134,16 @@ class HttpRequest:
         if socket is None or method is None or url is None or \
             protocol is None or host is None or agent is None:
             return False
-        if method != "GET" and method != "POST":
+        if method != HTTP_GET and method != HTTP_POST:
             return False
-        if method == "GET":
+        if method == HTTP_GET:
             if cache_control is None or accept is None or \
             accept_lang is None or accept_encoding is None or \
             accept_charset is None or connection is None:
                 return False
             if body is not None:
                 return False
-        if method == "POST" and content_type is None:
+        if method == HTTP_POST and content_type is None:
             return False
         
         # Check if the user-agent is a pre-defined one, 
@@ -170,7 +175,7 @@ class HttpRequest:
         request += "\r\n\r\n"
 
         # If the HTTP method is POST, then append the body
-        if method == "POST":
+        if method == HTTP_POST:
             request += body
 
         # Attempt to send the HTTP request.
@@ -216,7 +221,7 @@ class HttpRequest:
             if the GET request failed to send
         """
         # Ensure the instance of the HttpRequest was made for GET requests
-        if self.__method != "GET":
+        if self.__method != HTTP_GET:
             return False
 
         # Connect the HttpRequest
@@ -284,7 +289,7 @@ class HttpRequest:
             if the POST request failed to send
         """
         # Ensure the instance of the HttpRequest was made for POST requests
-        if self.__method != "POST":
+        if self.__method != HTTP_POST:
             return False
 
         # Connect the HttpRequest
@@ -348,6 +353,42 @@ class HttpRequest:
         # Strip the last & character if necessary.
         return body[:len(body)-1] if len(body) >= 1 else body
         
+    @staticmethod
+    def get(url, agent):
+        """ A convenience wrapper that instantiates an HttpRequest of type HTTP_GET,
+        sends the message, and returns the HttpResponse.
+
+        Parameters
+        ----------
+        url : string
+            URL to send the HttpRequest to
+        agent : string
+            user-agent that wil be used
+
+        Returns
+        -------
+        http_response : HttpResponse or None
+            HttpResponse describing the response or None on failure
+        """
+        request_info = extract_host_rel(url)
+        request = HttpRequest(request_info.host,HTTP_PORT,HTTP_GET)
+        too_many_req = 0
+        while too_many_req < HTTP_TOO_MANY_REQ:
+            response = request.send_get_request(request_info.rel_url,request_info.host,agent)
+            if response is None:
+                return None
+            status_tuple = response.status_code
+            if status_tuple is not None:
+                status_code, __ = status_tuple
+                status_code = int(status_code)
+                if status_code == 429 or status_code == 503:
+                    time.sleep(10)
+                    too_many_req += 1
+                    continue
+            return response
+        return None
+            
+
             
 
 

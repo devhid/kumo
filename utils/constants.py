@@ -12,6 +12,7 @@ HELP_URL = 'The url to start crawling at.'
 HELP_CFGS = 'The config set to use.'
 
 # network 
+## pre-defined user-agents
 HTTP_UA_FIREFOX = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
 HTTP_UA_CHROME = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 HTTP_UA_OPERA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36 OPR/38.0.2220.41'
@@ -21,16 +22,25 @@ HTTP_UA_GOOGLEBOT = 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 HTTP_UA = {'firefox':HTTP_UA_FIREFOX,'chrome':HTTP_UA_CHROME,
             'opera':HTTP_UA_OPERA,'safari':HTTP_UA_SAFARI,
             'ie':HTTP_UA_IE,'googlebot':HTTP_UA_GOOGLEBOT}
+
+## form-urlencoded constant
 HTTP_CONTENTTYPE_FORMENCODED = "application/x-www-form-urlencoded"
 
+## request constants
 HTTP_HEADERS = "headers"
 HTTP_BODY = "body"
+HTTP_GET = "GET"
+HTTP_POST = "POST"
+HTTP_PORT = 80
 
-## login_utils
-# keywords for login success detection
+## if we receive a 429 or 503 status code HTTP_TOO_MANY_REQ times, then assume failure
+HTTP_TOO_MANY_REQ = 10
+
+# login_utils
+## keywords for login success detection
 SUCCESS_KEYWORDS = set(["success", "logged in", "authenticated", "successfully", "logged", "/login/?authentication=success", "/success", "redirected", "automatically"]) # TODO: Might need to try to expand this list
 
-# keywords for login page detection
+## keywords for login page detection
 USER_KEYWORDS = set(["log in", "login", "log", "user", "username", "user_login", "user login", "user_id", "user id", "email"])
 PASS_KEYWORDS = set(["pwd", "passwd", "pass", "password"])
 LOGIN_KEYWORDS = set(["log in", "login", "signin", "sign in"])

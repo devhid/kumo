@@ -9,3 +9,6 @@ StatusCode = namedtuple('StatusCode', ['status_code', 'interesting_info'])
 
 # utils/login_utils.py -> detect_login()
 Form = namedtuple('Form', ['url', 'username', 'passname', 'action', 'host'])
+
+# network/HttpRequest
+RequestInfo = namedtuple('RequestInfo', ['host', 'rel_url'])

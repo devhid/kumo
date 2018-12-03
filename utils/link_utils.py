@@ -9,7 +9,7 @@ from urllib.parse import urlparse, \
 import urllib.robotparser
 
 # utils imports
-from utils.namedtuples import Form
+from utils.namedtuples import Form, RequestInfo
 
 def retrieve_links(html, base_url):
     """Return all links from an html document passed as a string
@@ -94,12 +94,36 @@ def dom_family(dom_one, dom_two):
     return done.find(dtwo) != -1 or dtwo.find(done) != -1
 
 def clean_url(url):
+    """ Strips the ending / from a URL if it exists.
+
+    Parameters
+    ----------
+    url : string
+        HTTP URL
+
+    Returns
+    -------
+    url : string
+        URL that is stripped of an ending / if it existed
+    """
     if url[-1] == '/':
         return url[:-1]
     
     return url
 
 def get_domain(url):
+    """ Get the domain from a URL.
+
+    Parameters
+    ----------
+    url : string
+        HTTP URL
+
+    Returns
+    -------
+    domain : string
+        domain of the URL
+    """
     o = urlparse(url)
     scheme = o.scheme
 
@@ -110,6 +134,20 @@ def get_domain(url):
     return link
 
 def add_subdomain(url, subdomain):
+    """ Adds a subdomain to a URL.
+
+    Parameters
+    ----------
+    url : string
+        HTTP URL
+    subdomain : string
+        subdomain to append to the front of a URL
+
+    Returns
+    -------
+    domain : string
+        combined URL and subdomain
+    """
     o = urlparse(url)
     scheme = o.scheme
 
@@ -121,6 +159,20 @@ def add_subdomain(url, subdomain):
     return link
 
 def get_robot_links(html, base_url):
+    """ Get the robots.txt links given the HTML body of the file and the base URL.
+
+    Parameters
+    ----------
+    html : string
+        HTML body of the robots.txt file
+    base_url : string
+        base URL of the domain
+
+    Returns
+    -------
+    paths : list(string)
+        list of paths from the robots.txt file
+    """
     rp = urllib.robotparser.RobotFileParser()
     
     rp.parse(html.splitlines())
@@ -128,4 +180,29 @@ def get_robot_links(html, base_url):
     paths = [clean_url(base_url + str(rule).split()[1]) for rule in rp.default_entry.rulelines]
     
     return paths
+
+def extract_host_rel(url):
+    """ Extract the [host] and [relative_url] that would be used in an HTTP request.
+
+    Parameters
+    ----------
+    url : string
+        HTTP URL
+
+    Returns
+    -------
+    request_info : RequestInfo (namedtuple)
+        first value is the [host] and second is the [relative_url]
+    """
+    if url.find("https://") != -1:
+        url = url.replace("https://","http://")
+    elif url.find("http://") == -1:
+        url = "http://" + url
+    ext = tld.extract(url)
+    dom = '.'.join(ext[:])
+    dom = dom[1:] if dom[:1] == "." else dom
+    rel = urlparse(url).path
+    relative = '/' if rel == '' else rel
+    relative = relative.replace("\r","")
+    return RequestInfo(host=dom,rel_url=relative)
 

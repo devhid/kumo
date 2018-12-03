@@ -1,7 +1,16 @@
+# dependency imports
+import tldextract
 
+# python imports
 from collections import deque
+import time
+from urllib.parse import urlparse
 
+# funcs imports
 from funcs.tokenizer import tokenize_html
+
+# utils imports
+from utils.constants import HTTP_TOO_MANY_REQ
 from utils.link_utils import retrieve_links, in_domain, dom_family
 from utils.login_utils import detect_login
 
@@ -9,10 +18,6 @@ from utils.login_utils import detect_login
 from network.HttpRequest import HttpRequest
 from network.HttpResponse import HttpResponse
 
-from urllib.parse import urlparse
-import tldextract
-
-import time
 
 class PageNode:
 
@@ -22,17 +27,15 @@ class PageNode:
         self.login_pages = set()
         self.other_domains = set()
         self.tokenized_words = set()
+        self.retries = {} # key = url of page that returned 429 or 503, value is # of tries
     
     def process(self,agent):
-        ext = tldextract.extract(self.url)
-        dom = '.'.join(ext[:])
-        dom = dom[1:] if dom[:1] == "." else dom
-        relative = '/' if urlparse(self.url).path == '' else urlparse(self.url).path
-        relative = relative.replace("\r","")
-        request = HttpRequest(dom,80,"GET")
         status_code = 0
+        self.retries[self.url] = 0
+        # this loop should not have to handle a redirect, as a PageNode is only processed if
+        # the status code is >= 200 and <= 300 (refer to DomainNode.process())
         while True:
-            response = request.send_get_request(relative,dom,agent)
+            response = HttpRequest.get(self.url,agent)
             if response is not None:
                 status_tuple = response.status_code
                 if status_tuple is not None:
@@ -40,7 +43,11 @@ class PageNode:
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
                         time.sleep(10)
-                        continue
+                        self.retries[self.url] += 1
+                        if self.retries[self.url] >= HTTP_TOO_MANY_REQ:
+                            return
+                        else:
+                            continue
                     if status_code >= 400 and status_code <= 599:
                         return
                     else:
@@ -50,23 +57,19 @@ class PageNode:
             else:
                 return
 
-        # if self.url.find("forum.3.17.9.125.xip.io") != -1:
-        #     print("here")
+        # Retrieve all the links on the page.
         all_links = retrieve_links(response.body, self.url)
         all_links = deque(all_links)
 
         while all_links:
             link = all_links.popleft()
-            ext = tldextract.extract(link)
-            dom = '.'.join(ext[:])
-            if dom[:1] == ".":
-                dom = dom[1:]
-            relative = '/' if urlparse(link).path == '' else urlparse(link).path
-            relative = relative.replace("\r","")
-            request = HttpRequest(dom,80,"GET")
-            response = request.send_get_request(relative,dom,agent)
+            if link in self.retries and self.retries[link] >= HTTP_TOO_MANY_REQ:
+                continue
+            else:
+                self.retries[link] = 0 if link not in self.retries else self.retries[link]
+            response = HttpRequest.get(link,agent)
 
-            # Continue wtih the next link if there are errors.
+            # Continue with the next link if there are errors.
             status_code = 0
             redirect_url = ''
             if response is not None:
@@ -76,54 +79,13 @@ class PageNode:
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
                         all_links.append(link)
+                        self.retries[link] += 1
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
                     continue
             else:
                 continue
-
-            # Handle redirection by looking at the Location header.
-            if status_code >= 301 and status_code <= 308:
-
-                if in_domain(self.url, redirect_url):
-                    inner_ext = tldextract.extract(redirect_url)
-                    inner_dom = '.'.join(inner_ext[:])
-                    inner_dom = inner_dom[1:] if inner_dom[:1] == "." else inner_dom
-                    inner_relative = '/' if urlparse(redirect_url).path == '' \
-                                        else urlparse(redirect_url).path
-                    if inner_relative.find("\r") != -1:
-                        inner_relative = inner_relative.replace("\r","")      
-                    inner_request = HttpRequest(inner_dom,80,"GET")
-                    inner_response = inner_request.send_get_request(inner_relative,inner_dom,agent)
-
-                    # Continue wtih the next link if there are errors.
-                    inner_status_code = 0
-                    inner_redirect_url = ''
-                    if inner_response is not None:
-                        inner_status_tuple = inner_response.status_code
-                        if inner_status_tuple is not None:
-                            inner_status_code, inner_redirect_url = inner_status_tuple
-                            inner_status_code = int(inner_status_code)
-                            if inner_status_code == 429 or inner_status_code == 503:
-                                all_links.append(redirect_url)
-                            if inner_status_code >= 400 and inner_status_code <= 599:
-                                continue
-                        else:
-                            continue
-                    else:
-                        continue
-
-                    if inner_status_code >= 200 and inner_status_code <= 300:
-                        url = redirect_url
-                        if inner_status_code == 300:
-                            url = inner_redirect_url
-                        login_page = detect_login(inner_response.body, url)
-                        self.connected_pages.add(url)
-                        if login_page:
-                            self.login_pages.add(login_page)
-                        
-                        self.tokenized_words.update(tokenize_html(inner_response.body,False))
 
             # Handle status 300 the same as 200.
             if status_code >= 200 and status_code <= 300:
@@ -139,6 +101,16 @@ class PageNode:
                         self.other_domains.add(link)
                 else:
                     continue
+            
+            # If the server is busy, try the request again.
+            if status_code == 429 or status_code == 503:
+                all_links.appendleft(redirect_url)
+                time.sleep(10)
+
+            # Handle redirection by looking at the Location header.
+            if status_code >= 301 and status_code <= 308:
+                if in_domain(self.url, redirect_url):
+                    all_links.appendleft(redirect_url)
 
     def get_tokenized_words(self):
         return self.tokenized_words
@@ -151,3 +123,9 @@ class PageNode:
     
     def get_login_pages(self):
         return self.login_pages
+
+    def is_login_page(self, rel_url):
+        for login in self.login_pages:
+            if rel_url == login.url:
+                return True
+        return False

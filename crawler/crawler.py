@@ -6,8 +6,8 @@ from network.HttpRequest import HttpRequest
 from network.HttpResponse import HttpResponse
 
 # utils imports
-from utils.constants import SUBDOMAINS
-from utils.link_utils import clean_url, get_domain, add_subdomain
+from utils.constants import SUBDOMAINS, HTTP_PORT
+from utils.link_utils import clean_url, get_domain, add_subdomain, extract_host_rel
 from utils.namedtuples import StatusCode
 from utils.login_utils import detect_login
 
@@ -51,43 +51,51 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                for subdomain in self.validate_subdomains(domain.url, user_agent):
-                    print("> Found Subdomain: " + subdomain)
-                    if subdomain not in visited:
-                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                # for subdomain in self.validate_subdomains(domain.url, user_agent):
+                #     print("> Found Subdomain: " + subdomain)
+                #     if subdomain not in visited:
+                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
-                visited.add(clean_url(domain.url))
+                # Mark the domain as being visited and begin to process it.
+                visited.add(extract_host_rel(domain.url).host)
                 visited_pages = domain.process()
 
-                self.page_count += len(visited_pages) # Update page count by adding the number of pages visited.
+                # Update page count by adding the number of pages visited.
+                self.page_count += len(visited_pages)
                 for form in domain.get_login_forms():
                     self.login_forms.add(form)
                 
+                # Aggregate the words that were tokenized from the pages in the domain.
                 for word in domain.get_tokenized_words():
                     self.tokenized.add(word)
 
-                if domain.page_count >= max_pages: # If we reach the maximum number of pages, stop crawling.
+                # If we reach the maximum number of pages, stop crawling.
+                if domain.page_count >= max_pages:
                     break
                 
+                # Add domains in F(D)
                 for link in domain.get_connected_domains():
                     if link and get_domain(link) not in visited:
                         to_traverse.append(DomainNode(link, user_agent, max_depth, max_pages))
 
+        # Print the aggregated output from the crawler.
         print("Total Domains Visited: {}".format(visited))
         print("Login Forms: {}".format(self.login_forms))
         print("Tokenized Words: {}".format(self.tokenized))
 
         # Begin bruteforcing forms
         for login_form in self.login_forms:
+            # Unpack the needed values from the Form namedtuple.
             form_url, user_key, pass_key, action_val, host = login_form
-            port = 80
-            ua = "chrome"
+            port = HTTP_PORT
+            ua = user_agent
 
             words = self.tokenized
-            # if "yalofaputu@autowb.com" in words and "test" in words:
-            #     words = {"yalofaputu@autowb.com", "test"}
-            # if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-            #     words = {"bawofafefe@kulmeo.com", "Test12345!"}
+            # SPEED UP DEMO
+            if "yalofaputu@autowb.com" in words and "test" in words:
+                words = {"yalofaputu@autowb.com", "test"}
+            if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
+                words = {"bawofafefe@kulmeo.com", "Test12345!"}
 
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
@@ -119,7 +127,7 @@ class Crawler:
             dom = dom[1:] if dom[:1] == "." else dom
             relative = '/' if urlparse(full_url).path == '' else urlparse(full_url).path
             
-            request = HttpRequest(dom,80,"GET")
+            request = HttpRequest(dom,HTTP_PORT,"GET")
             response = request.send_get_request(relative,dom,ua)
             if response is not None:
                 status_tuple = response.status_code
@@ -138,8 +146,8 @@ class Crawler:
         dom = dom[1:] if dom[:1] == "." else dom
         rel = urlparse(url).path
         relative = '/' if rel == '' else rel
-        
-        request = HttpRequest(dom,80,"GET")
+        relative = relative.replace("\r","")
+        request = HttpRequest(dom,HTTP_PORT,"GET")
         response = request.send_get_request(relative,dom,user_agent)
         if response is None:
             return False

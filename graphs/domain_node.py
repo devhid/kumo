@@ -1,16 +1,21 @@
+# dependency imports
+import tldextract as tld
 
+# python imports
 from collections import deque
+from urllib.parse import urlparse
 
+# graphs imports
 from graphs.page_graph import PageGraph
 from graphs.page_node import PageNode
-from utils.link_utils import get_domain, get_robot_links
+
+# utils imports
+from utils.constants import HTTP_PORT
+from utils.link_utils import get_domain, get_robot_links, clean_url, extract_host_rel
 
 # network imports
 from network.HttpRequest import HttpRequest
 from network.HttpResponse import HttpResponse
-
-import tldextract
-from urllib.parse import urlparse
 
 class DomainNode:
     
@@ -48,13 +53,7 @@ class DomainNode:
             current_page = queue.popleft()
 
             if current_page.url is not None and current_page.url not in visited:
-                ext = tldextract.extract(current_page.url)
-                dom = '.'.join(ext[:])
-                dom = dom[1:] if dom[:1] == "." else dom
-                relative = '/' if urlparse(current_page.url).path == '' else urlparse(current_page.url).path
-                relative = relative.replace("\r","")
-                request = HttpRequest(dom,80,"GET")
-                response = request.send_get_request(relative,dom,self.user_agent)
+                response = HttpRequest.get(current_page.url, self.user_agent)
 
                 if response is None:
                     continue
@@ -71,30 +70,38 @@ class DomainNode:
 
                 if status_code >= 200 and status_code <= 300:
                     print('------------------------------------------------------------')
-                    print("> New Page: " + current_page.url)
-                    visited.add(current_page.url)
+                    tld_ext = tld.extract(current_page.url)
+                    ext = extract_host_rel(current_page.url)
+                    url = "http://"+ clean_url(ext.host + ext.rel_url)
+                    if url.replace("\r","") not in visited:
+                        print("> New Page: " + current_page.url)
+                        visited.add(url)
+                        self.page_count += 1
+                        print("Page Count: " + str(self.page_count))
+                    else:
+                        print("> Redirected Page: " + current_page.url)
                     current_page.process(self.user_agent) 
+                    
+                    print("Depth: " + str(self.depths[current_page.url]))
 
-                    if current_page.url in current_page.get_login_pages():
+                    if current_page.is_login_page(ext.rel_url):
                         print("> Login Page Detected: " + current_page.url)
             
-                    print("Depth: " + str(self.depths[current_page.url]))
                     if self.depths[current_page.url] >= self.max_depth:
                         print("> Reached Max Depth: " + str(self.depths[current_page.url]))
                         break
-                        
-                    self.page_count += 1
-                    print("Page Count: " + str(self.page_count))
             
                     if self.page_count == self.max_pages:
                         print("> Reached Max Page Count: " + str(self.page_count))
                         break
                     
                     for link in current_page.get_connected_pages():
-                        if link not in visited:
-                            new_page_node = PageNode(link)
+                        link_ext = extract_host_rel(link)
+                        link_url = "http://" + clean_url(link_ext.host + link_ext.rel_url)
+                        if link_url not in visited:
+                            new_page_node = PageNode(link_url)
                             queue.append(new_page_node)
-                            self.depths[link] = self.depths[current_page.url] + 1
+                            self.depths[link_url] = self.depths[current_page.url] + 1
 
                     for other_domain in current_page.get_other_domains():
                         self.connected_domains.add(other_domain)
@@ -104,14 +111,21 @@ class DomainNode:
                     
                     for word in current_page.get_tokenized_words():
                         self.tokenized_words.add(word)
+                # if redirected, throw the PageNode back into the front of the deque
                 elif redirect_url is not None:
                     self.depths[redirect_url] = self.depths[current_page.url]
+                    # visited.add(current_page.url)           # handle infinite redirect loops
                     self.depths.pop(current_page.url,None)
                     current_page.url = redirect_url
-                    queue.append(current_page)
+                    queue.appendleft(current_page)          # handle in the next loop
         
         print('------------------------------------------------------------')
+        visited_list = list(visited)
+        # if redirected to http:// when trying no schema or with \r at end
+        visited_list = [clean_url(s).replace("\r","") for s in visited_list]
+        visited = set(visited_list)
         print("Pages Visited: {}".format(visited))
+        print(f"{len(visited)} pages.")
         print('------------------------------------------------------------\n')
         return visited
                     
@@ -126,7 +140,7 @@ class DomainNode:
 
     def check_robots(self):
         domain = get_domain(self.url).replace("http://","")
-        request = HttpRequest(domain,80,"GET")
+        request = HttpRequest(domain,HTTP_PORT,"GET")
         response = request.send_get_request("/robots.txt",domain,self.user_agent)
 
         if response is not None:
