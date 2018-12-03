@@ -3,6 +3,7 @@ import time
 
 # funcs imports
 from funcs import transform
+from funcs.tokenizer import tokenize_html
 
 # http_requests imports
 from http_requests.Socket import Socket
@@ -11,8 +12,8 @@ from http_requests.HttpRequest import HttpRequest
 # utils imports
 from utils.constants import HTTP_CONTENTTYPE_FORMENCODED
 from utils.constants import SUCCESS_KEYWORDS
+from utils.login_utils import verify_success_resp, detect_login
 from utils.namedtuples import Credential
-from utils.link_utils import verify_success_resp, tokenize_html
 
 def bruteforce(request, url, host, port, agent, 
                 user_key, pass_key, action_val, words):
