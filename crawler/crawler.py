@@ -94,6 +94,7 @@ class Crawler:
 
             if len(success) == 0:
                 print(f'Unable to crack {host}{form_url}')
+                continue
             else:
                 print(f'Cracked users for {host}{form_url}')
             for cred in success:
