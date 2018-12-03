@@ -4,6 +4,9 @@ from bruteforce.bruteforce import bruteforce
 # configs imports
 from configs import configs
 
+# crawler imports
+from crawler.crawler import Crawler
+
 # funcs imports
 from funcs.tokenizer import tokenize_html
 
@@ -14,6 +17,7 @@ from network.HttpRequest import HttpRequest
 # utils imports
 from utils.login_utils import detect_login
 from utils.link_utils import dom_family
+from utils.constants import HTTP_UA_CHROME
 
 # tests imports
 from tests.test_transform import TransformTest
@@ -24,7 +28,7 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     tests = ["brute_force", "configs", "crawler", "http_local", "http_requests",
             "test_dom_family", "test_link_utils", "test_login_utils", "test_transform"]
-    test = "brute_force"
+    test = "crawler"
 
     if test not in tests:
         print(f"Test {test} is invalid.")

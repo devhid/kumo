@@ -1,9 +1,14 @@
 # python imports
 from collections import deque
 
+# network imports
+from network.HttpRequest import HttpRequest
+from network.HttpResponse import HttpResponse
+
 # utils imports
 from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
+from utils.namedtuples import StatusCode
 
 # graphs imports
 from graphs.domain_graph import DomainGraph
@@ -34,7 +39,7 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                for subdomain in self.validate_subdomains(domain.url):
+                for subdomain in self.validate_subdomains(domain.url, user_agent):
                     print("> Found Subdomain: " + subdomain)
                     if subdomain not in visited:
                         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
@@ -67,13 +72,17 @@ class Crawler:
         else:
             return to_traverse.pop()
 
-    def validate_subdomains(self, root_domain):
+    def validate_subdomains(self, root_domain, ua):
         valid = set()
         for subdomain in SUBDOMAINS:
             full_url = add_subdomain(root_domain, subdomain)
-            
-            if requests.get(full_url):
-                valid.add(full_url)
-        
+            request = HttpRequest(full_url,80,"GET")
+            response = request.send_get_request("/",full_url,ua)
+            if response is not None:
+                status_tuple = response.status_code
+                if status_tuple is not None:
+                    status_code, __ = status_tuple
+                    if status_code != "404":
+                        valid.add(full_url)
         return valid
             
