@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Change the value of test to change what is tested
     tests = ["brute_force", "configs", "http_local", "http_requests",
             "test_link_utils", "test_login_utils", "test_transform"]
-    test = "test_transform"
+    test = "brute_force"
 
     if test not in tests:
         print(f"Test {test} is invalid.")
@@ -61,7 +61,7 @@ if __name__ == "__main__":
                 print("Successful Logins:")
                 for cred in success:
                     print(f'    user = {cred.user}, pass = {cred.password}')
-                    
+
     # configs
     elif test == "configs":
         config = configs.DEFAULT_CONFIGS

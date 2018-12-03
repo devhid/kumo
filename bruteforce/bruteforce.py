@@ -32,10 +32,12 @@ def bruteforce(request, url, host, port, agent,
         port of the connection
     agent : string
         HTTP User-Agent header
-    content_type : string
-        HTTP Content-Type header
-    content_length : string
-        HTTP Content-Length header
+    user_key : string
+        the "name" attribute of the username input for the login form
+    pass_key : string
+        the "name" attribute of the password input for the login form
+    action_key : string
+        the "action" attribute of the login form
     words : set(string)
         set of words from which to use for bruteforcing
 
