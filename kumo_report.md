@@ -35,6 +35,7 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    2. [Downloading](#Downloading)
    3. [Configs](#Configs)
    4. [How to Use](#How-To-Use)
+   5. [Testing](#Testing)
 
 3. [References](#References)
 
@@ -653,6 +654,19 @@ This section of the report describes how to use **kumo** after it is [Setup](#Se
 ```
 
 <h1 align=center>References</h1>
+
+# Testing
+
+The project itself comes with a local website along with deployed instances of **Wordpress**.
+Note that these websites are *designed specifically* to be exploited by **kumo** rather than testing on other live websites.
+
+## Local (Flask)
+
+A small Flask project to mock a regular website with different types of input forms can be found in `fake-website` directory.
+To run the project, ensure that Flask is installed.
+Follow the setup guide found in `README.md` inside the `fake-website` directory.
+
+## Wordpress
 
 ### Internet Standards
 
