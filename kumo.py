@@ -3,6 +3,7 @@ import os
 
 from crawler.crawler import Crawler
 from configs import configs
+from utils.constants import HELP_CFGS, HELP_URL
 
 # Some random defaults for configuration options.
 default_config = configs.DEFAULT_CONFIGS
@@ -28,11 +29,10 @@ def crawl(url, cfgs):
     click.secho("Crawler will begin on '{url}' with below settings:\n".format(url=url), fg='green')
     config = configs.load_config_section(config_section=cfgs)
     if config is None:
-        print(f"Invalid config {cfgs}")
+        print(f"Invalid config {cfgs}. Switching to DEFAULT.")
         config = configs.load_config_section(config_section='DEFAULT')
     else:
-        for val in config:
-            print("%s : %s" % (val,config[val]))
+        print(f"Config set {cfgs} loaded.")
     click.echo()
     crawler = Crawler()
     crawler.crawl(url, config['traversal'], config['user_agent'], int(config['max_depth']), int(config['max_total']))

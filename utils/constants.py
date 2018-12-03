@@ -8,6 +8,8 @@ HELP_AGENT = 'A custom user-agent for use with each GET/POST request.'
 HELP_SEARCH_METHOD = 'The search traversal method for crawling: bfs|dfs.'
 HELP_MAX_DEPTH = 'The maximum depth of pages to crawl.'
 HELP_MAX_PAGES = 'The maximum total number of crawled pages.'
+HELP_URL = 'The url to start crawling at.'
+HELP_CFGS = 'The config set to use.'
 
 # network 
 HTTP_UA_FIREFOX = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
