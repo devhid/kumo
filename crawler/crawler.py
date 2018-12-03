@@ -27,7 +27,7 @@ class Crawler:
         self.page_count = 0 # Global page counter.
         self.tokenized = set() # Global set of tokenized words.
         self.login_forms = set() # Global set of login page urls.
-        self.cracked = {} # A dictionary of the form, url: [[(username-value-attribute, username),(password-value-attribute, password)]]
+        self.cracked = {}
 
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
