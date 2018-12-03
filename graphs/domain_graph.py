@@ -1,4 +1,4 @@
-from .domain_node import DomainNode
+from graphs.domain_node import DomainNode
 
 class DomainGraph:
     """ A custom graph data structure to store the family of a given root domain. """
@@ -15,7 +15,7 @@ class DomainGraph:
     def __repr__(self):
         """ Returns a string representation of the DomainGraph class and its fields. """
 
-        return 'DomainGraph(root_domain={})'.format(self.root)
+        return 'DomainGraph(root_domain={})'.format(self.root_domain)
 
 
 

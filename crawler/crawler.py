@@ -1,12 +1,23 @@
-import requests
+# python imports
 from collections import deque
 
+# network imports
+from network.HttpRequest import HttpRequest
+from network.HttpResponse import HttpResponse
+
+# utils imports
 from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
+from utils.namedtuples import StatusCode
+from utils.login_utils import detect_login
+
+# graphs imports
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
 from bruteforce.bruteforce import bruteforce
 
+# tokenize imports
+from funcs.tokenizer import tokenize_html
 
 class Crawler:
     def __init__(self):
@@ -33,7 +44,7 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                # for subdomain in self.validate_subdomains(domain.url):
+                # for subdomain in self.validate_subdomains(domain.url, user_agent):
                 #     print("> Found Subdomain: " + subdomain)
                 #     if subdomain not in visited:
                 #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
@@ -61,25 +72,19 @@ class Crawler:
 
         # Begin bruteforcing forms
         for login_form in self.login_forms:
-            host = login_form.host
+            host, form_url, user_key, pass_key, action_val = login_form
             port = 80
-            request = HttpRequest(host, port, "GET")
-            response = request.send_get_request(url,host,ua)
-            if response is not None:
-                body = response.body
+            ua = "chrome"
 
-                # Detect if there is a login form present, and get login fields
-                login = detect_login(body,host+url)
-                if login is not None:
-                    form_url, user_key, pass_key, action_val = login
-                    words = tokenize_html(response.response, False)
+            words = tokenize_html(response.response, False)
 
-                    post_req = HttpRequest(host, port, "POST")
-                    success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
+            post_req = HttpRequest(host, port, "POST")
+            success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
 
-                    for cred in success:
-                        self.cracked[cred.user] = cred.password
-                        print(f'    user = {cred.user}, pass = {cred.password}')
+            print('Cracked Users:')
+            for cred in success:
+                self.cracked[cred.user] = cred.password
+                print(f'    user = {cred.user}, pass = {cred.password}')
 
         return visited
     
@@ -89,13 +94,17 @@ class Crawler:
         else:
             return to_traverse.pop()
 
-    def validate_subdomains(self, root_domain):
+    def validate_subdomains(self, root_domain, ua):
         valid = set()
         for subdomain in SUBDOMAINS:
             full_url = add_subdomain(root_domain, subdomain)
-            
-            if requests.get(full_url):
-                valid.add(full_url)
-        
+            request = HttpRequest(full_url,80,"GET")
+            response = request.send_get_request("/",full_url,ua)
+            if response is not None:
+                status_tuple = response.status_code
+                if status_tuple is not None:
+                    status_code, __ = status_tuple
+                    if status_code != "404":
+                        valid.add(full_url)
         return valid
             

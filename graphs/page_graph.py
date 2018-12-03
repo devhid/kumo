@@ -1,6 +1,6 @@
 import requests
 
-from .page_node import PageNode
+from graphs.page_node import PageNode
 
 class PageGraph:
 
