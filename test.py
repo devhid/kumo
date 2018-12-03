@@ -70,7 +70,7 @@ if __name__ == "__main__":
         dom_family("a.com", "b.a.com")
         dom_family("x.com", "x.com/login")
     elif test == "crawler":
-        url = "3.17.9.125.xip.io/"
+        url = "http://forum.3.17.9.125.xip.io/login"
         # url = "http://email.kumo.x10host.com"
         method = "dfs"
         agent = HTTP_UA_CHROME

@@ -50,8 +50,8 @@ class PageNode:
             else:
                 return
 
-        if self.url.find("forum.3.17.9.125.xip.io") != -1:
-            print("here")
+        # if self.url.find("forum.3.17.9.125.xip.io") != -1:
+        #     print("here")
         all_links = retrieve_links(response.body, self.url)
         all_links = deque(all_links)
 
