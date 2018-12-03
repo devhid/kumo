@@ -1,8 +1,11 @@
-import requests
+# python imports
 from collections import deque
 
+# utils imports
 from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
+
+# graphs imports
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
 
