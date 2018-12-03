@@ -16,9 +16,7 @@ It is configured to use either [Breadth-First Search (BFS)](#Breadth-First-Searc
 
 After **kumo** is done with a page, it moves onto the next page according to specified graph traversal algorithm. However, regardless of whether it is BFS or DFS, since each domain (**not each page**) is its own vertex, it will **always** choose to visit another page in the same domain over a page in another domain. Only when **kumo** has detected that there are no other links to pages in the current domain does it choose to traverse to another domain using the specified graph traversal algorithm.
 
-```html
-<div style="page-break-after: always;"></div>
-```
+
 
 <h1 align=center> Table of Contents </h1>
 
@@ -50,9 +48,6 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    5. [Major Blockers](#Major-Blockers)
    6. [Presentation Planning](#Presentation-Planning)
 
-   ```html
-   <div style="page-break-after: always;"></div>
-   ```
 
 
 <h1 align=center> Functional Specifications </h1>
@@ -672,11 +667,9 @@ max_total = 100
 ### 3. Future Improvements
 
 - Support for HTTPS servers
+
 - Support for the `Accept-Encoding` for messages sent using `HttpRequest.send_get_request` and `HttpRequest.send_post_request`
 
-```html
-<div style="page-break-after: always;"></div>
-```
 
 <h1 align=center> User Guide </h1>
 
@@ -744,9 +737,7 @@ For testing, multiple Wordpress sites have been deployed on AWS with text scatte
 
 To test the crawler effectively, it is recommended to set the starting page to **Kumo Blog** since that page would link to the other two subdomains.
 
-```html
-<div style="page-break-after: always;"></div>
-```
+
 
 <h1 align=center>References</h1>
 
@@ -825,9 +816,9 @@ The first topic we decided before we began our project was how to structure our 
 
 ## Tying It Together
 
-Each team member was responsible for creating subcomponents that were essential to create the main crawler. The domain that **kumo** starts crawling at, as well as the various configuration options, are specified using the **command line interface**. The crawler uses the **graph data structures** to traverses the domains and subdomains, using **http requests** to retrieve the http body. From the body, links and words are **tokenized** and stored into their respective sets while **login detection** checks whether the current url contains a login page. After the crawler completely traverses a domain and its subdomains or reaches the [configuration](#Config) limits of `max_depth` or `max_total` of pages, the crawler **bruteforces** all of the login forms that it finds, returning a list of successful username-password pair.
+Each team member was responsible for creating subcomponents that were essential to create the main crawler. The domain that **kumo** starts crawling at, as well as the various configuration options, are specified using the **command line interface**. The crawler uses the **graph data structures** to traverse the domains and subdomains of the **test websites**, using **http requests** to retrieve the http body. From the body, links and words are **tokenized** and stored into their respective sets while **login detection** checks whether the current url contains a login page. After the crawler completely traverses a domain and its subdomains or reaches the [configuration](#Config) limits of `max_depth` or `max_total` of pages, the crawler **bruteforces** all of the login forms that it finds, returning a list of successful username-password pair.
 
-To get all the components running together, we communicated through a group call. Everytime a feature was finished, the feature branch was merged with the master branch in GitHub. Eventually, all the features were completed and merged to master, allowing us to import all the components and implement the crawler. 
+To get all the components running together, we communicated through a group call. Whenever a feature was finished, the feature branch was merged with the master branch in GitHub. Eventually, when all the features were completed and merged to master, we imported all the components and used them to implement the crawler. 
 
 
 
