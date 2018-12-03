@@ -60,7 +60,26 @@ class Crawler:
         print("Tokenized Words: {}".format(self.tokenized))
 
         # Begin bruteforcing forms
+        for login_form in self.login_forms:
+            host = login_form.host
+            port = 80
+            request = HttpRequest(host, port, "GET")
+            response = request.send_get_request(url,host,ua)
+            if response is not None:
+                body = response.body
 
+                # Detect if there is a login form present, and get login fields
+                login = detect_login(body,host+url)
+                if login is not None:
+                    form_url, user_key, pass_key, action_val = login
+                    words = tokenize_html(response.response, False)
+
+                    post_req = HttpRequest(host, port, "POST")
+                    success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
+
+                    for cred in success:
+                        self.cracked[cred.user] = cred.password
+                        print(f'    user = {cred.user}, pass = {cred.password}')
 
         return visited
     
