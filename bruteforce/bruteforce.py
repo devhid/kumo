@@ -64,7 +64,7 @@ def bruteforce(request, url, host, port, agent,
     
     # Try all combinations for the form described by url on host
     content_type = HTTP_CONTENTTYPE_FORMENCODED
-    sleep_time = 30
+    sleep_time = 3
     for user in all_words:
         for _pass in all_words:
             data = {user_key: user, pass_key: _pass, 'action': action_val}

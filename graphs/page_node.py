@@ -42,16 +42,15 @@ class PageNode:
                     status_code, __ = status_tuple
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
-                        time.sleep(10)
                         self.retries[self.url] += 1
                         if self.retries[self.url] >= HTTP_TOO_MANY_REQ:
                             return
                         else:
+                            time.sleep(2)
                             continue
                     if status_code >= 400 and status_code <= 599:
                         return
-                    else:
-                        break
+                    break
                 else:
                     return
             else:
@@ -66,7 +65,7 @@ class PageNode:
             if link in self.retries and self.retries[link] >= HTTP_TOO_MANY_REQ:
                 continue
             else:
-                self.retries[link] = 0 if link not in self.retries else self.retries[link]
+                self.retries[link] = 0 if link not in self.retries else self.retries[link] + 1
             response = HttpRequest.get(link,agent)
 
             # Continue with the next link if there are errors.
@@ -104,13 +103,13 @@ class PageNode:
             
             # If the server is busy, try the request again.
             if status_code == 429 or status_code == 503:
-                all_links.appendleft(redirect_url)
-                time.sleep(10)
+                all_links.append(redirect_url)
+                time.sleep(2)
 
             # Handle redirection by looking at the Location header.
             if status_code >= 301 and status_code <= 308:
                 if in_domain(self.url, redirect_url):
-                    all_links.appendleft(redirect_url)
+                    all_links.append(redirect_url)
 
     def get_tokenized_words(self):
         return self.tokenized_words

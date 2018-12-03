@@ -372,21 +372,10 @@ class HttpRequest:
         """
         request_info = extract_host_rel(url)
         request = HttpRequest(request_info.host,HTTP_PORT,HTTP_GET)
-        too_many_req = 0
-        while too_many_req < HTTP_TOO_MANY_REQ:
-            response = request.send_get_request(request_info.rel_url,request_info.host,agent)
-            if response is None:
-                return None
-            status_tuple = response.status_code
-            if status_tuple is not None:
-                status_code, __ = status_tuple
-                status_code = int(status_code)
-                if status_code == 429 or status_code == 503:
-                    time.sleep(10)
-                    too_many_req += 1
-                    continue
-            return response
-        return None
+        response = request.send_get_request(request_info.rel_url,request_info.host,agent)
+        if response is None:
+            return None
+        return response
             
 
             

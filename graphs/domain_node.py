@@ -4,13 +4,14 @@ import tldextract as tld
 # python imports
 from collections import deque
 from urllib.parse import urlparse
+import time
 
 # graphs imports
 from graphs.page_graph import PageGraph
 from graphs.page_node import PageNode
 
 # utils imports
-from utils.constants import HTTP_PORT
+from utils.constants import HTTP_PORT, HTTP_TOO_MANY_REQ
 from utils.link_utils import get_domain, get_robot_links, clean_url, extract_host_rel
 
 # network imports
@@ -31,6 +32,7 @@ class DomainNode:
         self.connected_domains = set()
         self.login_forms = set()
         self.tokenized_words = set()
+        self.retries = {} # key = url of page that returned 429 or 503, value is # of tries
 
     def __repr__(self):
         return 'DomainNode(url={})'.format(self.url)
@@ -62,7 +64,10 @@ class DomainNode:
                     status_code, redirect_url = status_tuple
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
-                        queue.append(current_page)
+                        self.retries[current_page.url] = 1 if current_page.url not in self.retries else self.retries[current_page.url] + 1
+                        if self.retries[current_page.url] < HTTP_TOO_MANY_REQ:
+                            queue.appendleft(current_page)
+                            time.sleep(2)
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
@@ -114,7 +119,7 @@ class DomainNode:
                 # if redirected, throw the PageNode back into the front of the deque
                 elif redirect_url is not None:
                     self.depths[redirect_url] = self.depths[current_page.url]
-                    # visited.add(current_page.url)           # handle infinite redirect loops
+                    visited.add(current_page.url)           # handle infinite redirect loops
                     self.depths.pop(current_page.url,None)
                     current_page.url = redirect_url
                     queue.appendleft(current_page)          # handle in the next loop

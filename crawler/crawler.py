@@ -46,7 +46,7 @@ class Crawler:
             domain = self._pop(method, to_traverse)
             domain.page_count = self.page_count
 
-            if domain.url not in visited:
+            if extract_host_rel(domain.url).host not in visited:
                 print("> New Domain Detected: " + domain.url)
 
                 # Add subdomains
