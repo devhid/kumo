@@ -19,6 +19,9 @@ from bruteforce.bruteforce import bruteforce
 # tokenize imports
 from funcs.tokenizer import tokenize_html
 
+import tldextract
+from urllib.parse import urlparse
+
 class Crawler:
     def __init__(self):
         self.page_count = 0 # Global page counter.
@@ -76,7 +79,7 @@ class Crawler:
             port = 80
             ua = "chrome"
 
-            words = tokenize_html(response.response, False)
+            words = self.tokenized
 
             post_req = HttpRequest(host, port, "POST")
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
@@ -98,8 +101,14 @@ class Crawler:
         valid = set()
         for subdomain in SUBDOMAINS:
             full_url = add_subdomain(root_domain, subdomain)
-            request = HttpRequest(full_url,80,"GET")
-            response = request.send_get_request("/",full_url,ua)
+
+            ext = tldextract.extract(full_url)
+            dom = '.'.join(ext[:])
+            dom = dom[1:] if dom[:1] == "." else dom
+            relative = '/' if urlparse(full_url).path == '' else urlparse(full_url).path
+            
+            request = HttpRequest(dom,80,"GET")
+            response = request.send_get_request(relative,dom,ua)
             if response is not None:
                 status_tuple = response.status_code
                 if status_tuple is not None:
