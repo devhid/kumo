@@ -668,6 +668,19 @@ Follow the setup guide found in `README.md` inside the `fake-website` directory.
 
 ## Wordpress
 
+> Note that the original deployment on x10Host is no longer supported, however they can still be used for testing.
+  - [Kumo Blog](http://kumo.x10host.com/)
+  - [Subdomain Blog](http://email.kumo.x10host.com/)
+
+For testing, multiple Wordpress sites have been deployed on AWS with text scattered around each page that corresponding to accounts of actual users.
+  - [Kumo Blog](http://3.17.9.125.xip.io/)
+  - [Kumo Forum](http://forum.3.17.9.125.xip.io/)
+  - [Beta Site](http://beta.3.17.9.125.xip.io/)
+
+*Note that users are shared across the blogs.*
+
+To test the crawler effectively, it is recommended to set the starting page to **Kumo Blog** since that page would link to the other two subdomains.
+
 ### Internet Standards
 
 - #### HTTP
