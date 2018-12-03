@@ -15,7 +15,7 @@ class DomainGraph:
     def __repr__(self):
         """ Returns a string representation of the DomainGraph class and its fields. """
 
-        return 'DomainGraph(root_domain={})'.format(self.root)
+        return 'DomainGraph(root_domain={})'.format(self.root_domain)
 
 
 

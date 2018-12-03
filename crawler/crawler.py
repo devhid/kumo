@@ -5,13 +5,13 @@ from utils.constants import SUBDOMAINS
 from utils.link_utils import clean_url, get_domain, add_subdomain
 from graphs.domain_graph import DomainGraph
 from graphs.domain_node import DomainNode
+from bruteforce.bruteforce import bruteforce
 
 class Crawler:
     def __init__(self):
         self.page_count = 0 # Global page counter.
         self.tokenized = set() # Global set of tokenized words.
         self.login_forms = set() # Global set of login page urls.
-        self.cracked = {} # A dictionary of the form, url: [[(username-value-attribute, username),(password-value-attribute, password)]]
 
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
@@ -73,4 +73,3 @@ class Crawler:
                 valid.add(full_url)
         
         return valid
-            
