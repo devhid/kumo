@@ -4,8 +4,6 @@
 
 This project is an implementation of a **web crawler** and **form brute-forcer** that can "**autonomously navigate websites**, collecting and tokenizing all the words that it finds which it will later use as potential passwords on the website's login form". In addition, the crawler will "**autonomously identify the login page** and also detect whether a **combination of username and password was successful** or not".
 
-
-
 ## Crawling the Web 
 
 **kumo** starts at a specified target domain and builds its [graph model of the internet](#websites) as it analyzes web pages and traverses to the target's subdomains.
@@ -16,6 +14,7 @@ It is configured to use either [Breadth-First Search (BFS)](#Breadth-First-Searc
 
 After **kumo** is done with a page, it moves onto the next page according to specified graph traversal algorithm. However, regardless of whether it is BFS or DFS, since each domain (**not each page**) is its own vertex, it will **always** choose to visit another page in the same domain over a page in another domain. Only when **kumo** has detected that there are no other links to pages in the current domain does it choose to traverse to another domain using the specified graph traversal algorithm.
 
+<div style="page-break-after: always;"></div>
 
 
 <h1 align=center> Table of Contents </h1>
@@ -27,15 +26,12 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    - [Technical Design](#Technical-Design)
 
 2. [User Guide](#User-Guide)
-
-   1. [Setup](#Setup)
-   2. [Downloading](#Downloading)
-   3. [Configs](#Configs)
-   4. [How to Use](#How-To-Use)
-   5. [Testing](#Testing)
+   1. [Downloading](#Downloading)
+   2. [Installation](#Installtion)
+   3. [How to Use](#How-To-Use)
+   4. [Testing](#Testing)
 
 3. [References](#References)
-
    1. [Internet Standards](#Internet-Standards)
    2. [Programming Guidelines](#Programming-Guidelines)
 
@@ -49,6 +45,14 @@ After **kumo** is done with a page, it moves onto the next page according to spe
    6. [Presentation Planning](#Presentation-Planning)
 
 
+      1. [Workflow](#Workflow)
+      2. [Brainstorming](#Brainstorming)
+      3. [Feature Contributions](#Feature-Contributions)
+      4. [Tying It Together](#Tying-It-Together)
+      5. [Major Blockers](#Major-Blockers)
+      6. [Presentation Planning](#Presentation-Planning)
+
+<div style="page-break-after: always;"></div>
 
 <h1 align=center> Functional Specifications </h1>
 
@@ -181,15 +185,43 @@ max_total = 100
 
   Words are tokenized from a html body via the `PyQuery` library and stored inside a regular, global `set()`. As the crawler continues to traverse other pages, the set of tokenized words is updated with more words that are found.
 
-
-
 ### 2. Feature Implementation
 
-- #### Breadth-First Search (BFS)
+- #### Breadth-First Search (BFS) and Depth-First Search (DFS)
 
-- #### Depth-First Search (DFS)
+  - The two algorithms are essentially the same with the exception of the data structure used. For a **BFS**, we need a **FIFO** (first in, first out) structure such as a **queue**, whereas for a **DFS**, we need a **LIFO** (last in, first out) structure such as a **stack**.
+
+  - In order to prevent creating two separate functions to handle the algorithms, one function was used instead that changed the data structure depending on the traversal.
+
+  - The pseudocode for our `crawl()` function can be found below:
+
+    ```python
+    def crawl(url, method, user_agent, max_depth, max_pages):
+        root_domain = DomainNode(url, user_agent, max_depth, max_depth)
+        
+        visited = set()
+        to_traverse = stack(root_domain) if method == "dfs" else queue(root_domain)
+        
+        while to_traverse:
+            domain = to_traverse.pop()
+            
+            if domain.url not in visited:
+            	visited.add(domain.url)
+                
+                domain.process() # Gets the links, other domains, page count, tokenized words.
+                
+                for link in domain.get_connected_domains():
+                    if get_domain(link) in visited:
+                        to_traverse.append(DomainNode(link, user_agent, max_depth, max_pages))
+         
+        return visited
+    ```
 
 - #### Completely Processing the Current Domain
+
+  A domain is considered **completely processed** when all links for that domain have been found and crawled. A link is considered *crawled*, when all the text in that link has been tokenized and the form values have been extracted from the login form (if there is a login form on that page).
+
+  ## Network
 
 - HTTP request functionality is built into the `HttpRequest` class. Client code should only need to use `HttpRequest` to send HTTP requests/receive HTTP responses, and should not have to interact with the lower-level implementation of the sockets interface. The custom sockets interface is built on top of the standard Python3 `socket` library.
 
@@ -367,8 +399,6 @@ max_total = 100
 
       **Note**: the HTTP headers is separated by the body by two consecutive newline characters (`\r\n\r\n`) in the response message. If two consecutive newline characters are not found, `http_response` was not valid. If there was no body, `__get_body` returns an empty string.
 
-
-
   ### HttpRequest
 
   `HttpRequest` is a class that contains a `Socket` and represents either a `GET` or `POST` request. It provides convenience methods for sending either request, and other miscellaneous HTTP request functionality as described below.
@@ -532,8 +562,6 @@ max_total = 100
               print(response_str)
   ```
 
-
-
 - #### Tokenizing Words
 
   - `tokenize_html(html, include_all)`
@@ -667,17 +695,12 @@ max_total = 100
 ### 3. Future Improvements
 
 - Support for HTTPS servers
-
 - Support for the `Accept-Encoding` for messages sent using `HttpRequest.send_get_request` and `HttpRequest.send_post_request`
+
+<div style="page-break-after: always;"></div>
 
 
 <h1 align=center> User Guide </h1>
-
-# Setup
-
-This section of the report describes how **kumo** is set up to be deployed.
-
-
 
 ## Downloading
 
@@ -691,21 +714,64 @@ Via HTTPS:
 
 ​	```git clone https://github.com/devhid/kumo.git	```
 
+## Installation
 
+There are several dependencies that are required to run the crawler.
 
-## Configs
+To install the dependencies and install **kumo** as an executable in your command line, type the following commands:
 
-This section of the report describes how **kumo** is configured. 
+```
+cd kumo
+pip3 install .
+```
 
-Refer to [Properties](#Properties) for an explanation of the main configurations.
+**Note**: You must have **Python3** installed on your system to run the program.
 
+## How to Use
 
+This section of the report describes how to use **kumo** after it is setup.
 
-# How to Use
+Since **kumo** is a command line utility, you can run the **kumo** command in your terminal and it will display the other sub-commands, usage and help.
 
-This section of the report describes how to use **kumo** after it is [Setup](#Setup).
+### Commands
 
-# Testing
+`kumo info`
+
+* Displays information about the project, authors, git repository, and version.
+
+`kumo crawl <url> <config-section>`
+
+* This starts the crawling process on `url` with configuration options defined in the `config-section` located in `configs.ini`.
+
+* For example, the default `configs.ini` currently looks like this:
+
+  ```ini
+  [DEFAULT]
+  user_agent = chrome
+  traversal = bfs
+  max_depth = 10
+  max_total = 100
+  
+  [BFS]
+  user_agent = chrome
+  traversal = bfs
+  max_depth = 10
+  max_total = 100
+  
+  [DFS]
+  user_agent = chrome
+  traversal = dfs
+  max_depth = 10
+  max_total = 100
+  ```
+
+* If you wanted to use the `DEFAULT` configuration, you can run: `kumo crawl <url> DEFAULT`.
+
+* The available user agents are `chrome`, `opera`, `safari`, `firefox`, `ie` and `googlebot`.
+
+* You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.   
+
+## Testing
 
 The project itself comes with a local website along with deployed instances of **Wordpress**.
 Note that these websites are *designed specifically* to be exploited by **kumo** rather than testing on other live websites.
@@ -733,7 +799,7 @@ For testing, multiple Wordpress sites have been deployed on AWS with text scatte
 
 To test the crawler effectively, it is recommended to set the starting page to **Kumo Blog** since that page would link to the other two subdomains.
 
-
+<div style="page-break-after: always;"></div>
 
 <h1 align=center>References</h1>
 
@@ -760,11 +826,13 @@ To test the crawler effectively, it is recommended to set the starting page to *
     - [Python Socket Library Documentation](https://docs.python.org/3/library/socket.html)
     - [Python Socket Library Programming Guidelines](https://docs.python.org/3/howto/sockets.html)
 
+- ### URL Parsing
 
+    - [Urllib's Parsing Library Documentation][#https://docs.python.org/3/library/urllib.parse.html]
+    - [TLDExtract Library Documentation][#https://github.com/john-kurkowski/tldextract]
+    - [PyQuery Library Documentation](#https://pythonhosted.org/pyquery/)
 
-  ```html
-  <div style="page-break-after: always;"></div>
-  ```
+<div style="page-break-after: always;"></div>
 
 <h1 align=center>Team Dynamics & Journey</h1>
 
@@ -832,7 +900,6 @@ To get all the components running together, we communicated through a group call
 
 * Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
-
-
 ## Presentation Planning
 
+Presentation will include us running our crawler via our command line interface utility on our test website. We will talk about what the output means, how to configure user-based options, what we could not handle, and how our bruteforcing works.
