@@ -29,6 +29,7 @@ def crawl(url, cfgs):
     config = configs.load_config_section(config_section=cfgs)
     if config is None:
         print(f"Invalid config {cfgs}")
+        config = configs.load_config_section(config_section='DEFAULT')
     else:
         for val in config:
             print("%s : %s" % (val,config[val]))

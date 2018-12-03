@@ -43,7 +43,7 @@ def detect_login(html, base_url):
     #if(detect_login_from_url(base_url)):
     #    return True
     
-    if(html == "" or len(base_url) < 8):
+    if html == "" or base_url is None or len(base_url) < 8:
         return None
 
     d = pq(html)
@@ -72,7 +72,8 @@ def detect_login(html, base_url):
 
                     # Login submit button
                     if(login_submit == False
-                    and inp.attrib[attrib].lower() in LOGIN_KEYWORDS
+                    and (inp.attrib[attrib].lower() in LOGIN_KEYWORDS
+                        or inp.attrib['name'].lower() == "submit")
                     and inp.attrib['type'].lower() == "submit"):
                         login_submit = True
 

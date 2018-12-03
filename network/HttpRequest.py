@@ -43,8 +43,8 @@ class HttpRequest:
         method : string
             HTTP method to use in the request (supports GET & POST)
         """
-        self.__socket = Socket(url,port)
-        self.__method = method
+        self.__socket = Socket(str(url),port)
+        self.__method = str(method)
     
     # Connecting Functions
 
