@@ -100,15 +100,25 @@ def clean_url(url):
     return url
 
 def get_domain(url):
-
     o = urlparse(url)
-    link = o.scheme + "://" + o.netloc
+    scheme = o.scheme
+
+    if not o.scheme:
+        scheme = "http"
+
+    link = scheme + "://" + o.netloc
     return link
 
 def add_subdomain(url, subdomain):
     o = urlparse(url)
+    scheme = o.scheme
 
-    return o.scheme + "://" + subdomain.strip() + "." + o.netloc + o.path
+    if not o.scheme:
+        scheme = "http"
+
+    link = scheme + "://" + subdomain.strip() + "." + o.netloc + o.path
+
+    return link
 
 def get_robot_links(html, base_url):
     rp = urllib.robotparser.RobotFileParser()

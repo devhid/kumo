@@ -27,6 +27,7 @@ class Crawler:
         self.page_count = 0 # Global page counter.
         self.tokenized = set() # Global set of tokenized words.
         self.login_forms = set() # Global set of login page urls.
+        self.cracked = {}
 
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
@@ -50,10 +51,10 @@ class Crawler:
 
                 # Add subdomains
                 print('\n> Currently checking for existing subdomains...')
-                # for subdomain in self.validate_subdomains(domain.url, user_agent):
-                #     print("> Found Subdomain: " + subdomain)
-                #     if subdomain not in visited:
-                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                for subdomain in self.validate_subdomains(domain.url, user_agent):
+                    print("> Found Subdomain: " + subdomain)
+                    if subdomain not in visited:
+                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
                 visited.add(clean_url(domain.url))
                 visited_pages = domain.process()
@@ -126,9 +127,6 @@ class Crawler:
                     if status_code != "404":
                         valid.add(full_url)
         return valid
-<<<<<<< HEAD
-            
-=======
 
     @staticmethod
     def validate_url(url,user_agent):
@@ -153,4 +151,3 @@ class Crawler:
             if status_code != 429 and status_code != 503:
                 return False
         return True
->>>>>>> bcb9e3bd94d27e3672e62650a4c41e213b5758cc
