@@ -716,7 +716,7 @@ cd kumo
 pip3 install .
 ```
 
-**Note**: You must have **Python3** installed on your system to run the program.
+**Note**: You must have **Python3** installed on your system to run the program or you can create a virtual environment with **Python3** installed (`python3 -m venv venv`) and install `kumo` on there. 
 
 ## How to Use
 
@@ -760,7 +760,7 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 * The available user agents are `chrome`, `opera`, `safari`, `firefox`, `ie` and `googlebot`.
 
-* You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.   
+* You can also specify a custom user agent as well. Refer to [Properties](#Properties) for more information.   
 
 ## Testing
 
