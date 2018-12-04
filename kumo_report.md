@@ -333,6 +333,10 @@ max_total = 100
   An `HttpResponse` object is returned from the `send_post_request` and `send_get_request` methods of an `HttpRequest` instance if the request was successfully sent.
 
   - **Constructor**
+  
+    - `__init__(self, http_response)`
+
+      Initializes the `HttpResponse` instance using the raw `http_response` string.
 
   - **Instance Variables**
 
@@ -626,7 +630,6 @@ max_total = 100
 
 - #### Link Retrieval
 
-  ```
   - `retrieve_links(html, base_url)`
   
     Retrieves all links in the webpage represented by the url.
@@ -636,7 +639,6 @@ max_total = 100
     **Returns:** Returns a set of all urls in the html
   
     **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page.
-  ```
 
 - #### Detecting Login Forms
 
@@ -771,7 +773,9 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 * The available user agents are `chrome`, `opera`, `safari`, `firefox`, `ie` and `googlebot`.
 
-* You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.   
+* You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.
+
+* **Note**: At the moment, **kumo** only supports HTTP, not HTTPS and if any url is entered without `http://`, it is automatically prepended to the url.
 
 <div style="page-break-after: always;"></div>
 
