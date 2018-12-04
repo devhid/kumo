@@ -50,11 +50,11 @@ class Crawler:
                 print("> New Domain Detected: " + domain.url)
 
                 # Add subdomains
-                # print('\n> Currently checking for existing subdomains...')
-                # for subdomain in self.validate_subdomains(domain.url, user_agent):
-                #     print("> Found Subdomain: " + subdomain)
-                #     if subdomain not in visited:
-                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                print('\n> Currently checking for existing subdomains...')
+                for subdomain in self.validate_subdomains(domain.url, user_agent):
+                    print("> Found Subdomain: " + subdomain)
+                    if subdomain not in visited:
+                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
                 # Mark the domain as being visited and begin to process it.
                 visited.add(extract_host_rel(domain.url).host)

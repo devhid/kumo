@@ -153,5 +153,5 @@ class DomainNode:
 
         if response is not None:
             if response.body is not None:
-                return get_robot_links(response.body, self.url)
+                return get_robot_links(response.body, domain)
         return []
