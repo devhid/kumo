@@ -333,6 +333,10 @@ max_total = 100
   An `HttpResponse` object is returned from the `send_post_request` and `send_get_request` methods of an `HttpRequest` instance if the request was successfully sent.
 
   - **Constructor**
+  
+    - `__init__(self, http_response)`
+
+      Initializes the `HttpResponse` instance using the raw `http_response` string.
 
   - **Instance Variables**
 
