@@ -879,7 +879,7 @@ The first topic we decided before we began our project was how to structure our 
 
 ### Johnny So
 
-* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, helped design **graph traversal strategies **and handled errors with **main crawling logic**.
+* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, helped design **graph traversal strategies** and handled errors with **main crawling logic**.
 
 ### Mankirat Gulati
 
@@ -906,7 +906,7 @@ To get all the components running together, we communicated through a group call
 
 ### Testing Issues
 
-* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. Ultimately we found a work around by including a root-level test file with all of our tests.
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. Ultimately, we found a work around by including a root-level test file with all of our tests.
 
 ### Graph Design and Traversal Strategies
 
