@@ -4,7 +4,7 @@
 
 This project is an implementation of a **web crawler** and **form brute-forcer** that can "**autonomously navigate websites**, collecting and tokenizing all the words that it finds which it will later use as potential passwords on the website's login form". In addition, the crawler will "**autonomously identify the login page** and also detect whether a **combination of username and password was successful** or not".
 
-## Crawling the Web 
+## Crawling the Web
 
 **kumo** starts at a specified target domain and builds its [graph model of the internet](#websites) as it analyzes web pages and traverses to the target's subdomains.
 
@@ -15,7 +15,6 @@ It is configured to use either [Breadth-First Search (BFS)](#Breadth-First-Searc
 After **kumo** is done with a page, it moves onto the next page according to specified graph traversal algorithm. However, regardless of whether it is BFS or DFS, since each domain (**not each page**) is its own vertex, it will **always** choose to visit another page in the same domain over a page in another domain. Only when **kumo** has detected that there are no other links to pages in the current domain does it choose to traverse to another domain using the specified graph traversal algorithm.
 
 <div style="page-break-after: always;"></div>
-
 
 <h1 align=center> Table of Contents </h1>
 
@@ -115,11 +114,11 @@ max_total = 100
 
 - ### Domain Graph
 
-  A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph. 
+  A **kumo (クモ)** is the Japanese word for 'spider'; it is only fitting that the internet is thus represented as a graph.
 
   #### Vertices
 
-  Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains. 
+  Vertices in the graph correspond to domains. **kumo** considers subdomains and parent domains as separate domains in its model. By specification, **kumo** crawls only one target family of domains `F(D)` and does not crawl to a domain that is not in the target's family of domains.
 
   We define a family of domains over a target domain `D` to be the set `F(D) = {a | a is a subdomain of D or a is a parent domain of D}`. The root domain `D` is specified by the user, and only vertices corresponding to domains in `F(D)` are graphed and crawled.
 
@@ -190,22 +189,22 @@ max_total = 100
     ```python
     def crawl(url, method, user_agent, max_depth, max_pages):
         root_domain = DomainNode(url, user_agent, max_depth, max_depth)
-        
+
         visited = set()
         to_traverse = stack(root_domain) if method == "dfs" else queue(root_domain)
-        
+
         while to_traverse:
             domain = to_traverse.pop()
-            
+
             if domain.url not in visited:
             	visited.add(domain.url)
-                
+
                 domain.process() # Gets the links, other domains, page count, tokenized words.
-                
+
                 for link in domain.get_connected_domains():
                     if get_domain(link) in visited:
                         to_traverse.append(DomainNode(link, user_agent, max_depth, max_pages))
-         
+
         return visited
     ```
 
@@ -361,7 +360,7 @@ max_total = 100
 
       Gets the HTTP status code from an HTTP response. Does basic validity checking on `http_response`.
 
-      **Returns**: 
+      **Returns**:
 
       - `None` if `http_response` is invalid
 
@@ -458,7 +457,7 @@ max_total = 100
       Accept-Charset: [accept-charset]
       Connection: [connection]
       \\r\\n\\r\\n
-      
+
       [body]
       ```
 
@@ -481,7 +480,7 @@ max_total = 100
       Cache-Control: max-age=0
       Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
       Accept-Language: en-US,en;q=0.9
-      Accept-Encoding: 
+      Accept-Encoding:
       Accept-Charset: utf-8
       Connection: close
       \\r\\n\\r\\n
@@ -507,7 +506,7 @@ max_total = 100
        Content-Length: [content_length]
        Accept: application/json;text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*; q=0.8
        Accept-Language: en-US,en;q=0.9,ja;q=0.8"
-       Accept-Encoding: 
+       Accept-Encoding:
        Accept-Charset: utf-8
        Connection: close
        \\r\\n
@@ -560,7 +559,7 @@ max_total = 100
 
     Retrieves all the words in the body section of a webpage's html document.
 
-    If include_all is true, words are retrieved from the entire html documet. If false, only words within the body section are retrieved. 
+    If include_all is true, words are retrieved from the entire html documet. If false, only words within the body section are retrieved.
 
     **Uses:** tokenize_html(html, include_all)
 
@@ -637,7 +636,7 @@ max_total = 100
 
       **Returns:** Returns a set of all urls in the html
 
-      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page. 
+      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page.
 
 - #### Detecting Login Forms
 
@@ -656,11 +655,11 @@ max_total = 100
     if a login form is found in the current webpage, `None` otherwise.
 
     - `url`: The action url that the form submits to, relative to the `base_url`. If none is provided, the input `base_url` is used instead.
-    - `username`: The value of the name attribute in the username input tag. 
+    - `username`: The value of the name attribute in the username input tag.
     - `passname`: The value of the name attribute in the password input tag.
     - `action`: `url` with "/" removed
 
-  - **Detection Method** 
+  - **Detection Method**
 
     **kumo** detects login forms by scanning the html document of each webpage, looking for a form with a `post` method. Within each of the form that it finds, it parses the input tags and analyzes all their attributes. The attribute values are compared with a predefined set of keywords to determine whether the input is a username/email input or a password input. Username inputs also typically require the attribute-value pair `type="text"` while password inputs typically require the attribute value pair `type="password"`. To distinguish login forms from register forms, **kumo** analyzes the submit portion of the form, looking through the attribute values and text for keywords within another predefined set that would indicate that the form's function is for login rather than for register.
 
@@ -680,7 +679,7 @@ max_total = 100
 
     where the `user` and `password` represent a credential pair that successfully logged into the form.
 
-  - **Words used to bruteforce** 
+  - **Words used to bruteforce**
 
     Username and password are selected from the passed `words` argument, which is a set containing all collected words from the domains and subdomains of crawled webpages. The set also contains all transformed versions of the word, created using the [Text Transformation](#Text-Transformation) that **kumo** supports.
 
@@ -716,11 +715,25 @@ cd kumo
 pip3 install .
 ```
 
-**Note**: You must have **Python3** installed on your system to run the program or you can create a virtual environment with **Python3** installed (`python3 -m venv venv`) and install `kumo` on there. 
+**Note**: You must have **Python3** installed on your system to run the program or you can create a virtual environment with **Python3** installed (`python3 -m venv venv`) and install `kumo` on there.
 
 ## How to Use
 
 This section of the report describes how to use **kumo** after it is setup.
+
+Since **kumo** is a command line utility, you can run the **kumo** command in your terminal and it will display the other sub-commands, usage and help.
+
+### Commands
+
+`kumo info`
+
+* Displays information about the project, authors, git repository, and version.
+
+`kumo crawl <url> <config-section>`
+
+* This starts the crawling process on `url` with configuration options defined in the `config-section` located in `configs.ini`.
+
+* For example, the default `configs.ini` currently looks like this:
 
 Since **kumo** is a command line utility, you can run the **kumo** command in your terminal and it will display the other sub-commands, usage and help.
 
@@ -742,13 +755,13 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
   traversal = bfs
   max_depth = 10
   max_total = 100
-  
+
   [BFS]
   user_agent = chrome
   traversal = bfs
   max_depth = 10
   max_total = 100
-  
+
   [DFS]
   user_agent = chrome
   traversal = dfs
@@ -760,7 +773,9 @@ Since **kumo** is a command line utility, you can run the **kumo** command in yo
 
 * The available user agents are `chrome`, `opera`, `safari`, `firefox`, `ie` and `googlebot`.
 
-* You can also specify a custom user agent as well. Refer to [Properties](#Properties) for more information.   
+* You can also specify a custom use agent as well. Refer to [Properties](#Properties) for more information.   
+
+<div style="page-break-after: always;"></div>
 
 ## Testing
 
@@ -877,8 +892,7 @@ The first topic we decided before we began our project was how to structure our 
 
 Each team member was responsible for creating subcomponents that were essential to create the main crawler. The domain that **kumo** starts crawling at, as well as the various configuration options, are specified using the **command line interface**. The crawler uses the **graph data structures** to traverse the domains and subdomains of the **test websites**, using **http requests** to retrieve the http body. From the body, links and words are **tokenized** and stored into their respective sets while **login detection** checks whether the current url contains a login page. After the crawler completely traverses a domain and its subdomains or reaches the [configuration](#Config) limits of `max_depth` or `max_total` of pages, the crawler **bruteforces** all of the login forms that it finds, returning a list of successful username-password pair.
 
-To get all the components running together, we communicated through a group call. Whenever a feature was finished, the feature branch was merged with the master branch in GitHub. Eventually, when all the features were completed and merged to master, we imported all the components and used them to implement the crawler. 
-
+To get all the components running together, we communicated through a group call. Whenever a feature was finished, the feature branch was merged with the master branch in GitHub. Eventually, when all the features were completed and merged to master, we imported all the components and used them to implement the crawler.
 
 
 ## Major Blockers
@@ -889,7 +903,7 @@ To get all the components running together, we communicated through a group call
 
 #### Testing Issues
 
-* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. 
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment.
 
 #### Graph Design and Traversal Strategies
 

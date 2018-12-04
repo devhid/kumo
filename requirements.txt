@@ -1,0 +1,13 @@
+certifi==2018.11.29
+chardet==3.0.4
+Click==7.0
+cssselect==1.0.3
+idna==2.7
+-e git+https://github.com/devhid/kumo.git@f4acceb0e8c8996d9500c25682cefe5b89e910a7#egg=kumo
+lxml==4.2.5
+pyquery==1.4.0
+requests==2.20.1
+requests-file==1.4.3
+six==1.11.0
+tldextract==2.2.0
+urllib3==1.24.1

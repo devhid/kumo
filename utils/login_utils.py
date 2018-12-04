@@ -43,13 +43,13 @@ def detect_login(html, base_url):
     #if(detect_login_from_url(base_url)):
     #    return True
     
-    if(html == "" or len(base_url) < 8):
+    if html == "" or base_url is None or len(base_url) < 8:
         return None
 
     d = pq(html)
 
     # HTML Form (Standard HTML)
-    form_prop = ["", "", "", ""] # [form action url, user input name, password input name]
+    form_prop = ["", "", "", "", ""] # [form action url, user input name, password input name, host name]
     user_input = False
     pass_input = False
     login_submit = False
@@ -72,7 +72,8 @@ def detect_login(html, base_url):
 
                     # Login submit button
                     if(login_submit == False
-                    and inp.attrib[attrib].lower() in LOGIN_KEYWORDS
+                    and (inp.attrib[attrib].lower() in LOGIN_KEYWORDS
+                        or inp.attrib['name'].lower() == "submit")
                     and inp.attrib['type'].lower() == "submit"):
                         login_submit = True
 
@@ -97,11 +98,12 @@ def detect_login(html, base_url):
             form_url = urlparse(form_url)
             form_prop[0] = form_url.path.replace('localhost', '')
             form_prop[3] = form_prop[0].replace('/', '')
+            form_prop[4] = form_url.hostname
             break
 
     if(user_input and pass_input and login_submit):
         return Form(url=form_prop[0], username=form_prop[1], 
-                    passname=form_prop[2], action=form_prop[3])
+                    passname=form_prop[2], action=form_prop[3], host=form_prop[4])
     
     # HTML Forms (Bootstrap)
     for form in d('form'):
@@ -131,11 +133,12 @@ def detect_login(html, base_url):
             form_url = urlparse(form_url)
             form_prop[0] = form_url.path.replace('localhost', '')
             form_prop[3] = form_prop[0].replace('/', '')
+            form_prop[4] = form_url.hostname
             break
 
     if(user_input and pass_input and login_submit):
         return Form(url=form_prop[0], username=form_prop[1], 
-                    passname=form_prop[2], action=form_prop[3])
+                    passname=form_prop[2], action=form_prop[3], host=form_prop[4])
     else:
         return None
     
