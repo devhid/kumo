@@ -35,7 +35,7 @@ def crawl(url, cfgs):
         print(f"Config set {cfgs} loaded.")
     click.echo()
     crawler = Crawler()
-    print(f"url = {url}")
+    print(f"Target URL = {url}")
     crawler.crawl(url, config['traversal'], config['user_agent'], int(config['max_depth']), int(config['max_total']))
 
 # Sub-command that displays information about the project.

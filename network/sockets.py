@@ -25,7 +25,7 @@ def connect(url, port):
     try:
         client_socket = socket.create_connection((url,port),timeout=10)
         return client_socket
-    except socket.error as err:
+    except Exception as err:
         return None
 
 def close(mysocket):

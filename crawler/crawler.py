@@ -31,9 +31,16 @@ class Crawler:
 
     def crawl(self, url, method, user_agent, max_depth, max_pages):
         # clean_url: strips the "/" from the end of the url if present
-
+        if url.find("https://") == 0:
+            print(f"    kumo is a nice spider and does not crawl https domains.")
+            return
+        if url.find("http://") > 0 or url.find("https://") > 0:
+            print(f"    {url} is malformed.")
+            return
+        if url.find("http://") == -1:
+            url = "http://" + url
         if not Crawler.validate_url(url,user_agent):
-            print(f'Invalid target URL {url}')
+            print(f'    Invalid target URL {url}')
             return
 
         root_domain = DomainNode(clean_url(url), user_agent, max_depth, max_pages)
@@ -50,11 +57,11 @@ class Crawler:
                 print("> New Domain Detected: " + domain.url)
 
                 # Add subdomains
-                print('\n> Currently checking for existing subdomains...')
-                for subdomain in self.validate_subdomains(domain.url, user_agent):
-                    print("> Found Subdomain: " + subdomain)
-                    if subdomain not in visited:
-                        to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
+                # print('\n> Currently checking for existing subdomains...')
+                # for subdomain in self.validate_subdomains(domain.url, user_agent):
+                #     print("> Found Subdomain: " + subdomain)
+                #     if subdomain not in visited:
+                #         to_traverse.append(DomainNode(subdomain, user_agent, max_depth, max_pages))
 
                 # Mark the domain as being visited and begin to process it.
                 visited.add(extract_host_rel(domain.url).host)
@@ -92,10 +99,13 @@ class Crawler:
 
             words = self.tokenized
             # SPEED UP DEMO
-            if "yalofaputu@autowb.com" in words and "test" in words:
-                words = {"yalofaputu@autowb.com", "test"}
-            if "bawofafefe@kulmeo.com" in words and "Test12345!" in words:
-                words = {"bawofafefe@kulmeo.com", "Test12345!"}
+            # accounts = []
+            # if "yalofaputu@autowb.com" in words and "test" in words:
+            #     accounts.extend(["yalofaputu@autowb.com","test"])
+            # if "bakefaxoj@kulmeo.com" in words and "test" in words:
+            #     accounts.extend(["bakefaxoj@kulmeo.com","test"])
+            # if len(accounts) > 0:
+            #     words = set(accounts)
 
             post_req = HttpRequest(host, port, "POST")
             print(f'Attempting to crack {host}{form_url}...')
@@ -140,8 +150,6 @@ class Crawler:
 
     @staticmethod
     def validate_url(url,user_agent):
-        if url.find("http://") == -1:
-            url = "http://" + url
         ext = tldextract.extract(url)
         dom = '.'.join(ext[:])
         dom = dom[1:] if dom[:1] == "." else dom
