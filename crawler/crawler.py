@@ -39,6 +39,8 @@ class Crawler:
             return
         if url.find("http://") == -1:
             url = "http://" + url
+        if url[len(url)-1:] != "/":
+            url += "/"
         if not Crawler.validate_url(url,user_agent):
             print(f'    Invalid target URL {url}')
             return
