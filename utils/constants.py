@@ -35,6 +35,7 @@ HTTP_PORT = 80
 
 ## if we receive a 429 or 503 status code HTTP_TOO_MANY_REQ times, then assume failure
 HTTP_TOO_MANY_REQ = 10
+HTTP_RETRY_TIME = 2
 
 # login_utils
 ## keywords for login success detection

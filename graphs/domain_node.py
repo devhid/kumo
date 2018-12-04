@@ -11,7 +11,7 @@ from graphs.page_graph import PageGraph
 from graphs.page_node import PageNode
 
 # utils imports
-from utils.constants import HTTP_PORT, HTTP_TOO_MANY_REQ
+from utils.constants import HTTP_PORT, HTTP_TOO_MANY_REQ, HTTP_RETRY_TIME
 from utils.link_utils import get_domain, get_robot_links, clean_url, extract_host_rel
 
 # network imports
@@ -67,7 +67,11 @@ class DomainNode:
                         self.retries[current_page.url] = 1 if current_page.url not in self.retries else self.retries[current_page.url] + 1
                         if self.retries[current_page.url] < HTTP_TOO_MANY_REQ:
                             queue.appendleft(current_page)
-                            time.sleep(2)
+                            print(f"{current_page.url}")
+                            print(f"    was busy. retrying in {HTTP_RETRY_TIME} seconds.")
+                            time.sleep(HTTP_RETRY_TIME)
+                        else:
+                            print(f"    could not connect within {HTTP_TOO_MANY_REQ} tries.")
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
@@ -85,9 +89,8 @@ class DomainNode:
                         print("Page Count: " + str(self.page_count))
                     else:
                         print("> Redirected Page: " + current_page.url)
-                    current_page.process(self.user_agent) 
-                    
                     print("Depth: " + str(self.depths[current_page.url]))
+                    current_page.process(self.user_agent) 
 
                     if current_page.is_login_page(ext.rel_url):
                         print("> Login Page Detected: " + current_page.url)

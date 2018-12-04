@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 from funcs.tokenizer import tokenize_html
 
 # utils imports
-from utils.constants import HTTP_TOO_MANY_REQ
+from utils.constants import HTTP_TOO_MANY_REQ, HTTP_RETRY_TIME
 from utils.link_utils import retrieve_links, in_domain, dom_family
 from utils.login_utils import detect_login
 
@@ -44,9 +44,12 @@ class PageNode:
                     if status_code == 429 or status_code == 503:
                         self.retries[self.url] += 1
                         if self.retries[self.url] >= HTTP_TOO_MANY_REQ:
+                            print(f"    could not connect within {HTTP_TOO_MANY_REQ} tries.")
                             return
                         else:
-                            time.sleep(2)
+                            print(f"{self.url}")
+                            print(f"     was busy. retrying in {HTTP_RETRY_TIME} seconds.")
+                            time.sleep(HTTP_RETRY_TIME)
                             continue
                     if status_code >= 400 and status_code <= 599:
                         return
@@ -63,9 +66,8 @@ class PageNode:
         while all_links:
             link = all_links.popleft()
             if link in self.retries and self.retries[link] >= HTTP_TOO_MANY_REQ:
+                print(f"    could not connect within {HTTP_TOO_MANY_REQ} tries.")
                 continue
-            else:
-                self.retries[link] = 0 if link not in self.retries else self.retries[link] + 1
             response = HttpRequest.get(link,agent)
 
             # Continue with the next link if there are errors.
@@ -78,7 +80,9 @@ class PageNode:
                     status_code = int(status_code)
                     if status_code == 429 or status_code == 503:
                         all_links.append(link)
-                        self.retries[link] += 1
+                        self.retries[link] = 1 if link not in self.retries else self.retries[link] + 1
+                        print(f"{link}")
+                        print(f"    was busy. retrying in {HTTP_RETRY_TIME} seconds.")
                     if status_code >= 400 and status_code <= 599:
                         continue
                 else:
@@ -103,8 +107,10 @@ class PageNode:
             
             # If the server is busy, try the request again.
             if status_code == 429 or status_code == 503:
-                all_links.append(redirect_url)
-                time.sleep(2)
+                self.retries[link] = 1 if link not in self.retries else self.retries[link] + 1
+                all_links.append(link)
+                print(f"    {link} was busy. retrying in {HTTP_RETRY_TIME} seconds.")
+                time.sleep(HTTP_RETRY_TIME)
 
             # Handle redirection by looking at the Location header.
             if status_code >= 301 and status_code <= 308:
