@@ -529,29 +529,28 @@ max_total = 100
 
       **Note**: only `Content-Type` of `application/x-www-form-urlencoded` is supported as `multipart/form-data` is used for uploading files which is unnecessary, and it is safe to assume `text/plain` is never used in a `POST` request.
 
-
     ### Example Usage of `network`
 
-   An example usage of client code interacting with the `network` module is shown below.
+       An example usage of client code interacting with the `network` module is shown below.
 
-  ```python
-  # example usage of client code using the network module to send a GET request
-    request = HttpRequest(url,port,method)
-    for i in range(num_req):
-        response = request.send_get_request(url,host,agent)
-        if response is not None:
-            status_tuple = response.status_code
-            if status_tuple is not None:
-                print(status_tuple)
-            headers = response.headers
-            if headers is not None:
-                print(status_tuple)
-            body = response.body
-            if body is not None:
-                print(body)
-            response_str = response.response
-                print(response_str)
-  ```
+    ```python
+    # example usage of client code using the network module to send a GET request
+        request = HttpRequest(url,port,method)
+        for i in range(num_req):
+            response = request.send_get_request(url,host,agent)
+            if response is not None:
+                status_tuple = response.status_code
+                if status_tuple is not None:
+                    print(status_tuple)
+                headers = response.headers
+                if headers is not None:
+                    print(status_tuple)
+                body = response.body
+                if body is not None:
+                    print(body)
+                response_str = response.response
+                    print(response_str)
+    ```
 
 - #### Tokenizing Words
 
@@ -627,16 +626,17 @@ max_total = 100
 
 - #### Link Retrieval
 
-
-    - `retrieve_links(html, base_url)`
-
-      Retrieves all links in the webpage represented by the url.
-
-      **Uses:** `retrieve_links(html, base_url)`
-
-      **Returns:** Returns a set of all urls in the html
-
-      **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page.
+  ```
+  - `retrieve_links(html, base_url)`
+  
+    Retrieves all links in the webpage represented by the url.
+  
+    **Uses:** `retrieve_links(html, base_url)`
+  
+    **Returns:** Returns a set of all urls in the html
+  
+    **Note:** All relative urls are converted to absolute urls based off the provided `base_url`. Url fragments are also removed from the url so that every link in the return set points to a different page.
+  ```
 
 - #### Detecting Login Forms
 
@@ -679,7 +679,7 @@ max_total = 100
 
     where the `user` and `password` represent a credential pair that successfully logged into the form.
 
-  - **Words used to bruteforce**
+  - **Words Used to Bruteforce**
 
     Username and password are selected from the passed `words` argument, which is a set containing all collected words from the domains and subdomains of crawled webpages. The set also contains all transformed versions of the word, created using the [Text Transformation](#Text-Transformation) that **kumo** supports.
 
@@ -688,9 +688,7 @@ max_total = 100
 - Support for HTTPS servers
 - Support for the `Accept-Encoding` for messages sent using `HttpRequest.send_get_request` and `HttpRequest.send_post_request`
 
-<div style="page-break-after: always;"></div>
-
-<a name="User-Guide"></a><h1 align=center> User Guide </h1>
+<div style="page-break-after: always;"></div><a name="User-Guide"></a><h1 align=center> User Guide </h1>
 
 ## Downloading
 
@@ -710,7 +708,7 @@ There are several dependencies that are required to run the crawler.
 
 To install the dependencies and install **kumo** as an executable in your command line, type the following commands:
 
-```
+```bash
 cd kumo
 pip3 install .
 ```
@@ -838,9 +836,14 @@ To test the crawler effectively, it is recommended to set the starting page to *
 
 - ### URL Parsing
 
-    - [Urllib's Parsing Library Documentation](#https://docs.python.org/3/library/urllib.parse.html)
-    - [TLDExtract Library Documentation](#https://github.com/john-kurkowski/tldextract)
-    - [PyQuery Library Documentation](#https://pythonhosted.org/pyquery/)
+    - [Urllib's Parsing Library Documentation](https://docs.python.org/3/library/urllib.parse.html)
+    - [TLDExtract Library Documentation](https://github.com/john-kurkowski/tldextract)
+    - [PyQuery Library Documentation](https://pythonhosted.org/pyquery/)
+
+- ### Other Helpful Resources
+
+    - [Google](https://google.com)
+    - [StackOverflow](https://stackoverflow.com)
 
 <div style="page-break-after: always;"></div>
 
@@ -854,15 +857,15 @@ The first topic we decided before we began our project was how to structure our 
 
 ## Brainstorming
 
-#### Command Line Interface vs. Web Application
+### Command Line Interface vs. Web Application
 
 * We were first thinking about whether to control the crawler through a simple command line interface or through an online web application. We decided that we should just build a simple command line interface and build a web application version if we had extra time (we didn't).
 
-#### Domain Vertices vs. Pages Vertices
+### Domain Vertices vs. Pages Vertices
 
 * At first, we were stuck on how we wanted to design our graph. We had a choice between designating each page as a vertex or each domain as a vertex. Ultimately, we realized that we wanted both.
 
-#### Testing the Crawler
+### Testing the Crawler
 
 * In order to actually test the crawler, we needed a test website. **Stanley** worked on creating a simple website with login forms using **Flask**, but we realized that we also needed another website that had subdomains. Thus, **Stanley** also created a separate website on **WordPress** to handle that case.
 
@@ -870,19 +873,19 @@ The first topic we decided before we began our project was how to structure our 
 
 ## Feature Contributions
 
-#### Stanley Lim
+### Stanley Lim
 
 * Worked on **text transformation**, created the **test websites** using Flask and Wordpress to help test live usage of the crawler, and helped out with **bruteforcing**.
 
-#### Johnny So
+### Johnny So
 
-* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, and helped design **graph traversal strategies**.
+* Worked on manually creating **http requests**, helped with **bruteforcing**, created most of this **report**, helped design **graph traversal strategies **and handled errors with **main crawling logic**.
 
-#### Mankirat Gulati
+### Mankirat Gulati
 
 * Started implementing **command line interface**, helped design the **graph data structures**, combined other components to implement the **main crawling logic**.
 
-#### Andy Liang
+### Andy Liang
 
 * Created essential utility functions to handle **tokenization**, **link sanitization**, **domain matching**, and **login detection**.
 
@@ -897,18 +900,22 @@ To get all the components running together, we communicated through a group call
 
 ## Major Blockers
 
-#### Request Limits
+### Request Limits
 
-* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts. In order to circumvent this, the initial deployment of Wordpress switched from x10Host to AWS and tests were run using a VPN when the host machine's IP was blacklisted. When these solutions failed, a check was added in **kumo** to handle 429 and 503 status codes, which were errors for **too many requests** and **service unavailable** respectively.
+* When we attempted to bruteforce credentials, there was a plugin in place in **WordPress** that detected this type of action and blocked further bruteforcing attempts. In order to circumvent this, the initial deployment of Wordpress switched from x10Host to AWS and tests were run using a VPN when the host machine's IP was blacklisted. When these solutions failed, a check was added in **kumo** to handle `429` and `503` status codes, which were errors for **too many requests** and **service unavailable** respectively.
 
-#### Testing Issues
+### Testing Issues
 
-* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment.
+* We had trouble testing our modules because of the way Python handles relative imports in conjunction with working in a virtual environment. Ultimately we found a work around by including a root-level test file with all of our tests.
 
-#### Graph Design and Traversal Strategies
+### Graph Design and Traversal Strategies
 
 * Designing the graph and traversal strategies were a pain because we always thought of new edge cases, so we needed to be **very specific** on how we wanted our crawler to work. Thus, this designing phase took a lot of our time.
 
+### Redirects
+
+* Sometimes a request to a page would return in `3XX` status codes which are the redirect status codes. In order to handle these, we replaced the original url in our `PageNode` with the redirected url, set the depth of the redirected url equal to the depth of the original url and added it in front of the queue. We also marked the original url as **visited** in our traversal, so there could never be a possibility of infinitely redirecting.
+
 ## Presentation Planning
 
-Presentation will include us running our crawler via our command line interface utility on our test website. We will talk about what the output means, how to configure user-based options, what we could not handle, and how our bruteforcing works.
+Presentation will include us running our crawler via our command line interface utility on our test website. We will talk about what the output means, how to configure user-based options, how our bruteforcing works, how we handled certain situations, traversal implementation and future improvements.
