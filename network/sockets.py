@@ -89,11 +89,14 @@ def receive(socket):
     if socket is None:
         return response
 
-    while True:
-        message = socket.recv(4096)
-        if len(message) == 0:
-            break
-        response += message.decode()
-    
-    return response
+    try:
+        while True:
+            message = socket.recv(4096)
+            if len(message) == 0:
+                break
+            response += message.decode()
+        
+        return response
+    except Exception:
+        return None
 

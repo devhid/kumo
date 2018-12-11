@@ -244,6 +244,8 @@ class HttpRequest:
         if sent:
             http_response = self.__receive()
             self.close()
+            if http_response is None:
+                return None
             return HttpResponse(http_response)
         self.close()
         return None
@@ -312,6 +314,8 @@ class HttpRequest:
         if sent:
             http_response = self.__receive()
             self.close()
+            if http_response is None:
+                return None
             return HttpResponse(http_response)
         self.close()
         return None

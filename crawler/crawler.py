@@ -101,13 +101,13 @@ class Crawler:
 
             words = self.tokenized
             # SPEED UP DEMO
-            # accounts = []
-            # if "yalofaputu@autowb.com" in words and "test" in words:
-            #     accounts.extend(["yalofaputu@autowb.com","test"])
-            # if "bakefaxoj@kulmeo.com" in words and "test" in words:
-            #     accounts.extend(["bakefaxoj@kulmeo.com","test"])
-            # if len(accounts) > 0:
-            #     words = set(accounts)
+            accounts = []
+            if "yalofaputu@autowb.com" in words and "test" in words:
+                accounts.extend(["yalofaputu@autowb.com","test"])
+            if "bakefaxoj@kulmeo.com" in words and "test" in words:
+                accounts.extend(["bakefaxoj@kulmeo.com","test"])
+            if len(accounts) > 0:
+                words = set(accounts)
 
             post_req = HttpRequest(host, port, "POST")
             print(f'Attempting to crack {host}{form_url}...')
